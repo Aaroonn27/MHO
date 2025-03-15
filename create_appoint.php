@@ -66,6 +66,25 @@
         .back-link:hover {
             text-decoration: underline;
         }
+
+        /* Status message styling */
+        .status-message {
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 
@@ -105,7 +124,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="profile.php">
+                    <a href="profilepage.php">
                         <i class="fas fa-user"></i>
                         <span>Profile</span>
                     </a>
@@ -120,7 +139,18 @@
         </div>
 
         <div class="form-container">
-            <form action="save_appointment.php" method="post">
+            <?php
+            // Display status message if available
+            if (isset($_GET['status'])) {
+                if ($_GET['status'] == 'success') {
+                    echo '<div class="status-message status-success">Appointment successfully created!</div>';
+                } else if ($_GET['status'] == 'error') {
+                    echo '<div class="status-message status-error">Error creating appointment. Please try again.</div>';
+                }
+            }
+            ?>
+
+            <form action="save_appointment.php" method="post" id="appointment-form">
                 <div class="form-group">
                     <label for="program">Program:</label>
                     <select id="program" name="program" required>
