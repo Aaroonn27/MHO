@@ -150,7 +150,7 @@
             }
             ?>
 
-            <form action="save_appointment.php" method="post" id="appointment-form">
+            <form action="save_appoint.php" method="post" id="appointment-form">
                 <div class="form-group">
                     <label for="program">Program:</label>
                     <select id="program" name="program" required>

@@ -73,7 +73,10 @@
         </div>
 
         <div class="appointment-grid">
-            <?php include 'db_conn.php'; ?>
+            <?php
+            include 'db_conn.php';
+            fetch_appointments();
+            ?>
         </div>
     </main>
 
