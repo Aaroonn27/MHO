@@ -5,61 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
+    <link rel="stylesheet" href="Style/home.css">
     <link rel="stylesheet" href="Style/inventory.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 
 <body>
-    <header>
-        <div class="logo-container">
-            <h1>LOGO</h1>
-        </div>
-        <nav>
-            <ul>
-                <li>
-                    <a href="index.php">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="dropdown">
-                    <a href="#">
-                        <i class="fas fa-calendar"></i>
-                        <span>Appointment</span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="appointment.php"><i class="fas fa-list"></i>View Appointments</a>
-                        <a href="create_appoint.php"><i class="fas fa-plus"></i>Create Appointment</a>
-                    </div>
-                </li>
-                <li>
-                    <a href="announcement.php">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Announcement</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="message.php">
-                        <i class="fas fa-envelope"></i>
-                        <span>Message</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="inventory.php" class="active">
-                        <i class="fas fa-boxes"></i>
-                        <span>Inventory</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="profilepage.php">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <?php include 'includes/header.php'; ?>
 
     <main>
         <div class="inventory-container">
@@ -69,7 +22,7 @@
                 <form action="inventory.php" method="GET">
                     <div class="filter-group">
                         <label for="name">Name</label>
-                        <input type="text" id="name" name="name" class="filter-input" 
+                        <input type="text" id="name" name="name" class="filter-input"
                             value="<?php echo isset($_GET['name']) ? htmlspecialchars($_GET['name']) : ''; ?>">
                     </div>
 
@@ -130,7 +83,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php include 'inventory_functions.php'; display_inventory(); ?>
+                            <?php include 'inventory_functions.php';
+                            display_inventory(); ?>
                         </tbody>
                     </table>
                 </div>

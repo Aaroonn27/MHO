@@ -16,16 +16,21 @@
     <main>
         <div class="appointment-header">
             <h1>APPOINTMENT</h1>
-            <div class="sort-dropdown">
-                <button class="sort-btn">
-                    Sort by
-                    <i class="fas fa-caret-down"></i>
+            <div class="header-actions">
+                <button id="addapp" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;" onclick="window.location.href='create_appoint.php'">
+                    <i class="fas fa-plus"></i> Add Appointment
                 </button>
-                <div class="dropdown-content">
-                    <a href="?sort=date_asc">Date (Ascending)</a>
-                    <a href="?sort=date_desc">Date (Descending)</a>
-                    <a href="?sort=name_asc">Name (A-Z)</a>
-                    <a href="?sort=name_desc">Name (Z-A)</a>
+                <div class="sort-dropdown">
+                    <button class="sort-btn">
+                        Sort by
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="?sort=date_asc">Date (Ascending)</a>
+                        <a href="?sort=date_desc">Date (Descending)</a>
+                        <a href="?sort=name_asc">Name (A-Z)</a>
+                        <a href="?sort=name_desc">Name (Z-A)</a>
+                    </div>
                 </div>
             </div>
         </div>

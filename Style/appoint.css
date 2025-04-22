@@ -188,6 +188,8 @@ nav ul li.dropdown .dropdown-menu a i {
     font-size: 16px;
 }
 
+
+
 /* Triangle pointer */
 nav ul li.dropdown .dropdown-menu:before {
     content: '';
@@ -207,5 +209,18 @@ nav ul li.dropdown .dropdown-menu:before {
     
     nav ul {
         gap: 1rem;
+    }
+    .appointment-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    .header-actions .btn-submit {
+        margin-bottom: 10px;
     }
 }
