@@ -135,12 +135,14 @@ main {
     margin-left: 1rem;
 }
 
-.info-row {
-    margin-bottom: 0.75rem;
+#addapp:hover {
+    background-color: #45a049;
 }
 
-.info-row span {
-    font-weight: bold;
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 /* Dropdown Menu Styles */
@@ -188,8 +190,6 @@ nav ul li.dropdown .dropdown-menu a i {
     font-size: 16px;
 }
 
-
-
 /* Triangle pointer */
 nav ul li.dropdown .dropdown-menu:before {
     content: '';
@@ -201,6 +201,7 @@ nav ul li.dropdown .dropdown-menu:before {
     border-right: 10px solid transparent;
     border-bottom: 10px solid #fff;
 }
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .appointment-grid {
@@ -210,6 +211,7 @@ nav ul li.dropdown .dropdown-menu:before {
     nav ul {
         gap: 1rem;
     }
+    
     .appointment-header {
         flex-direction: column;
         align-items: flex-start;
@@ -218,9 +220,6 @@ nav ul li.dropdown .dropdown-menu:before {
     .header-actions {
         margin-top: 1rem;
         width: 100%;
-    }
-    
-    .header-actions .btn-submit {
-        margin-bottom: 10px;
+        justify-content: space-between;
     }
 }
