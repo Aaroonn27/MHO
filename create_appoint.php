@@ -89,49 +89,7 @@
 </head>
 
 <body>
-    <header>
-        <div class="logo-container">
-            <h1>LOGO</h1>
-        </div>
-        <nav>
-            <ul>
-                <li>
-                    <a href="index.php">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="dropdown active">
-                    <a href="#">
-                        <i class="fas fa-calendar"></i>
-                        <span>Appointment</span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="appointment.php"><i class="fas fa-list"></i>View Appointments</a>
-                        <a href="create_appoint.php"><i class="fas fa-plus"></i>Create Appointment</a>
-                    </div>
-                </li>
-                <li>
-                    <a href="announcement.php">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Announcement</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="message.php">
-                        <i class="fas fa-envelope"></i>
-                        <span>Message</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="profilepage.php">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <?php include 'includes/header.php'; ?>
 
     <main>
         <div class="appointment-header">
