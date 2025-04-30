@@ -51,14 +51,12 @@ function fetch_appointments() {
     
     if ($result->num_rows > 0) {
         // Output data of each row
-        while($row = $result->fetch_assoc()) {
-            echo '<div class="program-card">';
-            echo '<div class="program-title">Program: ' . htmlspecialchars($row["program"]) . '</div>';
-            echo '<div class="program-info">';
-            echo '<div class="info-row"><span>Name:</span> ' . htmlspecialchars($row["name"]) . '</div>';
-            echo '<div class="info-row"><span>Address:</span> ' . htmlspecialchars($row["address"]) . '</div>';
-            echo '<div class="info-row"><span>Contact:</span> ' . htmlspecialchars($row["contact"]) . '</div>';
-            echo '</div>';
+        while($row = mysqli_fetch_assoc($result)) {
+            echo '<div class="table-row">';
+            echo '<div>' . htmlspecialchars($row["name"]) . '</div>';
+            echo '<div>' . htmlspecialchars($row["appointment_date"]) . '</div>';
+            echo '<div>' . htmlspecialchars($row["contact"]) . '</div>';
+            echo '<div>' . htmlspecialchars($row["program"]) . '</div>';
             echo '</div>';
         }
     } else {

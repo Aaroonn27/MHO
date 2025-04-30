@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Page</title>
-    <link rel="stylesheet" href="Style/appoint.css">
+    <title>Appointment Page - City Health Office of San Pablo</title>
+    <link rel="stylesheet" href="Style/appointment.css">
     <link rel="stylesheet" href="Style/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -14,52 +14,60 @@
     <?php include 'includes/header.php'; ?>
 
     <main>
-        <div class="appointment-header">
-            <h1>APPOINTMENT</h1>
-            <div class="header-actions">
-                <button id="addapp" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;" onclick="window.location.href='create_appoint.php'">
-                    <i class="fas fa-plus"></i> Add Appointment
-                </button>
-                <div class="sort-dropdown">
-                    <button class="sort-btn">
-                        Sort by
-                        <i class="fas fa-caret-down"></i>
+        <div class="appointment-container">
+            <div class="appointment-header">
+                <h1>APPOINTMENT</h1>
+                <div class="header-actions">
+                    <button id="addapp" onclick="window.location.href='create_appoint.php'">
+                        <i class="fas fa-plus"></i> Add Appointment
                     </button>
-                    <div class="dropdown-content">
-                        <a href="?sort=date_asc">Date (Ascending)</a>
-                        <a href="?sort=date_desc">Date (Descending)</a>
-                        <a href="?sort=name_asc">Name (A-Z)</a>
-                        <a href="?sort=name_desc">Name (Z-A)</a>
+                    <div class="sort-dropdown">
+                        <button class="sort-btn">
+                            Sort By <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="?sort=date_asc">Date (Ascending)</a>
+                            <a href="?sort=date_desc">Date (Descending)</a>
+                            <a href="?sort=name_asc">Name (A-Z)</a>
+                            <a href="?sort=name_desc">Name (Z-A)</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="appointment-grid">
-            <?php
-            include 'db_conn.php';
-            fetch_appointments();
-            ?>
+            <div class="appointment-table">
+                <div class="table-header">
+                    <div>Name</div>
+                    <div>Date</div>
+                    <div>Contact</div>
+                    <div>Program</div>
+                </div>
+                <div class="table-body">
+                    <?php
+                    include 'db_conn.php';
+                    fetch_appointments();
+                    ?>
+                </div>
+            </div>
         </div>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Get all dropdown navigation items
+            // Get dropdown elements
             const sortBtn = document.querySelector('.sort-btn');
             const dropdownContent = document.querySelector('.dropdown-content');
 
             if (sortBtn) {
-                sortBtn.addEventListener('click', function() {
+                sortBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     dropdownContent.classList.toggle('show');
                 });
 
                 // Close dropdown when clicking outside
-                window.addEventListener('click', function(e) {
-                    if (!e.target.matches('.sort-btn') && !e.target.matches('.sort-btn *')) {
-                        if (dropdownContent.classList.contains('show')) {
-                            dropdownContent.classList.remove('show');
-                        }
+                window.addEventListener('click', function() {
+                    if (dropdownContent.classList.contains('show')) {
+                        dropdownContent.classList.remove('show');
                     }
                 });
             }
