@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Page - City Health Office of San Pablo</title>
     <link rel="stylesheet" href="Style/appointment.css">
-    <link rel="stylesheet" href="Style/header.css">
+    <link rel="stylesheet" href="Style/headerstyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="Style/headerstyle.css">
+<link rel="stylesheet" href="Style/headerstyles.css">
 <header>
     <div class="logo-container">
         <div class="logo-img">
