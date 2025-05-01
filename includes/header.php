@@ -10,7 +10,7 @@
         <ul>
             <li><a href="index.php"><i class="fas fa-home"></i><span>Home</span></a></li>
             <li><a href="appointment.php"><i class="far fa-calendar-alt"></i><span>Appointment</span></a></li>
-            <li><a href="#"><i class="fas fa-file-invoice"></i><span>Charge Slip</span></a></li>
+            <li><a href="cslip.php"><i class="fas fa-file-invoice"></i><span>Charge Slip</span></a></li>
             <li><a href="inventory.php"><i class="fas fa-box"></i><span>Inventory</span></a></li>
             <li><a href="#"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>
         </ul>

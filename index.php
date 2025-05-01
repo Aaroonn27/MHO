@@ -53,7 +53,7 @@ $programs = [
     <title>City Health Office of San Pablo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="Style/homee.css">
-    <link rel="stylesheet" href="Style/navibar.css">
+    <link rel="stylesheet" href="Style/headerstyles.css">
 </head>
 
 <body>
