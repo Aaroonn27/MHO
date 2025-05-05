@@ -57,7 +57,7 @@ function require_role($roles) {
 }
 
 // Function to get current user information
-function get_current_user() {
+function get_logged_in_user() {
     if (is_logged_in()) {
         return [
             'id' => $_SESSION['user_id'],
