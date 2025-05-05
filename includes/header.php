@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="Style/headerstyles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <header>
     <div class="logo-container">
         <div class="logo-img">
