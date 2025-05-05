@@ -33,6 +33,9 @@ body {
 
 .header img {
     height: 60px;
+    border-radius: 50%; 
+    object-fit: cover; 
+    width: 60px; 
 }
 
 .title {
