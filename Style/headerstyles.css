@@ -13,6 +13,8 @@ header {
     background-color: #4d94ff;
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    z-index: 10;
 }
 
 .logo-container {
@@ -186,4 +188,22 @@ footer p {
     margin-top: 20px;
     font-size: 14px;
     line-height: 1.6;
+}
+
+header h1, .header-title {
+    font-size: 28px;
+    margin-bottom: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.main-content {
+    margin-top: 32px;
+}
+
+h1:not(.header-title) {
+    color: #335c99;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-shadow: none;
 }
