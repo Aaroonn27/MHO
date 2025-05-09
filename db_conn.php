@@ -496,4 +496,160 @@ function delete_appointment($id) {
     $stmt->close();
     $conn->close();
 }
+
+// Function to get quarterly report data
+function get_quarterly_report_data($year) {
+    $conn = connect_db();
+    $months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    $categories = [1, 2, 3];
+    $report_data = [];
+    foreach ($months as $month) {
+        foreach ($categories as $cat) {
+            $report_data[$month][$cat] = [
+                'registered_exposures' => 0,
+                'patients_received_rig' => 0,
+                'outcome_complete' => 0,
+                'outcome_incomplete' => 0,
+                'outcome_none' => 0,
+                'outcome_died' => 0
+            ];
+        }
+    }
+    $sql = "SELECT 
+                MONTH(date_recorded) as month,
+                category,
+                COUNT(*) as registered_exposures,
+                SUM(CASE WHEN rig_amount IS NOT NULL AND rig_amount != '' THEN 1 ELSE 0 END) as patients_received_rig,
+                SUM(CASE WHEN outcome = 'C' THEN 1 ELSE 0 END) as outcome_complete,
+                SUM(CASE WHEN outcome = 'Inc' THEN 1 ELSE 0 END) as outcome_incomplete,
+                SUM(CASE WHEN outcome = 'N' THEN 1 ELSE 0 END) as outcome_none,
+                SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END) as outcome_died
+            FROM sheet1
+            WHERE YEAR(date_recorded) = ?
+            GROUP BY MONTH(date_recorded), category";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $month_num = $row['month'];
+        $month_name = $months[$month_num - 1];
+        $cat = (int)$row['category'];
+        if (!in_array($cat, $categories)) continue;
+        $report_data[$month_name][$cat]['registered_exposures'] = $row['registered_exposures'];
+        $report_data[$month_name][$cat]['patients_received_rig'] = $row['patients_received_rig'];
+        $report_data[$month_name][$cat]['outcome_complete'] = $row['outcome_complete'];
+        $report_data[$month_name][$cat]['outcome_incomplete'] = $row['outcome_incomplete'];
+        $report_data[$month_name][$cat]['outcome_none'] = $row['outcome_none'];
+        $report_data[$month_name][$cat]['outcome_died'] = $row['outcome_died'];
+    }
+    $stmt->close();
+    $conn->close();
+    return $report_data;
+}
+
+// Function to calculate quarterly totals for all categories
+function calculate_quarterly_totals($report_data) {
+    $quarters = [
+        'FIRST QUARTER' => ['January', 'February', 'March'],
+        'SECOND QUARTER' => ['April', 'May', 'June'],
+        'THIRD QUARTER' => ['July', 'August', 'September'],
+        'FOURTH QUARTER' => ['October', 'November', 'December']
+    ];
+    $categories = [1, 2, 3];
+    $quarterly_totals = [];
+    foreach ($quarters as $quarter_name => $quarter_months) {
+        foreach ($categories as $cat) {
+            $quarterly_totals[$quarter_name][$cat] = [
+                'registered_exposures' => 0,
+                'patients_received_rig' => 0,
+                'outcome_complete' => 0,
+                'outcome_incomplete' => 0,
+                'outcome_none' => 0,
+                'outcome_died' => 0
+            ];
+            foreach ($quarter_months as $month) {
+                if (isset($report_data[$month][$cat])) {
+                    foreach ($report_data[$month][$cat] as $key => $value) {
+                        $quarterly_totals[$quarter_name][$cat][$key] += $value;
+                    }
+                }
+            }
+        }
+    }
+    return $quarterly_totals;
+}
+
+// Function to generate the CSV export for all categories
+function generate_csv($report_data, $quarterly_totals, $year) {
+    $filename = "Quarterly_Report_$year.csv";
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    $output = fopen('php://output', 'w');
+    $categories = [1 => 'Category 1', 2 => 'Category 2', 3 => 'Category 3'];
+    $header = ['Quarter & Year'];
+    foreach ($categories as $cat_label) {
+        $header = array_merge($header, [
+            $cat_label . ' - No. of Registered Exposures',
+            $cat_label . ' - No. of patients who received RIG',
+            $cat_label . ' - Outcome Complete',
+            $cat_label . ' - Outcome Incomplete',
+            $cat_label . ' - Outcome None',
+            $cat_label . ' - Outcome Died'
+        ]);
+    }
+    fputcsv($output, $header);
+    foreach ($report_data as $month => $cat_data) {
+        $row = ["$month $year"];
+        foreach ([1, 2, 3] as $cat) {
+            $row[] = $cat_data[$cat]['registered_exposures'];
+            $row[] = $cat_data[$cat]['patients_received_rig'];
+            $row[] = $cat_data[$cat]['outcome_complete'];
+            $row[] = $cat_data[$cat]['outcome_incomplete'];
+            $row[] = $cat_data[$cat]['outcome_none'];
+            $row[] = $cat_data[$cat]['outcome_died'];
+        }
+        fputcsv($output, $row);
+    }
+    foreach ($quarterly_totals as $quarter => $cat_data) {
+        $row = ["$quarter $year"];
+        foreach ([1, 2, 3] as $cat) {
+            $row[] = $cat_data[$cat]['registered_exposures'];
+            $row[] = $cat_data[$cat]['patients_received_rig'];
+            $row[] = $cat_data[$cat]['outcome_complete'];
+            $row[] = $cat_data[$cat]['outcome_incomplete'];
+            $row[] = $cat_data[$cat]['outcome_none'];
+            $row[] = $cat_data[$cat]['outcome_died'];
+        }
+        fputcsv($output, $row);
+    }
+    fclose($output);
+    exit;
+}
+
+// Function to get available years for the dropdown
+function get_available_years() {
+    $conn = connect_db();
+    
+    $sql = "SELECT DISTINCT YEAR(date_recorded) as year FROM sheet1 ORDER BY year DESC";
+    $result = $conn->query($sql);
+    
+    $years = [];
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $years[] = $row['year'];
+        }
+    }
+    
+    // If no years found, add current year
+    if (empty($years)) {
+        $years[] = date('Y');
+    }
+    
+    $conn->close();
+    return $years;
+}
 ?>

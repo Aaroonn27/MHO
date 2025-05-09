@@ -1,0 +1,144 @@
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+
+        .container {
+            width: 95%;
+            margin: 20px auto;
+        }
+
+        .report-header {
+            text-align: center;
+            background-color: #4e7ae6;
+            color: white;
+            padding: 15px;
+            border-radius: 20px 20px 0 0;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .report-tools {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e6f0ff;
+            border-radius: 5px;
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .year-selector label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .export-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .export-btn:hover {
+            background-color: #45a049;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border: 2px solid #7b9ee0;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .report-table th {
+            background-color: #7b9ee0;
+            color: white;
+            padding: 12px 8px;
+            font-weight: bold;
+        }
+
+        .report-table tr:nth-child(even) {
+            background-color: #f2f7ff;
+        }
+
+        .month-row {
+            background-color: #ffffff;
+        }
+
+        .quarter-row {
+            background-color: #ffeeee;
+            font-weight: bold;
+            color: #cc0000;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .show-graph-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .show-graph-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .outcome-cols {
+            background-color: rgba(123, 158, 224, 0.1);
+        }
+
+        .prophylaxis-cols {
+            background-color: rgba(224, 123, 158, 0.1);
+        }
+
+        @media print {
+
+            .report-tools,
+            .chart-container {
+                display: none;
+            }
+
+            .report-header {
+                background-color: transparent;
+                color: black;
+                text-shadow: none;
+            }
+
+            .report-table th {
+                background-color: #eee;
+                color: black;
+            }
+
+            body {
+                background-color: white;
+            }
+        }
