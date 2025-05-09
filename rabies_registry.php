@@ -69,7 +69,10 @@ $current_page = $result['current_page'];
                 </div>
                 <div class="col-12 d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="rabies_form.php" class="btn btn-success">Add New Patient</a>
+                    <div>
+                        <a href="quarterly_report.php" class="btn btn-info me-2">Quarterly Report</a>
+                        <a href="rabies_form.php" class="btn btn-success">Add New Patient</a>
+                    </div>
                 </div>
             </form>
         </div>
