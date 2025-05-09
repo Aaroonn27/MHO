@@ -46,9 +46,11 @@ if (isset($_GET['export']) && $_GET['export'] == 'csv') {
                     <?php endforeach; ?>
                 </select>
             </div>
-            <a href="?year=<?php echo $selected_year; ?>&export=csv" class="export-btn">
-                <i class="fas fa-file-csv"></i> Export to CSV
-            </a>
+            <div class="tool-buttons">
+                <a href="?year=<?php echo $selected_year; ?>&export=csv" class="export-btn">
+                    <i class="fas fa-file-csv"></i> Export to CSV
+                </a>
+            </div>
         </div>
 
         <table class="report-table">
@@ -116,9 +118,14 @@ if (isset($_GET['export']) && $_GET['export'] == 'csv') {
         </table>
 
         <div class="chart-container">
-            <button class="show-graph-btn" onclick="window.location.href='report_graph.php?year=<?php echo $selected_year; ?>'">
-                Show Graph
-            </button>
+            <div class="button-group">
+                <button class="show-graph-btn" onclick="window.location.href='report_graph.php?year=<?php echo $selected_year; ?>'">
+                    <i class="fas fa-chart-bar"></i> Show Graph
+                </button>
+                <button class="show-graph-btn" onclick="window.location.href='analytics_dashboard.php?year=<?php echo $selected_year; ?>'">
+                    <i class="fas fa-chart-line"></i> View Analytics
+                </button>
+            </div>
         </div>
     </div>
 
