@@ -497,6 +497,9 @@ function delete_appointment($id) {
     $conn->close();
 }
 
+// Fixed functions for quarterly report
+// Add these updated functions to your db_conn.php file
+
 // Function to get quarterly report data
 function get_quarterly_report_data($year) {
     $conn = connect_db();
@@ -506,6 +509,8 @@ function get_quarterly_report_data($year) {
     ];
     $categories = [1, 2, 3];
     $report_data = [];
+    
+    // Initialize data structure for all months and categories
     foreach ($months as $month) {
         foreach ($categories as $cat) {
             $report_data[$month][$cat] = [
@@ -518,6 +523,8 @@ function get_quarterly_report_data($year) {
             ];
         }
     }
+    
+    // SQL query with debugging - Make sure we handle null values properly
     $sql = "SELECT 
                 MONTH(date_recorded) as month,
                 category,
@@ -528,24 +535,40 @@ function get_quarterly_report_data($year) {
                 SUM(CASE WHEN outcome = 'N' THEN 1 ELSE 0 END) as outcome_none,
                 SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END) as outcome_died
             FROM sheet1
-            WHERE YEAR(date_recorded) = ?
+            WHERE YEAR(date_recorded) = ? AND category IN (1, 2, 3)
             GROUP BY MONTH(date_recorded), category";
+    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $year);
     $stmt->execute();
     $result = $stmt->get_result();
+    
+    if (!$result) {
+        // Log error for debugging
+        error_log("SQL Error in get_quarterly_report_data: " . $conn->error);
+        $stmt->close();
+        $conn->close();
+        return $report_data; // Return empty initialized data
+    }
+    
+    // Process results
     while ($row = $result->fetch_assoc()) {
         $month_num = $row['month'];
+        if (!$month_num || $month_num < 1 || $month_num > 12) continue;
+        
         $month_name = $months[$month_num - 1];
         $cat = (int)$row['category'];
+        
         if (!in_array($cat, $categories)) continue;
-        $report_data[$month_name][$cat]['registered_exposures'] = $row['registered_exposures'];
-        $report_data[$month_name][$cat]['patients_received_rig'] = $row['patients_received_rig'];
-        $report_data[$month_name][$cat]['outcome_complete'] = $row['outcome_complete'];
-        $report_data[$month_name][$cat]['outcome_incomplete'] = $row['outcome_incomplete'];
-        $report_data[$month_name][$cat]['outcome_none'] = $row['outcome_none'];
-        $report_data[$month_name][$cat]['outcome_died'] = $row['outcome_died'];
+        
+        $report_data[$month_name][$cat]['registered_exposures'] = (int)$row['registered_exposures'];
+        $report_data[$month_name][$cat]['patients_received_rig'] = (int)$row['patients_received_rig'];
+        $report_data[$month_name][$cat]['outcome_complete'] = (int)$row['outcome_complete'];
+        $report_data[$month_name][$cat]['outcome_incomplete'] = (int)$row['outcome_incomplete'];
+        $report_data[$month_name][$cat]['outcome_none'] = (int)$row['outcome_none'];
+        $report_data[$month_name][$cat]['outcome_died'] = (int)$row['outcome_died'];
     }
+    
     $stmt->close();
     $conn->close();
     return $report_data;
@@ -561,6 +584,7 @@ function calculate_quarterly_totals($report_data) {
     ];
     $categories = [1, 2, 3];
     $quarterly_totals = [];
+    
     foreach ($quarters as $quarter_name => $quarter_months) {
         foreach ($categories as $cat) {
             $quarterly_totals[$quarter_name][$cat] = [
@@ -571,6 +595,7 @@ function calculate_quarterly_totals($report_data) {
                 'outcome_none' => 0,
                 'outcome_died' => 0
             ];
+            
             foreach ($quarter_months as $month) {
                 if (isset($report_data[$month][$cat])) {
                     foreach ($report_data[$month][$cat] as $key => $value) {
@@ -580,6 +605,7 @@ function calculate_quarterly_totals($report_data) {
             }
         }
     }
+    
     return $quarterly_totals;
 }
 
@@ -589,9 +615,12 @@ function generate_csv($report_data, $quarterly_totals, $year) {
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     $output = fopen('php://output', 'w');
+    
+    // Use numeric key values for categories
     $categories = [1 => 'Category 1', 2 => 'Category 2', 3 => 'Category 3'];
+    
     $header = ['Quarter & Year'];
-    foreach ($categories as $cat_label) {
+    foreach ($categories as $cat_num => $cat_label) {
         $header = array_merge($header, [
             $cat_label . ' - No. of Registered Exposures',
             $cat_label . ' - No. of patients who received RIG',
@@ -601,9 +630,13 @@ function generate_csv($report_data, $quarterly_totals, $year) {
             $cat_label . ' - Outcome Died'
         ]);
     }
+    
     fputcsv($output, $header);
+    
+    // Add monthly data
     foreach ($report_data as $month => $cat_data) {
         $row = ["$month $year"];
+        
         foreach ([1, 2, 3] as $cat) {
             $row[] = $cat_data[$cat]['registered_exposures'];
             $row[] = $cat_data[$cat]['patients_received_rig'];
@@ -612,10 +645,14 @@ function generate_csv($report_data, $quarterly_totals, $year) {
             $row[] = $cat_data[$cat]['outcome_none'];
             $row[] = $cat_data[$cat]['outcome_died'];
         }
+        
         fputcsv($output, $row);
     }
+    
+    // Add quarterly totals
     foreach ($quarterly_totals as $quarter => $cat_data) {
         $row = ["$quarter $year"];
+        
         foreach ([1, 2, 3] as $cat) {
             $row[] = $cat_data[$cat]['registered_exposures'];
             $row[] = $cat_data[$cat]['patients_received_rig'];
@@ -624,8 +661,10 @@ function generate_csv($report_data, $quarterly_totals, $year) {
             $row[] = $cat_data[$cat]['outcome_none'];
             $row[] = $cat_data[$cat]['outcome_died'];
         }
+        
         fputcsv($output, $row);
     }
+    
     fclose($output);
     exit;
 }

@@ -77,26 +77,34 @@ if (isset($_GET['export']) && $_GET['export'] == 'csv') {
             </thead>
             <tbody>
                 <?php
-                $categories = ['I', 'II', 'III'];
                 function print_report_row($label, $data) {
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($label) . "</td>";
-                    foreach (['I', 'II', 'III'] as $cat) {
-                        echo "<td>" . ($data[$cat]['registered_exposures'] ?? 0) . "</td>";
-                        echo "<td>" . ($data[$cat]['patients_received_rig'] ?? 0) . "</td>";
-                        echo "<td class='outcome-cols'>" . ($data[$cat]['outcome_complete'] ?? 0) . "</td>";
-                        echo "<td class='outcome-cols'>" . ($data[$cat]['outcome_incomplete'] ?? 0) . "</td>";
-                        echo "<td class='outcome-cols'>" . ($data[$cat]['outcome_none'] ?? 0) . "</td>";
-                        echo "<td class='outcome-cols'>" . ($data[$cat]['outcome_died'] ?? 0) . "</td>";
+                    
+                    // Use numeric keys (1, 2, 3) instead of Roman numerals
+                    foreach ([1, 2, 3] as $cat) {
+                        if (isset($data[$cat])) {
+                            echo "<td>" . $data[$cat]['registered_exposures'] . "</td>";
+                            echo "<td>" . $data[$cat]['patients_received_rig'] . "</td>";
+                            echo "<td class='outcome-cols'>" . $data[$cat]['outcome_complete'] . "</td>";
+                            echo "<td class='outcome-cols'>" . $data[$cat]['outcome_incomplete'] . "</td>";
+                            echo "<td class='outcome-cols'>" . $data[$cat]['outcome_none'] . "</td>";
+                            echo "<td class='outcome-cols'>" . $data[$cat]['outcome_died'] . "</td>";
+                        } else {
+                            // Fill with zeros if data doesn't exist for this category
+                            echo "<td>0</td><td>0</td><td class='outcome-cols'>0</td><td class='outcome-cols'>0</td><td class='outcome-cols'>0</td><td class='outcome-cols'>0</td>";
+                        }
                     }
                     echo "</tr>";
                 }
+                
                 $quarters = [
                     'FIRST QUARTER' => ['January', 'February', 'March'],
                     'SECOND QUARTER' => ['April', 'May', 'June'],
                     'THIRD QUARTER' => ['July', 'August', 'September'],
                     'FOURTH QUARTER' => ['October', 'November', 'December']
                 ];
+                
                 foreach ($quarters as $quarter_name => $months) {
                     foreach ($months as $month) {
                         print_report_row("$month $selected_year", $report_data[$month]);
