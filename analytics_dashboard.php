@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'db_conn.php';
 require_once 'analytics.php';
 
@@ -8,6 +11,11 @@ $available_years = get_available_years();
 
 // Get analytics data
 $analytics_report = generate_analytics_report($selected_year);
+
+// Check for errors
+if (isset($analytics_report['error'])) {
+    echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($analytics_report['message']) . '</div>';
+}
 ?>
 
 <!DOCTYPE html>
@@ -133,7 +141,8 @@ $analytics_report = generate_analytics_report($selected_year);
     </div>
 
     <script>
-        function changeYear(year) {
+        // Define changeYear function in global scope
+        window.changeYear = function(year) {
             window.location.href = '?year=' + year;
         }
 
@@ -173,12 +182,12 @@ $analytics_report = generate_analytics_report($selected_year);
                 labels: ['Category 1', 'Category 2', 'Category 3'],
                 datasets: [{
                     data: [
-                        <?php echo $analytics_report['summary']['category1_percentage']; ?>,
-                        <?php echo $analytics_report['summary']['category2_percentage']; ?>,
-                        <?php echo $analytics_report['summary']['category3_percentage']; ?>
+                        <?php echo floatval(str_replace('%','',$analytics_report['summary']['category1_percentage'])); ?>,
+                        <?php echo floatval(str_replace('%','',$analytics_report['summary']['category2_percentage'])); ?>,
+                        <?php echo floatval(str_replace('%','',$analytics_report['summary']['category3_percentage'])); ?>
                     ],
                     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-                }]
+                }]  
             },
             options: {
                 responsive: true,
