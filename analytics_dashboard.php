@@ -73,7 +73,10 @@ if (isset($analytics_report['error'])) {
         }
         canvas {
             width: 100% !important;
-            height: 300px !important;
+            height: auto !important;
+            max-height: 500px;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -165,6 +168,7 @@ if (isset($analytics_report['error'])) {
             },
             options: {
                 responsive: true,
+                aspectRatio: 2,
                 plugins: {
                     title: {
                         display: true,
@@ -191,6 +195,7 @@ if (isset($analytics_report['error'])) {
             },
             options: {
                 responsive: true,
+                aspectRatio: 2,
                 plugins: {
                     title: {
                         display: true,
@@ -218,6 +223,7 @@ if (isset($analytics_report['error'])) {
             },
             options: {
                 responsive: true,
+                aspectRatio: 2,
                 plugins: {
                     title: {
                         display: true,
@@ -244,6 +250,7 @@ if (isset($analytics_report['error'])) {
             },
             options: {
                 responsive: true,
+                aspectRatio: 2,
                 plugins: {
                     title: {
                         display: true,
