@@ -2,23 +2,23 @@
 $services = [
     [
         "name" => "Issuance of Health Certification for Workers of Business Establishments",
-        "content" => "<strong>Pursuant to The Code on Sanitation of the Philippines</strong> (P.D. 856 Chapter III, Section 15) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Workers of food and non-food establishments<br><strong>Requirements:</strong><ol><li><strong>Valid Laboratory Exam Result</strong> (Click “More Details” For Clarification)</li><li>1x1 ID Picture</li><li>Community Tax Certificate for the current Year</li><li>Identification Card</li></ol>"
+        "content" => "<strong>Pursuant to The Code on Sanitation of the Philippines</strong> (P.D. 856 Chapter III, Section 15) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Workers of food and non-food establishments<br><strong>Requirements:</strong><ol><li><strong>Valid Laboratory Exam Result</strong> (Click “More Details” For Clarification)</li><li><strong>1x1 ID Picture</strong></li><li><strong>Community Tax Certificate for the current Year</strong></li><li><strong>Identification Card</strong></li><a href='https://drive.google.com/file/d/1bzcWDB02_oAagntv52JUbiM8wipUbGpi/view?usp=drive_link'>More Details</a></ol>"
     ],
     [
-        "name" => "Immunization Programs",
-        "content" => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        "name" => "Issuance of Medical Certificates for Employment, On-the-job-training, Loans, Scholarships, School Entrants",
+        "content" => "As required by employers, schools and financial institutions. Fees collected is pursuant to Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Applicants for employment, on-the-job-training, loans, scholarships, school entrant<br><strong>Requirements:</strong><ol><li><strong>Identification Card</strong></li><li><strong>Valid Laboratory Exam Results (Click “More Details” For Clarification)</strong></li><a href='https://drive.google.com/file/d/1uhFaIHCb0K7ewsj14dj1Rci1DTqsPKHh/view?usp=drive_link'>More Details</a></ol>"
     ],
     [
-        "name" => "Maternal & Child Care",
-        "content" => "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        "name" => "Issuance of Medical Certificate for Tricycle Drivers (Tricycle Franchise)",
+        "content" => "<strong>Pursuant to Local Ordinance No. 2011-01</strong> (The 2011 Revised Comprehensive Traffic Code of the City of San Pablo, and Creating a Comprehensive and Integrated Traffic Management System/Traffic Assessment Plan in the City of San Pablo)<br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Tricycle Drivers<br><strong>Requirements:</strong><ol><li><strong>Driver's License</strong></li><li><strong>Unified Clearance</strong></li><a href='https://drive.google.com/file/d/11Hb-Sz7ivHctu_TFhpitSPvH8cOfbVI9/view?usp=drive_link'>More Details</a></ol>"
     ],
     [
-        "name" => "Dental Services",
-        "content" => "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident."
+        "name" => "Issuance of Medical Certificate for Leave of Absence",
+        "content" => "As required by private employers and pursuant to CSC MC No. 41, s. 1998<br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Government Employees and General Public<br><strong>Requirements:</strong><ol><li><strong>Consultation within the first three (3) days of illness</strong></li><li><strong>Laboratory Test (If Available)</strong></li><a href='https://drive.google.com/file/d/1ER8_ky-ooMjzNFNTmLxnoOxmfpjQvlGS/view?usp=drive_link'>More Details</a></ol>"
     ],
     [
-        "name" => "Health Education",
-        "content" => "Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio."
+        "name" => "Issuance of Medical Certificates for Persons with Disabilities (PWDs)",
+        "content" => "<strong>Pursuant to National Council on Disability Affairs Administrative Order No. 001, s. 2008</strong><br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Persons with Disabilities and/or their relatives<br><strong>Requirements:</strong><ol><li><strong>Philippine Registry Form for Persons with Disabilities</strong></li><li><strong>Certification from a Specialist if the disability is uncertain (e.g. Psychiatrist for Psychosocial Disability)</strong></li><li><strong>Proof of the disability if client is unable to report for physical examination and assessment</strong></li><a href='https://drive.google.com/file/d/173ZpJwyo8AVjci1erlrxOwzfsJIOG9rS/view?usp=drive_link'>More Details</a></ol>"
     ]
 ];
 $programs = [
