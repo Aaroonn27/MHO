@@ -28,52 +28,171 @@ $history = get_charge_slip_history();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charge Slip</title>
     <link rel="stylesheet" href="Style/chargeslip.css">
+    <style>
+        /* Additional print styles */
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .print-section {
+                padding: 0;
+                margin: 0;
+            }
+            body {
+                background-color: #def;
+            }
+            .charge-slip-container {
+                border: none;
+                box-shadow: none;
+            }
+        }
+        
+        /* Styles for the printed charge slip format */
+        .printed-charge-slip {
+            background-color: #def;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+        
+        .printed-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .printed-header img {
+            height: 60px;
+            margin: 0 10px;
+        }
+        
+        .printed-header h3 {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .printed-header h2 {
+            margin: 10px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .printed-form {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .printed-form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .printed-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .printed-table th, .printed-table td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        
+        .printed-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        .total-row {
+            text-align: right;
+            padding: 10px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
     <?php include 'includes/header.php'; ?>
 
     <div class="charge-slip-container">
-        <div class="charge-slip-header">CHARGE SLIP</div>
-
         <?php display_status_messages(); ?>
 
         <?php if ($viewing_slip): ?>
             <!-- Display the charge slip for viewing/printing -->
             <div class="print-section">
-                <div class="charge-slip-form">
-                    <div class="section services-section">
-                        <div class="section-header">SERVICES</div>
-                        <div><?php echo htmlspecialchars($current_slip['services']); ?></div>
+                <div class="printed-charge-slip">
+                    <div class="printed-header">
+                        <div style="display: flex; justify-content: center; align-items: center;">
+                            <img src="/MHO/media/sanpablologo.png" alt="San Pablo City Logo">
+                            <div style="text-align: center; margin: 0 10px;">
+                                <h3>Republic of the Philippines</h3>
+                                <h3>OFFICE OF THE CITY HEALTH OFFICER</h3>
+                                <h3>San Pablo City</h3>
+                            </div>
+                            <img src="/MHO/media/chologo.png" alt="CHO Logo">
+                        </div>
+                        <h2>CHARGE SLIP</h2>
                     </div>
-
-                    <div class="section name-section">
-                        <div class="section-header">NAME</div>
-                        <div>
-                            <strong>First Name:</strong> <?php echo htmlspecialchars($current_slip['fname']); ?>
+                    
+                    <div class="printed-form">
+                        <div class="printed-form-row">
+                            <div>
+                                <strong>Name:</strong> <?php echo htmlspecialchars($current_slip['fname'] . ' ' . $current_slip['mname'] . ' ' . $current_slip['lname']); ?>
+                            </div>
+                            <div>
+                                <strong>Date/Time:</strong> <?php echo $current_slip['timeanddate']; ?>
+                            </div>
                         </div>
-                        <div>
-                            <strong>Middle Name:</strong> <?php echo htmlspecialchars($current_slip['mname']); ?>
-                        </div>
-                        <div>
-                            <strong>Last Name:</strong> <?php echo htmlspecialchars($current_slip['lname']); ?>
-                        </div>
-                    </div>
-
-                    <div class="section discount-section">
-                        <div class="section-header">DISCOUNT</div>
-                        <strong><?php
-                                if ($current_slip['discount'] == 20) echo "SENIOR CITIZEN";
-                                else if ($current_slip['discount'] == 15) echo "PWD";
-                                else if ($current_slip['discount'] == 10) echo "Others";
-                                else echo "None";
-                                ?></strong>
-                        <div>
-                            <strong>Discount Rate:</strong> <?php echo $current_slip['discount']; ?>%
-                        </div>
-                        <div>
-                            <strong>Date/Time:</strong> <?php echo $current_slip['timeanddate']; ?>
-                        </div>
+                        
+                        <table class="printed-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60%;">SERVICES</th>
+                                    <th style="width: 20%;">QUANTITY</th>
+                                    <th style="width: 20%;">AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($current_slip['services']); ?></td>
+                                    <td>1</td>
+                                    <td>
+                                        <?php 
+                                        // Get the service amount from the service price function
+                                        $amount = get_service_price($current_slip['services']); 
+                                        echo "₱" . number_format($amount, 2);
+                                        
+                                        // Calculate discount if applicable
+                                        $discountAmount = 0;
+                                        if ($current_slip['discount'] > 0) {
+                                            $discountAmount = $amount * ($current_slip['discount'] / 100);
+                                            $amount -= $discountAmount;
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php if ($current_slip['discount'] > 0): ?>
+                                <tr>
+                                    <td>
+                                        <?php 
+                                        if ($current_slip['discount'] == 20) echo "Senior Citizen Discount";
+                                        else if ($current_slip['discount'] == 15) echo "PWD Discount";
+                                        else if ($current_slip['discount'] == 10) echo "Other Discount";
+                                        ?> (<?php echo $current_slip['discount']; ?>%)
+                                    </td>
+                                    <td>-</td>
+                                    <td>-₱<?php echo number_format($discountAmount, 2); ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr>
+                                    <td colspan="2" class="total-row">Total:</td>
+                                    <td>₱<?php echo number_format($amount, 2); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -84,6 +203,7 @@ $history = get_charge_slip_history();
             </div>
         <?php else: ?>
             <!-- Form for creating a new charge slip -->
+            <div class="charge-slip-header">CHARGE SLIP</div>
             <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="charge-slip-form">
                 <div class="section services-section">
                     <div class="section-header">SERVICES</div>
@@ -136,6 +256,12 @@ $history = get_charge_slip_history();
                             <label>
                                 <input type="radio" name="discount" value="others">
                                 Others
+                            </label>
+                        </div>
+                        <div class="discount-option">
+                            <label>
+                                <input type="radio" name="discount" value="none" checked>
+                                None
                             </label>
                         </div>
                     </div>

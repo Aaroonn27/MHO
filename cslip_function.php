@@ -10,10 +10,10 @@ function save_charge_slip() {
         // Get form data and sanitize inputs
         $services = $conn->real_escape_string($_POST['services']);
         $fname = $conn->real_escape_string($_POST['fname']);
-        $mname = $conn->real_escape_string($_POST['mname']);
+        $mname = $conn->real_escape_string($_POST['mname'] ?? '');  // Make middle name optional
         $lname = $conn->real_escape_string($_POST['lname']);
         
-        // Calculate discount value (0 if none selected)
+        // Calculate discount value
         $discount = 0;
         if (isset($_POST['discount'])) {
             switch ($_POST['discount']) {
@@ -26,6 +26,7 @@ function save_charge_slip() {
                 case 'others':
                     $discount = 10; // 10% discount for others
                     break;
+                case 'none':
                 default:
                     $discount = 0;
             }
@@ -38,7 +39,7 @@ function save_charge_slip() {
         // Execute the statement
         if ($stmt->execute()) {
             $last_id = $conn->insert_id;
-            // Redirect with success message and the ID for potential printing
+            // Redirect with success message and the ID for printing
             header("Location: charge_slip.php?success=1&id=$last_id");
             exit();
         } else {
@@ -95,6 +96,20 @@ function get_charge_slip($id) {
     return $charge_slip;
 }
 
+// Function to get service price - this is new
+function get_service_price($service) {
+    // Define prices for each service
+    // You could expand this to pull from a database table
+    $prices = [
+        'Health Certificate' => 100.00,
+        'Medical Certificate' => 150.00,
+        'Other Certificate' => 200.00
+    ];
+    
+    // Return the price or a default value if service not found
+    return isset($prices[$service]) ? $prices[$service] : 100.00;
+}
+
 // Display success/error messages
 function display_status_messages() {
     if (isset($_GET['success'])) {
@@ -109,7 +124,6 @@ function display_status_messages() {
 // Get service options
 function get_service_options() {
     // You could expand this to pull from a services table
-    // For now, returning static options based on your image
     return [
         'Health Certificate',
         'Medical Certificate',
