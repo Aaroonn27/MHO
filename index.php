@@ -1,8 +1,8 @@
 <?php
 $services = [
     [
-        "name" => "Medical Consultations",
-        "content" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel semper metus. Donec efficitur, nibh eget facilisis volutpat, magna nisl dictum mauris, vitae fringilla arcu eros et nulla."
+        "name" => "Issuance of Health Certification for Workers of Business Establishments",
+        "content" => "<strong>Pursuant to The Code on Sanitation of the Philippines</strong> (P.D. 856 Chapter III, Section 15) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br><strong>Office or Division:</strong> City Health Office<br><strong>Who May Avail:</strong> Workers of food and non-food establishments<br><strong>Requirements:</strong><ol><li><strong>Valid Laboratory Exam Result</strong> (Click “More Details” For Clarification)</li><li>1x1 ID Picture</li><li>Community Tax Certificate for the current Year</li><li>Identification Card</li></ol>"
     ],
     [
         "name" => "Immunization Programs",
@@ -47,6 +47,7 @@ $programs = [
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,7 +58,7 @@ $programs = [
 </head>
 
 <body>
-    
+
     <?php include 'includes/header.php'; ?>
 
     <div class="banner">
@@ -70,15 +71,15 @@ $programs = [
             <h2>Services</h2>
             <div class="content-box">
                 <?php foreach ($services as $index => $service): ?>
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span><?php echo $service['name']; ?></span>
-                        <i class="fas fa-chevron-down"></i>
+                    <div class="dropdown-item">
+                        <div class="dropdown-header">
+                            <span><?php echo $service['name']; ?></span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-content">
+                            <?php echo $service['content']; ?>
+                        </div>
                     </div>
-                    <div class="dropdown-content">
-                        <p><?php echo $service['content']; ?></p>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -87,15 +88,15 @@ $programs = [
             <h2>Programs</h2>
             <div class="content-box">
                 <?php foreach ($programs as $index => $program): ?>
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span><?php echo $program['name']; ?></span>
-                        <i class="fas fa-chevron-down"></i>
+                    <div class="dropdown-item">
+                        <div class="dropdown-header">
+                            <span><?php echo $program['name']; ?></span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-content">
+                            <p><?php echo $program['content']; ?></p>
+                        </div>
                     </div>
-                    <div class="dropdown-content">
-                        <p><?php echo $program['content']; ?></p>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -114,7 +115,7 @@ $programs = [
 
             dropdownItems.forEach(item => {
                 const header = item.querySelector('.dropdown-header');
-                
+
                 header.addEventListener('click', function() {
                     // Close all other dropdowns
                     dropdownItems.forEach(otherItem => {
@@ -122,7 +123,7 @@ $programs = [
                             otherItem.classList.remove('active');
                         }
                     });
-                    
+
                     // Toggle current dropdown
                     item.classList.toggle('active');
                 });
@@ -130,4 +131,5 @@ $programs = [
         });
     </script>
 </body>
+
 </html>
