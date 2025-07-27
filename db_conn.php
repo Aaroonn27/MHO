@@ -691,4 +691,93 @@ function get_available_years() {
     $conn->close();
     return $years;
 }
+
+function fetch_appointments_with_sms() {
+    global $conn;
+    
+    // Handle sorting
+    $sort = $_GET['sort'] ?? 'date_asc';
+    $order_by = '';
+    
+    switch($sort) {
+        case 'date_asc':
+            $order_by = 'ORDER BY appointment_date ASC';
+            break;
+        case 'date_desc':
+            $order_by = 'ORDER BY appointment_date DESC';
+            break;
+        case 'name_asc':
+            $order_by = 'ORDER BY name ASC';
+            break;
+        case 'name_desc':
+            $order_by = 'ORDER BY name DESC';
+            break;
+        default:
+            $order_by = 'ORDER BY appointment_date ASC';
+    }
+    
+    $sql = "SELECT id, name, appointment_date, contact, program, sms_status, sms_sent_at FROM appointments $order_by";
+    $result = $conn->query($sql);
+    
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $appointment_datetime = new DateTime($row['appointment_date']);
+            $formatted_date = $appointment_datetime->format('M j, Y');
+            $formatted_time = $appointment_datetime->format('g:i A');
+            
+            // Determine SMS status
+            $sms_status = $row['sms_status'] ?? 'pending';
+            $status_class = 'status-' . $sms_status;
+            $status_text = strtoupper($sms_status);
+            
+            // Determine if SMS button should be shown/enabled
+            $show_sms_button = true;
+            $button_disabled = '';
+            $button_text = 'Send SMS';
+            
+            if ($sms_status === 'sent') {
+                $button_disabled = 'disabled';
+                $button_text = 'Sent';
+            }
+            
+            echo '<div class="table-row">';
+            echo '<div>' . htmlspecialchars($row['name']) . '</div>';
+            echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
+            echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
+            echo '<div>' . htmlspecialchars($row['program']) . '</div>';
+            echo '<div>';
+            echo '<div class="sms-status ' . $status_class . '">' . $status_text . '</div>';
+            if ($show_sms_button) {
+                echo '<button class="sms-action-btn" onclick="sendIndividualSMS(' . $row['id'] . ', this)" ' . $button_disabled . '>' . $button_text . '</button>';
+            }
+            echo '</div>';
+            echo '</div>';
+        }
+    } else {
+        echo '<div class="table-row"><div colspan="5">No appointments found</div></div>';
+    }
+}
+
+
+    
+    $sql = "SELECT name, appointment_date, contact, program FROM appointments $order_by";
+    $result = $conn->query($sql);
+    
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $appointment_datetime = new DateTime($row['appointment_date']);
+            $formatted_date = $appointment_datetime->format('M j, Y');
+            $formatted_time = $appointment_datetime->format('g:i A');
+            
+            echo '<div class="table-row">';
+            echo '<div>' . htmlspecialchars($row['name']) . '</div>';
+            echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
+            echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
+            echo '<div>' . htmlspecialchars($row['program']) . '</div>';
+            echo '</div>';
+        }
+    } else {
+        echo '<div class="table-row"><div colspan="4">No appointments found</div></div>';
+    }
+
 ?>

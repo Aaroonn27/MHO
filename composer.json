@@ -1,0 +1,7 @@
+{
+    "require": {
+        "softcreatr/php-mistral-ai-sdk": "^2.0",
+        "board3r/mistral-sdk": "^1.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
