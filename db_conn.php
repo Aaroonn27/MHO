@@ -696,7 +696,7 @@ function get_available_years() {
 }
 
 function fetch_appointments_with_sms() {
-    global $conn;
+    $conn = connect_db();  // Changed from global $conn;
     
     // Handle sorting
     $sort = $_GET['sort'] ?? 'date_asc';
@@ -769,6 +769,8 @@ function fetch_appointments_with_sms() {
      } else {
          echo '<div class="table-row"><div colspan="5">No appointments found</div></div>';
      }
+     
+     $conn->close();  // Added missing connection close
 }
 
 
@@ -794,7 +796,7 @@ function fetch_appointments_with_sms() {
     }
 
     function getAppointmentsForDate($date, $sms_status = 'pending') {
-        global $conn;
+        $conn = connect_db();  // Changed from global $conn;
         
         // Check if SMS columns exist
         $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
@@ -811,11 +813,16 @@ function fetch_appointments_with_sms() {
         
         $stmt->execute();
         $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $appointments = $result->fetch_all(MYSQLI_ASSOC);
+        
+        $stmt->close();
+        $conn->close();  // Added missing connection close
+        
+        return $appointments;
     }
-
+    
     function updateSMSStatus($appointment_id, $status) {
-        global $conn;
+        $conn = connect_db();  // Changed from global $conn;
         
         // Check if SMS columns exist
         $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
@@ -824,20 +831,29 @@ function fetch_appointments_with_sms() {
             // SMS columns exist, update them
             $stmt = $conn->prepare("UPDATE appointments SET sms_status = ?, sms_sent_at = NOW() WHERE id = ?");
             $stmt->bind_param("si", $status, $appointment_id);
-            return $stmt->execute();
+            $success = $stmt->execute();
+            $stmt->close();
         } else {
             // SMS columns don't exist, just return true (no error)
-            return true;
+            $success = true;
         }
+        
+        $conn->close();  // Added missing connection close
+        return $success;
     }
-
+    
     function getAppointmentById($id) {
-        global $conn;
+        $conn = connect_db();  // Changed from global $conn;
         $stmt = $conn->prepare("SELECT * FROM appointments WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        $appointment = $result->fetch_assoc();
+        
+        $stmt->close();
+        $conn->close();  // Added missing connection close
+        
+        return $appointment;
     }
 
 ?>
