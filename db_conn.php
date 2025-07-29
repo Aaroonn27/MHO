@@ -352,45 +352,48 @@ function get_rabies_stats() {
 
 // Function to fetch and display appointments
 function fetch_appointments() {
-    $conn = connect_db();
+    global $conn;
     
-    // Get sort parameter
-    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'date_desc';
+    // Handle sorting
+    $sort = $_GET['sort'] ?? 'date_asc';
+    $order_by = '';
     
-    // Determine sort order
-    switch ($sort) {
+    switch($sort) {
         case 'date_asc':
-            $order_by = "appointment_date ASC";
+            $order_by = 'ORDER BY appointment_date ASC';
             break;
         case 'date_desc':
-            $order_by = "appointment_date DESC";
+            $order_by = 'ORDER BY appointment_date DESC';
             break;
         case 'name_asc':
-            $order_by = "name ASC";
+            $order_by = 'ORDER BY name ASC';
             break;
         case 'name_desc':
-            $order_by = "name DESC";
+            $order_by = 'ORDER BY name DESC';
             break;
         default:
-            $order_by = "appointment_date DESC";
+            $order_by = 'ORDER BY appointment_date ASC';
     }
     
     // SQL query to fetch appointments
-    $sql = "SELECT id, program, name, address, contact, appointment_date FROM appointments ORDER BY $order_by";
+    $sql = "SELECT name, appointment_date, contact, program FROM appointments $order_by";
     $result = $conn->query($sql);
     
     if ($result->num_rows > 0) {
-        // Output data of each row
-        while($row = mysqli_fetch_assoc($result)) {
+        while($row = $result->fetch_assoc()) {
+            $appointment_datetime = new DateTime($row['appointment_date']);
+            $formatted_date = $appointment_datetime->format('M j, Y');
+            $formatted_time = $appointment_datetime->format('g:i A');
+            
             echo '<div class="table-row">';
-            echo '<div>' . htmlspecialchars($row["name"]) . '</div>';
-            echo '<div>' . htmlspecialchars($row["appointment_date"]) . '</div>';
-            echo '<div>' . htmlspecialchars($row["contact"]) . '</div>';
-            echo '<div>' . htmlspecialchars($row["program"]) . '</div>';
+            echo '<div>' . htmlspecialchars($row['name']) . '</div>';
+            echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
+            echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
+            echo '<div>' . htmlspecialchars($row['program']) . '</div>';
             echo '</div>';
         }
     } else {
-        echo '<div class="no-appointments">No appointments found</div>';
+        echo '<div class="table-row"><div colspan="4">No appointments found</div></div>';
     }
     
     $conn->close();
@@ -716,46 +719,56 @@ function fetch_appointments_with_sms() {
             $order_by = 'ORDER BY appointment_date ASC';
     }
     
-    $sql = "SELECT id, name, appointment_date, contact, program, sms_status, sms_sent_at FROM appointments $order_by";
-    $result = $conn->query($sql);
+     // Check if SMS columns exist, if not, use basic query
+     $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
     
-    if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-            $appointment_datetime = new DateTime($row['appointment_date']);
-            $formatted_date = $appointment_datetime->format('M j, Y');
-            $formatted_time = $appointment_datetime->format('g:i A');
-            
-            // Determine SMS status
-            $sms_status = $row['sms_status'] ?? 'pending';
-            $status_class = 'status-' . $sms_status;
-            $status_text = strtoupper($sms_status);
-            
-            // Determine if SMS button should be shown/enabled
-            $show_sms_button = true;
-            $button_disabled = '';
-            $button_text = 'Send SMS';
-            
-            if ($sms_status === 'sent') {
-                $button_disabled = 'disabled';
-                $button_text = 'Sent';
-            }
-            
-            echo '<div class="table-row">';
-            echo '<div>' . htmlspecialchars($row['name']) . '</div>';
-            echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
-            echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
-            echo '<div>' . htmlspecialchars($row['program']) . '</div>';
-            echo '<div>';
-            echo '<div class="sms-status ' . $status_class . '">' . $status_text . '</div>';
-            if ($show_sms_button) {
-                echo '<button class="sms-action-btn" onclick="sendIndividualSMS(' . $row['id'] . ', this)" ' . $button_disabled . '>' . $button_text . '</button>';
-            }
-            echo '</div>';
-            echo '</div>';
-        }
-    } else {
-        echo '<div class="table-row"><div colspan="5">No appointments found</div></div>';
-    }
+     if ($check_columns->num_rows > 0) {
+         // SMS columns exist, use full query
+         $sql = "SELECT id, name, appointment_date, contact, program, sms_status, sms_sent_at FROM appointments $order_by";
+     } else {
+         // SMS columns don't exist, use basic query
+         $sql = "SELECT id, name, appointment_date, contact, program, 'pending' as sms_status, NULL as sms_sent_at FROM appointments $order_by";
+     }
+     
+     $result = $conn->query($sql);
+     
+     if ($result->num_rows > 0) {
+         while($row = $result->fetch_assoc()) {
+             $appointment_datetime = new DateTime($row['appointment_date']);
+             $formatted_date = $appointment_datetime->format('M j, Y');
+             $formatted_time = $appointment_datetime->format('g:i A');
+             
+             // Determine SMS status
+             $sms_status = $row['sms_status'] ?? 'pending';
+             $status_class = 'status-' . $sms_status;
+             $status_text = strtoupper($sms_status);
+             
+             // Determine if SMS button should be shown/enabled
+             $show_sms_button = true;
+             $button_disabled = '';
+             $button_text = 'Send SMS';
+             
+             if ($sms_status === 'sent') {
+                 $button_disabled = 'disabled';
+                 $button_text = 'Sent';
+             }
+             
+             echo '<div class="table-row">';
+             echo '<div>' . htmlspecialchars($row['name']) . '</div>';
+             echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
+             echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
+             echo '<div>' . htmlspecialchars($row['program']) . '</div>';
+             echo '<div>';
+             echo '<div class="sms-status ' . $status_class . '">' . $status_text . '</div>';
+             if ($show_sms_button && isset($row['id'])) {
+                 echo '<br><button class="sms-action-btn" onclick="sendIndividualSMS(' . $row['id'] . ', this)" ' . $button_disabled . '>' . $button_text . '</button>';
+             }
+             echo '</div>';
+             echo '</div>';
+         }
+     } else {
+         echo '<div class="table-row"><div colspan="5">No appointments found</div></div>';
+     }
 }
 
 
@@ -778,6 +791,53 @@ function fetch_appointments_with_sms() {
         }
     } else {
         echo '<div class="table-row"><div colspan="4">No appointments found</div></div>';
+    }
+
+    function getAppointmentsForDate($date, $sms_status = 'pending') {
+        global $conn;
+        
+        // Check if SMS columns exist
+        $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
+        
+        if ($check_columns->num_rows > 0) {
+            // SMS columns exist
+            $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ? AND (sms_status = ? OR sms_status IS NULL)");
+            $stmt->bind_param("ss", $date, $sms_status);
+        } else {
+            // SMS columns don't exist, get all appointments for the date
+            $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ?");
+            $stmt->bind_param("s", $date);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    function updateSMSStatus($appointment_id, $status) {
+        global $conn;
+        
+        // Check if SMS columns exist
+        $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
+        
+        if ($check_columns->num_rows > 0) {
+            // SMS columns exist, update them
+            $stmt = $conn->prepare("UPDATE appointments SET sms_status = ?, sms_sent_at = NOW() WHERE id = ?");
+            $stmt->bind_param("si", $status, $appointment_id);
+            return $stmt->execute();
+        } else {
+            // SMS columns don't exist, just return true (no error)
+            return true;
+        }
+    }
+
+    function getAppointmentById($id) {
+        global $conn;
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 
 ?>
