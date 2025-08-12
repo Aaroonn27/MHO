@@ -696,7 +696,7 @@ function get_available_years() {
 }
 
 function fetch_appointments_with_sms() {
-    $conn = connect_db();  // Changed from global $conn;
+    $conn = connect_db();
     
     // Handle sorting
     $sort = $_GET['sort'] ?? 'date_asc';
@@ -719,63 +719,17 @@ function fetch_appointments_with_sms() {
             $order_by = 'ORDER BY appointment_date ASC';
     }
     
-     // Check if SMS columns exist, if not, use basic query
-     $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
+    // Check if SMS columns exist, if not, use basic query
+    $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
     
-     if ($check_columns->num_rows > 0) {
-         // SMS columns exist, use full query
-         $sql = "SELECT id, name, appointment_date, contact, program, sms_status, sms_sent_at FROM appointments $order_by";
-     } else {
-         // SMS columns don't exist, use basic query
-         $sql = "SELECT id, name, appointment_date, contact, program, 'pending' as sms_status, NULL as sms_sent_at FROM appointments $order_by";
-     }
-     
-     $result = $conn->query($sql);
-     
-     if ($result->num_rows > 0) {
-         while($row = $result->fetch_assoc()) {
-             $appointment_datetime = new DateTime($row['appointment_date']);
-             $formatted_date = $appointment_datetime->format('M j, Y');
-             $formatted_time = $appointment_datetime->format('g:i A');
-             
-             // Determine SMS status
-             $sms_status = $row['sms_status'] ?? 'pending';
-             $status_class = 'status-' . $sms_status;
-             $status_text = strtoupper($sms_status);
-             
-             // Determine if SMS button should be shown/enabled
-             $show_sms_button = true;
-             $button_disabled = '';
-             $button_text = 'Send SMS';
-             
-             if ($sms_status === 'sent') {
-                 $button_disabled = 'disabled';
-                 $button_text = 'Sent';
-             }
-             
-             echo '<div class="table-row">';
-             echo '<div>' . htmlspecialchars($row['name']) . '</div>';
-             echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
-             echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
-             echo '<div>' . htmlspecialchars($row['program']) . '</div>';
-             echo '<div>';
-             echo '<div class="sms-status ' . $status_class . '">' . $status_text . '</div>';
-             if ($show_sms_button && isset($row['id'])) {
-                 echo '<br><button class="sms-action-btn" onclick="sendIndividualSMS(' . $row['id'] . ', this)" ' . $button_disabled . '>' . $button_text . '</button>';
-             }
-             echo '</div>';
-             echo '</div>';
-         }
-     } else {
-         echo '<div class="table-row"><div colspan="5">No appointments found</div></div>';
-     }
-     
-     $conn->close();  // Added missing connection close
-}
-
-
+    if ($check_columns->num_rows > 0) {
+        // SMS columns exist, use full query
+        $sql = "SELECT id, name, appointment_date, contact, program, sms_status, sms_sent_at FROM appointments $order_by";
+    } else {
+        // SMS columns don't exist, use basic query
+        $sql = "SELECT id, name, appointment_date, contact, program, 'pending' as sms_status, NULL as sms_sent_at FROM appointments $order_by";
+    }
     
-    $sql = "SELECT name, appointment_date, contact, program FROM appointments $order_by";
     $result = $conn->query($sql);
     
     if ($result->num_rows > 0) {
@@ -784,16 +738,40 @@ function fetch_appointments_with_sms() {
             $formatted_date = $appointment_datetime->format('M j, Y');
             $formatted_time = $appointment_datetime->format('g:i A');
             
+            // Determine SMS status
+            $sms_status = $row['sms_status'] ?? 'pending';
+            $status_class = 'status-' . $sms_status;
+            $status_text = strtoupper($sms_status);
+            
+            // Determine if SMS button should be shown/enabled
+            $show_sms_button = true;
+            $button_disabled = '';
+            $button_text = 'Send SMS';
+            
+            if ($sms_status === 'sent') {
+                $button_disabled = 'disabled';
+                $button_text = 'Sent';
+            }
+            
             echo '<div class="table-row">';
             echo '<div>' . htmlspecialchars($row['name']) . '</div>';
             echo '<div>' . $formatted_date . '<br><small>' . $formatted_time . '</small></div>';
             echo '<div>' . htmlspecialchars($row['contact']) . '</div>';
             echo '<div>' . htmlspecialchars($row['program']) . '</div>';
+            echo '<div>';
+            echo '<div class="sms-status ' . $status_class . '">' . $status_text . '</div>';
+            if ($show_sms_button && isset($row['id'])) {
+                echo '<br><button class="sms-action-btn" onclick="sendIndividualSMS(' . $row['id'] . ', this)" ' . $button_disabled . '>' . $button_text . '</button>';
+            }
+            echo '</div>';
             echo '</div>';
         }
     } else {
-        echo '<div class="table-row"><div colspan="4">No appointments found</div></div>';
+        echo '<div class="table-row"><div colspan="5">No appointments found</div></div>';
     }
+    
+    $conn->close();
+}
 
     function getAppointmentsForDate($date, $sms_status = 'pending') {
         $conn = connect_db();  // Changed from global $conn;

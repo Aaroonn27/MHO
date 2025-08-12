@@ -4,6 +4,8 @@ include 'db_conn.php';
 
 header('Content-Type: application/json');
 
+$conn = connect_db();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     $sms = new SMSService();
@@ -108,28 +110,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Helper functions
+// Helper functions - Fixed versions
 function getAppointmentById($id) {
-    global $conn;
+    $conn = connect_db();
     $stmt = $conn->prepare("SELECT * FROM appointments WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
-    return $result->fetch_assoc();
+    $appointment = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+    return $appointment;
 }
 
 function getAppointmentsForDate($date, $sms_status = 'pending') {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ? AND (sms_status = ? OR sms_status IS NULL)");
-    $stmt->bind_param("ss", $date, $sms_status);
+    $conn = connect_db();
+    
+    // Check if SMS columns exist
+    $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
+    
+    if ($check_columns->num_rows > 0) {
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ? AND (sms_status = ? OR sms_status IS NULL)");
+        $stmt->bind_param("ss", $date, $sms_status);
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ?");
+        $stmt->bind_param("s", $date);
+    }
+    
     $stmt->execute();
     $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
+    $appointments = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    $conn->close();
+    return $appointments;
 }
 
 function updateSMSStatus($appointment_id, $status) {
-    global $conn;
-    $stmt = $conn->prepare("UPDATE appointments SET sms_status = ?, sms_sent_at = NOW() WHERE id = ?");
-    $stmt->bind_param("si", $status, $appointment_id);
-    return $stmt->execute();
+    $conn = connect_db();
+    
+    // Check if SMS columns exist
+    $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
+    
+    if ($check_columns->num_rows > 0) {
+        $stmt = $conn->prepare("UPDATE appointments SET sms_status = ?, sms_sent_at = NOW() WHERE id = ?");
+        $stmt->bind_param("si", $status, $appointment_id);
+        $success = $stmt->execute();
+        $stmt->close();
+    } else {
+        $success = true; // Return true if columns don't exist
+    }
+    
+    $conn->close();
+    return $success;
 }
 ?>
