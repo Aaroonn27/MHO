@@ -22,8 +22,26 @@ header {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Logo container with glass morphism effect */
-.logo-img {
+.main-header {
+    position: relative;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-header .logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.main-header .logo-img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -37,8 +55,27 @@ header {
     backdrop-filter: blur(10px);
 }
 
-/* Navigation with updated hover effects */
-nav ul li a {
+.main-header h1 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+}
+
+.main-header nav ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.main-header nav ul li {
+    display: inline-block;
+}
+
+.main-header nav ul li a {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -48,12 +85,28 @@ nav ul li a {
     border-radius: 10px;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    font-family: inherit;
 }
 
-nav ul li a:hover {
+.main-header nav ul li a:hover {
     background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure nav ul is horizontal */
+nav ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure nav li is inline */
+nav ul li {
+    display: inline-block;
 }
 
 /* Update content areas to work with new background */

@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="Style/headerstylee.css">
+<link rel="stylesheet" href="Style/headerstyleess.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<header>
+<header class="main-header">
     <div class="logo-container">
         <div class="logo-img">
             <img src="/MHO/media/chologo.png" alt="CHO Logo">
