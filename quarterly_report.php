@@ -119,9 +119,9 @@ if (isset($_GET['export']) && $_GET['export'] == 'csv') {
 
         <div class="chart-container">
             <div class="button-group">
-                <button class="show-graph-btn" onclick="window.location.href='report_graph.php?year=<?php echo $selected_year; ?>'">
+                <!-- <button class="show-graph-btn" onclick="window.location.href='report_graph.php?year=<?php echo $selected_year; ?>'">
                     <i class="fas fa-chart-bar"></i> Show Graph
-                </button>
+                </button> -->
                 <button class="show-graph-btn" onclick="window.location.href='analytics_dashboard.php?year=<?php echo $selected_year; ?>'">
                     <i class="fas fa-chart-line"></i> View Analytics
                 </button>
