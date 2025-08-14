@@ -1,6 +1,7 @@
 <?php
 require_once 'db_conn.php';
 
+
 function get_descriptive_analytics($year) {
     try {
         $conn = connect_db();
@@ -8,23 +9,70 @@ function get_descriptive_analytics($year) {
             throw new Exception("Database connection failed");
         }
         
+        // Debug: Check if we have any data for the year
+        $debug_sql = "SELECT COUNT(*) as total FROM sheet1 WHERE YEAR(date_recorded) = ?";
+        $debug_stmt = $conn->prepare($debug_sql);
+        $debug_stmt->bind_param("i", $year);
+        $debug_stmt->execute();
+        $debug_result = $debug_stmt->get_result();
+        $debug_row = $debug_result->fetch_assoc();
+        
+        error_log("Debug: Found {$debug_row['total']} records for year {$year}");
+        
+        if ($debug_row['total'] == 0) {
+            // Return empty structure if no data found
+            return array(
+                'overall' => array(
+                    'total_cases' => 0,
+                    'active_months' => 0,
+                    'category1_percentage' => 0,
+                    'category2_percentage' => 0,
+                    'category3_percentage' => 0,
+                    'rig_completion_rate' => 0,
+                    'complete_outcome_rate' => 0,
+                    'bite_percentage' => 0,
+                    'washing_rate' => 0,
+                    'average_age' => 0,
+                    'male_percentage' => 0,
+                    'female_percentage' => 0,
+                    'avg_days_to_first_vaccine' => 0
+                ),
+                'monthly_trends' => array(),
+                'barangay_analysis' => array(),
+                'bite_place_analysis' => array(),
+                'age_groups' => array(),
+                'animal_types' => array(),
+                'outcomes' => array(),
+                'bite_sites' => array(),
+                'vaccine_compliance' => array(),
+                'animal_status' => array(),
+                'response_time' => array(
+                    'avg_response_days' => 0,
+                    'within_24hrs' => 0,
+                    'within_72hrs' => 0,
+                    'beyond_72hrs' => 0,
+                    'total_with_vaccine' => 0
+                )
+            );
+        }
+        
         $analytics = array();
         
-        // 1. Overall Statistics (Enhanced)
+        // 1. Overall Statistics (Enhanced with better null handling)
         $sql = "SELECT 
             COUNT(*) as total_cases,
             COUNT(DISTINCT MONTH(date_recorded)) as active_months,
-            AVG(CASE WHEN category = 1 THEN 1 ELSE 0 END) * 100 as category1_percentage,
-            AVG(CASE WHEN category = 2 THEN 1 ELSE 0 END) * 100 as category2_percentage,
-            AVG(CASE WHEN category = 3 THEN 1 ELSE 0 END) * 100 as category3_percentage,
-            AVG(CASE WHEN rig_amount IS NOT NULL AND rig_amount != '' THEN 1 ELSE 0 END) * 100 as rig_completion_rate,
-            AVG(CASE WHEN outcome = 'C' THEN 1 ELSE 0 END) * 100 as complete_outcome_rate,
-            AVG(CASE WHEN bite_type = 'B' THEN 1 ELSE 0 END) * 100 as bite_percentage,
-            AVG(CASE WHEN washing_of_bite = 'Y' THEN 1 ELSE 0 END) * 100 as washing_rate,
-            AVG(age) as average_age,
-            COUNT(CASE WHEN sex = 'M' THEN 1 END) * 100.0 / COUNT(*) as male_percentage,
-            COUNT(CASE WHEN sex = 'F' THEN 1 END) * 100.0 / COUNT(*) as female_percentage,
-            AVG(DATEDIFF(vaccine_day0, bite_date)) as avg_days_to_first_vaccine
+            COALESCE(AVG(CASE WHEN category = 1 THEN 1 ELSE 0 END) * 100, 0) as category1_percentage,
+            COALESCE(AVG(CASE WHEN category = 2 THEN 1 ELSE 0 END) * 100, 0) as category2_percentage,
+            COALESCE(AVG(CASE WHEN category = 3 THEN 1 ELSE 0 END) * 100, 0) as category3_percentage,
+            COALESCE(AVG(CASE WHEN rig_amount IS NOT NULL AND rig_amount != '' THEN 1 ELSE 0 END) * 100, 0) as rig_completion_rate,
+            COALESCE(AVG(CASE WHEN outcome = 'C' THEN 1 ELSE 0 END) * 100, 0) as complete_outcome_rate,
+            COALESCE(AVG(CASE WHEN bite_type = 'B' THEN 1 ELSE 0 END) * 100, 0) as bite_percentage,
+            COALESCE(AVG(CASE WHEN washing_of_bite = 'Y' THEN 1 ELSE 0 END) * 100, 0) as washing_rate,
+            COALESCE(AVG(age), 0) as average_age,
+            COALESCE(COUNT(CASE WHEN sex = 'M' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as male_percentage,
+            COALESCE(COUNT(CASE WHEN sex = 'F' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as female_percentage,
+            COALESCE(AVG(DATEDIFF(vaccine_day0, bite_date)), 0) as avg_days_to_first_vaccine
         FROM sheet1 
         WHERE YEAR(date_recorded) = ?";
         
@@ -40,6 +88,9 @@ function get_descriptive_analytics($year) {
         
         $result = $stmt->get_result();
         $analytics['overall'] = $result->fetch_assoc();
+        
+        // Debug log the overall results
+        error_log("Overall analytics: " . print_r($analytics['overall'], true));
         
         // 2. Monthly Trends (Enhanced)
         $sql = "SELECT 
@@ -66,14 +117,14 @@ function get_descriptive_analytics($year) {
         
         // 3. Barangay/Address Analysis (TOP 10)
         $sql = "SELECT 
-            TRIM(UPPER(address)) as barangay,
+            TRIM(UPPER(COALESCE(address, 'UNKNOWN'))) as barangay,
             COUNT(*) as count,
             COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ?) as percentage,
             COUNT(CASE WHEN category = 3 THEN 1 END) as high_risk_cases,
             COUNT(CASE WHEN outcome = 'C' THEN 1 END) as completed_cases
         FROM sheet1 
-        WHERE YEAR(date_recorded) = ? AND address IS NOT NULL AND TRIM(address) != ''
-        GROUP BY TRIM(UPPER(address))
+        WHERE YEAR(date_recorded) = ?
+        GROUP BY TRIM(UPPER(COALESCE(address, 'UNKNOWN')))
         ORDER BY count DESC
         LIMIT 10";
         
@@ -88,13 +139,13 @@ function get_descriptive_analytics($year) {
         
         // 4. Bite Place Analysis (TOP 10)
         $sql = "SELECT 
-            TRIM(UPPER(bite_place)) as bite_place,
+            TRIM(UPPER(COALESCE(bite_place, 'UNKNOWN'))) as bite_place,
             COUNT(*) as count,
             COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ?) as percentage,
             COUNT(CASE WHEN category = 3 THEN 1 END) as high_risk_cases
         FROM sheet1 
-        WHERE YEAR(date_recorded) = ? AND bite_place IS NOT NULL AND TRIM(bite_place) != ''
-        GROUP BY TRIM(UPPER(bite_place))
+        WHERE YEAR(date_recorded) = ?
+        GROUP BY TRIM(UPPER(COALESCE(bite_place, 'UNKNOWN')))
         ORDER BY count DESC
         LIMIT 10";
         
@@ -110,6 +161,7 @@ function get_descriptive_analytics($year) {
         // 5. Age Group Analysis
         $sql = "SELECT 
             CASE 
+                WHEN age IS NULL THEN 'Unknown'
                 WHEN age < 5 THEN '0-4 years'
                 WHEN age BETWEEN 5 AND 14 THEN '5-14 years'
                 WHEN age BETWEEN 15 AND 29 THEN '15-29 years'
@@ -125,6 +177,7 @@ function get_descriptive_analytics($year) {
         WHERE YEAR(date_recorded) = ?
         GROUP BY 
             CASE 
+                WHEN age IS NULL THEN 'Unknown'
                 WHEN age < 5 THEN '0-4 years'
                 WHEN age BETWEEN 5 AND 14 THEN '5-14 years'
                 WHEN age BETWEEN 15 AND 29 THEN '15-29 years'
@@ -135,6 +188,7 @@ function get_descriptive_analytics($year) {
             END
         ORDER BY 
             CASE 
+                WHEN age IS NULL THEN 8
                 WHEN age < 5 THEN 1
                 WHEN age BETWEEN 5 AND 14 THEN 2
                 WHEN age BETWEEN 15 AND 29 THEN 3
@@ -155,15 +209,15 @@ function get_descriptive_analytics($year) {
         
         // 6. Animal Type Analysis (Enhanced)
         $sql = "SELECT 
-            TRIM(UPPER(animal_type)) as animal_type,
+            TRIM(UPPER(COALESCE(animal_type, 'UNKNOWN'))) as animal_type,
             COUNT(*) as count,
             COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ?) as percentage,
             COUNT(CASE WHEN category = 3 THEN 1 END) as high_risk_cases,
             COUNT(CASE WHEN bite_type = 'B' THEN 1 END) as bite_cases,
             COUNT(CASE WHEN animal_status = 'Dead' THEN 1 END) as dead_animals
         FROM sheet1 
-        WHERE YEAR(date_recorded) = ? AND animal_type IS NOT NULL AND TRIM(animal_type) != ''
-        GROUP BY TRIM(UPPER(animal_type))
+        WHERE YEAR(date_recorded) = ?
+        GROUP BY TRIM(UPPER(COALESCE(animal_type, 'UNKNOWN')))
         ORDER BY count DESC";
         
         $stmt = $conn->prepare($sql);
@@ -177,13 +231,13 @@ function get_descriptive_analytics($year) {
         
         // 7. Bite Site Analysis (Enhanced)
         $sql = "SELECT 
-            TRIM(UPPER(bite_site)) as bite_site,
+            TRIM(UPPER(COALESCE(bite_site, 'UNKNOWN'))) as bite_site,
             COUNT(*) as count,
             COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ?) as percentage,
             COUNT(CASE WHEN category = 3 THEN 1 END) as high_risk_cases
         FROM sheet1 
-        WHERE YEAR(date_recorded) = ? AND bite_site IS NOT NULL AND TRIM(bite_site) != ''
-        GROUP BY TRIM(UPPER(bite_site))
+        WHERE YEAR(date_recorded) = ?
+        GROUP BY TRIM(UPPER(COALESCE(bite_site, 'UNKNOWN')))
         ORDER BY count DESC";
         
         $stmt = $conn->prepare($sql);
@@ -197,19 +251,19 @@ function get_descriptive_analytics($year) {
         
         // 8. Outcome Analysis (Enhanced)
         $sql = "SELECT 
-            CASE outcome
+            CASE COALESCE(outcome, 'Unknown')
                 WHEN 'C' THEN 'Complete'
                 WHEN 'Inc' THEN 'Incomplete'
                 WHEN 'N' THEN 'Not Started'
                 WHEN 'D' THEN 'Died'
-                ELSE outcome
+                ELSE COALESCE(outcome, 'Unknown')
             END as outcome_label,
-            outcome,
+            COALESCE(outcome, 'Unknown') as outcome,
             COUNT(*) as count,
             COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ?) as percentage
         FROM sheet1 
         WHERE YEAR(date_recorded) = ?
-        GROUP BY outcome
+        GROUP BY COALESCE(outcome, 'Unknown')
         ORDER BY count DESC";
         
         $stmt = $conn->prepare($sql);
@@ -226,35 +280,35 @@ function get_descriptive_analytics($year) {
             'Day 0' as vaccine_day,
             COUNT(CASE WHEN vaccine_day0 IS NOT NULL THEN 1 END) as given,
             COUNT(*) - COUNT(CASE WHEN vaccine_day0 IS NOT NULL THEN 1 END) as missed,
-            COUNT(CASE WHEN vaccine_day0 IS NOT NULL THEN 1 END) * 100.0 / COUNT(*) as compliance_rate
+            COALESCE(COUNT(CASE WHEN vaccine_day0 IS NOT NULL THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as compliance_rate
         FROM sheet1 WHERE YEAR(date_recorded) = ?
         UNION ALL
         SELECT 
             'Day 3' as vaccine_day,
             COUNT(CASE WHEN vaccine_day3 IS NOT NULL THEN 1 END) as given,
             COUNT(*) - COUNT(CASE WHEN vaccine_day3 IS NOT NULL THEN 1 END) as missed,
-            COUNT(CASE WHEN vaccine_day3 IS NOT NULL THEN 1 END) * 100.0 / COUNT(*) as compliance_rate
+            COALESCE(COUNT(CASE WHEN vaccine_day3 IS NOT NULL THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as compliance_rate
         FROM sheet1 WHERE YEAR(date_recorded) = ?
         UNION ALL
         SELECT 
             'Day 7' as vaccine_day,
             COUNT(CASE WHEN vaccine_day7 IS NOT NULL THEN 1 END) as given,
             COUNT(*) - COUNT(CASE WHEN vaccine_day7 IS NOT NULL THEN 1 END) as missed,
-            COUNT(CASE WHEN vaccine_day7 IS NOT NULL THEN 1 END) * 100.0 / COUNT(*) as compliance_rate
+            COALESCE(COUNT(CASE WHEN vaccine_day7 IS NOT NULL THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as compliance_rate
         FROM sheet1 WHERE YEAR(date_recorded) = ?
         UNION ALL
         SELECT 
             'Day 14' as vaccine_day,
             COUNT(CASE WHEN vaccine_day14 IS NOT NULL THEN 1 END) as given,
             COUNT(*) - COUNT(CASE WHEN vaccine_day14 IS NOT NULL THEN 1 END) as missed,
-            COUNT(CASE WHEN vaccine_day14 IS NOT NULL THEN 1 END) * 100.0 / COUNT(*) as compliance_rate
+            COALESCE(COUNT(CASE WHEN vaccine_day14 IS NOT NULL THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as compliance_rate
         FROM sheet1 WHERE YEAR(date_recorded) = ?
         UNION ALL
         SELECT 
             'Day 28-30' as vaccine_day,
             COUNT(CASE WHEN vaccine_day2830 IS NOT NULL THEN 1 END) as given,
             COUNT(*) - COUNT(CASE WHEN vaccine_day2830 IS NOT NULL THEN 1 END) as missed,
-            COUNT(CASE WHEN vaccine_day2830 IS NOT NULL THEN 1 END) * 100.0 / COUNT(*) as compliance_rate
+            COALESCE(COUNT(CASE WHEN vaccine_day2830 IS NOT NULL THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as compliance_rate
         FROM sheet1 WHERE YEAR(date_recorded) = ?";
         
         $stmt = $conn->prepare($sql);
@@ -268,12 +322,12 @@ function get_descriptive_analytics($year) {
         
         // 10. Animal Status Analysis
         $sql = "SELECT 
-            animal_status,
+            COALESCE(animal_status, 'Unknown') as animal_status,
             COUNT(*) as count,
-            COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ? AND animal_status IS NOT NULL) as percentage
+            COUNT(*) * 100.0 / (SELECT COUNT(*) FROM sheet1 WHERE YEAR(date_recorded) = ?) as percentage
         FROM sheet1 
-        WHERE YEAR(date_recorded) = ? AND animal_status IS NOT NULL
-        GROUP BY animal_status
+        WHERE YEAR(date_recorded) = ?
+        GROUP BY COALESCE(animal_status, 'Unknown')
         ORDER BY count DESC";
         
         $stmt = $conn->prepare($sql);
@@ -285,9 +339,9 @@ function get_descriptive_analytics($year) {
             $analytics['animal_status'][] = $row;
         }
         
-        // 11. Response Time Analysis
+        // 11. Response Time Analysis (Fixed null handling)
         $sql = "SELECT 
-            AVG(DATEDIFF(vaccine_day0, bite_date)) as avg_response_days,
+            COALESCE(AVG(DATEDIFF(vaccine_day0, bite_date)), 0) as avg_response_days,
             COUNT(CASE WHEN DATEDIFF(vaccine_day0, bite_date) <= 1 THEN 1 END) as within_24hrs,
             COUNT(CASE WHEN DATEDIFF(vaccine_day0, bite_date) BETWEEN 2 AND 3 THEN 1 END) as within_72hrs,
             COUNT(CASE WHEN DATEDIFF(vaccine_day0, bite_date) > 3 THEN 1 END) as beyond_72hrs,
@@ -299,7 +353,16 @@ function get_descriptive_analytics($year) {
         $stmt->bind_param("i", $year);
         $stmt->execute();
         $result = $stmt->get_result();
-        $analytics['response_time'] = $result->fetch_assoc();
+        $response_time_row = $result->fetch_assoc();
+        
+        // Ensure all values are not null
+        $analytics['response_time'] = array(
+            'avg_response_days' => floatval($response_time_row['avg_response_days'] ?? 0),
+            'within_24hrs' => intval($response_time_row['within_24hrs'] ?? 0),
+            'within_72hrs' => intval($response_time_row['within_72hrs'] ?? 0),
+            'beyond_72hrs' => intval($response_time_row['beyond_72hrs'] ?? 0),
+            'total_with_vaccine' => intval($response_time_row['total_with_vaccine'] ?? 0)
+        );
         
         $stmt->close();
         $conn->close();
@@ -324,22 +387,23 @@ function generate_analytics_report($year) {
         );
     }
     
-    // Format the data for display with null checks
+    // Format the data for display with null checks and proper defaults
     $report = array(
         'summary' => array(
-            'total_cases' => isset($analytics['overall']['total_cases']) ? number_format($analytics['overall']['total_cases']) : '0',
-            'active_months' => isset($analytics['overall']['active_months']) ? $analytics['overall']['active_months'] : '0',
-            'category1_percentage' => isset($analytics['overall']['category1_percentage']) ? number_format($analytics['overall']['category1_percentage'], 1) . '%' : '0%',
-            'category2_percentage' => isset($analytics['overall']['category2_percentage']) ? number_format($analytics['overall']['category2_percentage'], 1) . '%' : '0%',
-            'category3_percentage' => isset($analytics['overall']['category3_percentage']) ? number_format($analytics['overall']['category3_percentage'], 1) . '%' : '0%',
-            'rig_completion_rate' => isset($analytics['overall']['rig_completion_rate']) ? number_format($analytics['overall']['rig_completion_rate'], 1) . '%' : '0%',
-            'complete_outcome_rate' => isset($analytics['overall']['complete_outcome_rate']) ? number_format($analytics['overall']['complete_outcome_rate'], 1) . '%' : '0%',
-            'bite_percentage' => isset($analytics['overall']['bite_percentage']) ? number_format($analytics['overall']['bite_percentage'], 1) . '%' : '0%',
-            'washing_rate' => isset($analytics['overall']['washing_rate']) ? number_format($analytics['overall']['washing_rate'], 1) . '%' : '0%',
-            'average_age' => isset($analytics['overall']['average_age']) ? number_format($analytics['overall']['average_age'], 1) : '0',
-            'male_percentage' => isset($analytics['overall']['male_percentage']) ? number_format($analytics['overall']['male_percentage'], 1) . '%' : '0%',
-            'female_percentage' => isset($analytics['overall']['female_percentage']) ? number_format($analytics['overall']['female_percentage'], 1) . '%' : '0%',
-            'avg_days_to_first_vaccine' => isset($analytics['overall']['avg_days_to_first_vaccine']) ? number_format($analytics['overall']['avg_days_to_first_vaccine'], 1) : 'N/A'
+            'total_cases' => number_format(intval($analytics['overall']['total_cases'] ?? 0)),
+            'active_months' => intval($analytics['overall']['active_months'] ?? 0),
+            'category1_percentage' => number_format(floatval($analytics['overall']['category1_percentage'] ?? 0), 1) . '%',
+            'category2_percentage' => number_format(floatval($analytics['overall']['category2_percentage'] ?? 0), 1) . '%',
+            'category3_percentage' => number_format(floatval($analytics['overall']['category3_percentage'] ?? 0), 1) . '%',
+            'rig_completion_rate' => number_format(floatval($analytics['overall']['rig_completion_rate'] ?? 0), 1) . '%',
+            'complete_outcome_rate' => number_format(floatval($analytics['overall']['complete_outcome_rate'] ?? 0), 1) . '%',
+            'bite_percentage' => number_format(floatval($analytics['overall']['bite_percentage'] ?? 0), 1) . '%',
+            'washing_rate' => number_format(floatval($analytics['overall']['washing_rate'] ?? 0), 1) . '%',
+            'average_age' => number_format(floatval($analytics['overall']['average_age'] ?? 0), 1),
+            'male_percentage' => number_format(floatval($analytics['overall']['male_percentage'] ?? 0), 1) . '%',
+            'female_percentage' => number_format(floatval($analytics['overall']['female_percentage'] ?? 0), 1) . '%',
+            'avg_days_to_first_vaccine' => floatval($analytics['overall']['avg_days_to_first_vaccine'] ?? 0) > 0 ? 
+                number_format(floatval($analytics['overall']['avg_days_to_first_vaccine']), 1) : 'N/A'
         ),
         'monthly_trends' => $analytics['monthly_trends'] ?? array(),
         'barangay_analysis' => $analytics['barangay_analysis'] ?? array(),

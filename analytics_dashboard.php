@@ -234,6 +234,15 @@ if (isset($analytics_report['error'])) {
             font-style: italic;
             padding: 20px;
         }
+
+        .debug-info {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 
@@ -252,6 +261,14 @@ if (isset($analytics_report['error'])) {
                         </option>
                     <?php endforeach; ?>
                 </select>
+            </div>
+            
+            <!-- Debug Information -->
+            <div class="debug-info">
+                <strong>Debug Info:</strong> 
+                Total Cases: <?php echo $analytics_report['summary']['total_cases']; ?> | 
+                Selected Year: <?php echo $selected_year; ?> |
+                Available Years: <?php echo implode(', ', $available_years); ?>
             </div>
         </div>
 
@@ -292,8 +309,8 @@ if (isset($analytics_report['error'])) {
                 <h3>Average Response Time</h3>
                 <div class="stat-value">
                     <?php
-                    $avg_days = $analytics_report['response_time']['avg_response_days'];
-                    echo number_format($avg_days !== null ? $avg_days : 0, 1);
+                    $avg_days = $analytics_report['response_time']['avg_response_days'] ?? 0;
+                    echo is_numeric($avg_days) ? number_format(floatval($avg_days), 1) : '0.0';
                     ?>
                 </div>
                 <div class="metric-trend">Days to first vaccine</div>
@@ -358,10 +375,10 @@ if (isset($analytics_report['error'])) {
                         foreach ($analytics_report['barangay_analysis'] as $barangay):
                             $risk_level = 'LOW';
                             $badge_class = 'badge-low';
-                            if ($barangay['high_risk_cases'] >= 20) {
+                            if (intval($barangay['high_risk_cases']) >= 20) {
                                 $risk_level = 'HIGH';
                                 $badge_class = 'badge-high';
-                            } elseif ($barangay['high_risk_cases'] >= 10) {
+                            } elseif (intval($barangay['high_risk_cases']) >= 10) {
                                 $risk_level = 'MEDIUM';
                                 $badge_class = 'badge-medium';
                             }
@@ -369,10 +386,10 @@ if (isset($analytics_report['error'])) {
                             <tr>
                                 <td><?php echo $rank++; ?></td>
                                 <td><?php echo htmlspecialchars($barangay['barangay']); ?></td>
-                                <td><?php echo number_format($barangay['count']); ?></td>
-                                <td><?php echo number_format($barangay['percentage'], 1); ?>%</td>
-                                <td><?php echo number_format($barangay['high_risk_cases']); ?></td>
-                                <td><?php echo number_format($barangay['completed_cases']); ?></td>
+                                <td><?php echo number_format(intval($barangay['count'])); ?></td>
+                                <td><?php echo number_format(floatval($barangay['percentage']), 1); ?>%</td>
+                                <td><?php echo number_format(intval($barangay['high_risk_cases'])); ?></td>
+                                <td><?php echo number_format(intval($barangay['completed_cases'])); ?></td>
                                 <td><span class="badge <?php echo $badge_class; ?>"><?php echo $risk_level; ?></span></td>
                             </tr>
                         <?php endforeach; ?>
@@ -404,10 +421,10 @@ if (isset($analytics_report['error'])) {
                         foreach ($analytics_report['bite_place_analysis'] as $place):
                             $priority = 'LOW';
                             $badge_class = 'badge-low';
-                            if ($place['count'] >= 50 || $place['high_risk_cases'] >= 15) {
+                            if (intval($place['count']) >= 50 || intval($place['high_risk_cases']) >= 15) {
                                 $priority = 'URGENT';
                                 $badge_class = 'badge-high';
-                            } elseif ($place['count'] >= 20 || $place['high_risk_cases'] >= 5) {
+                            } elseif (intval($place['count']) >= 20 || intval($place['high_risk_cases']) >= 5) {
                                 $priority = 'MODERATE';
                                 $badge_class = 'badge-medium';
                             }
@@ -415,9 +432,9 @@ if (isset($analytics_report['error'])) {
                             <tr>
                                 <td><?php echo $rank++; ?></td>
                                 <td><?php echo htmlspecialchars($place['bite_place']); ?></td>
-                                <td><?php echo number_format($place['count']); ?></td>
-                                <td><?php echo number_format($place['percentage'], 1); ?>%</td>
-                                <td><?php echo number_format($place['high_risk_cases']); ?></td>
+                                <td><?php echo number_format(intval($place['count'])); ?></td>
+                                <td><?php echo number_format(floatval($place['percentage']), 1); ?>%</td>
+                                <td><?php echo number_format(intval($place['high_risk_cases'])); ?></td>
                                 <td><span class="badge <?php echo $badge_class; ?>"><?php echo $priority; ?></span></td>
                             </tr>
                         <?php endforeach; ?>
@@ -441,19 +458,19 @@ if (isset($analytics_report['error'])) {
         </div>
 
         <!-- Response Time Analysis -->
-        <?php if (!empty($analytics_report['response_time'])): ?>
+        <?php if (!empty($analytics_report['response_time']) && intval($analytics_report['response_time']['total_with_vaccine']) > 0): ?>
             <div class="table-container">
                 <h2><i class="fas fa-clock"></i> Treatment Response Time Analysis</h2>
                 <div class="stats-grid">
                     <div class="stat-card success-card">
                         <i class="fas fa-bolt stat-icon"></i>
                         <h3>Within 24 Hours</h3>
-                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['within_24hrs']); ?></div>
+                        <div class="stat-value"><?php echo number_format(intval($analytics_report['response_time']['within_24hrs'])); ?></div>
                         <div class="metric-trend">
                             <?php
-                            $total = $analytics_report['response_time']['total_with_vaccine'];
+                            $total = intval($analytics_report['response_time']['total_with_vaccine']);
                             if ($total > 0) {
-                                echo number_format(($analytics_report['response_time']['within_24hrs'] / $total) * 100, 1) . '% of cases';
+                                echo number_format((intval($analytics_report['response_time']['within_24hrs']) / $total) * 100, 1) . '% of cases';
                             } else {
                                 echo 'No data available';
                             }
@@ -463,11 +480,11 @@ if (isset($analytics_report['error'])) {
                     <div class="stat-card warning-card">
                         <i class="fas fa-hourglass-half stat-icon"></i>
                         <h3>Within 72 Hours</h3>
-                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['within_72hrs']); ?></div>
+                        <div class="stat-value"><?php echo number_format(intval($analytics_report['response_time']['within_72hrs'])); ?></div>
                         <div class="metric-trend">
                             <?php
                             if ($total > 0) {
-                                echo number_format(($analytics_report['response_time']['within_72hrs'] / $total) * 100, 1) . '% of cases';
+                                echo number_format((intval($analytics_report['response_time']['within_72hrs']) / $total) * 100, 1) . '% of cases';
                             } else {
                                 echo 'No data available';
                             }
@@ -477,11 +494,11 @@ if (isset($analytics_report['error'])) {
                     <div class="stat-card danger-card">
                         <i class="fas fa-exclamation-circle stat-icon"></i>
                         <h3>Beyond 72 Hours</h3>
-                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['beyond_72hrs']); ?></div>
+                        <div class="stat-value"><?php echo number_format(intval($analytics_report['response_time']['beyond_72hrs'])); ?></div>
                         <div class="metric-trend">
                             <?php
                             if ($total > 0) {
-                                echo number_format(($analytics_report['response_time']['beyond_72hrs'] / $total) * 100, 1) . '% of cases';
+                                echo number_format((intval($analytics_report['response_time']['beyond_72hrs']) / $total) * 100, 1) . '% of cases';
                             } else {
                                 echo 'No data available';
                             }
@@ -491,7 +508,12 @@ if (isset($analytics_report['error'])) {
                     <div class="stat-card">
                         <i class="fas fa-calculator stat-icon"></i>
                         <h3>Average Response</h3>
-                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['avg_response_days'], 1); ?></div>
+                        <div class="stat-value">
+                            <?php 
+                            $avg_response = floatval($analytics_report['response_time']['avg_response_days'] ?? 0);
+                            echo number_format($avg_response, 1); 
+                            ?>
+                        </div>
                         <div class="metric-trend">Days to treatment</div>
                     </div>
                 </div>
@@ -499,10 +521,12 @@ if (isset($analytics_report['error'])) {
         <?php endif; ?>
 
         <!-- Animal Status Chart -->
+        <?php if (!empty($analytics_report['animal_status'])): ?>
         <div class="chart-container">
             <h2>Animal Status Distribution</h2>
             <canvas id="animalStatusChart"></canvas>
         </div>
+        <?php endif; ?>
     </div>
 
     <script>
@@ -513,26 +537,25 @@ if (isset($analytics_report['error'])) {
 
         // Monthly Trends Chart - Using real data from PHP
         const monthlyTrendsCtx = document.getElementById('monthlyTrendsChart').getContext('2d');
+        const monthlyData = <?php echo json_encode($analytics_report['monthly_trends']); ?>;
+        
         new Chart(monthlyTrendsCtx, {
             type: 'line',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return date('M', mktime(0, 0, 0, $item['month'], 1));
-                        }, $analytics_report['monthly_trends'])); ?>,
+                labels: monthlyData.map(item => {
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    return months[item.month - 1] || 'Unknown';
+                }),
                 datasets: [{
                     label: 'Total Cases',
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['monthly_cases'];
-                            }, $analytics_report['monthly_trends'])); ?>,
+                    data: monthlyData.map(item => parseInt(item.monthly_cases) || 0),
                     borderColor: '#667eea',
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     fill: true,
                     tension: 0.4
                 }, {
                     label: 'High Risk (Category 3)',
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['category3_cases'];
-                            }, $analytics_report['monthly_trends'])); ?>,
+                    data: monthlyData.map(item => parseInt(item.category3_cases) || 0),
                     borderColor: '#e74c3c',
                     backgroundColor: 'rgba(231, 76, 60, 0.1)',
                     fill: true,
@@ -556,18 +579,16 @@ if (isset($analytics_report['error'])) {
 
         // Age Group Chart - Using real data from PHP
         const ageGroupCtx = document.getElementById('ageGroupChart').getContext('2d');
+        const ageGroupData = <?php echo json_encode($analytics_report['age_groups']); ?>;
+        
         new Chart(ageGroupCtx, {
             type: 'doughnut',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return $item['age_group'];
-                        }, $analytics_report['age_groups'])); ?>,
+                labels: ageGroupData.map(item => item.age_group),
                 datasets: [{
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['count'];
-                            }, $analytics_report['age_groups'])); ?>,
+                    data: ageGroupData.map(item => parseInt(item.count) || 0),
                     backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384'
                     ]
                 }]
             },
@@ -583,23 +604,19 @@ if (isset($analytics_report['error'])) {
 
         // Animal Type Chart - Using real data from PHP
         const animalTypeCtx = document.getElementById('animalTypeChart').getContext('2d');
+        const animalTypeData = <?php echo json_encode($analytics_report['animal_types']); ?>;
+        
         new Chart(animalTypeCtx, {
             type: 'bar',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return $item['animal_type'];
-                        }, $analytics_report['animal_types'])); ?>,
+                labels: animalTypeData.map(item => item.animal_type),
                 datasets: [{
                     label: 'Total Cases',
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['count'];
-                            }, $analytics_report['animal_types'])); ?>,
+                    data: animalTypeData.map(item => parseInt(item.count) || 0),
                     backgroundColor: '#4CAF50'
                 }, {
                     label: 'High Risk Cases',
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['high_risk_cases'];
-                            }, $analytics_report['animal_types'])); ?>,
+                    data: animalTypeData.map(item => parseInt(item.high_risk_cases) || 0),
                     backgroundColor: '#e74c3c'
                 }]
             },
@@ -620,17 +637,15 @@ if (isset($analytics_report['error'])) {
 
         // Vaccine Compliance Chart - Using real data from PHP
         const vaccineComplianceCtx = document.getElementById('vaccineComplianceChart').getContext('2d');
+        const vaccineComplianceData = <?php echo json_encode($analytics_report['vaccine_compliance']); ?>;
+        
         new Chart(vaccineComplianceCtx, {
             type: 'bar',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return $item['vaccine_day'];
-                        }, $analytics_report['vaccine_compliance'])); ?>,
+                labels: vaccineComplianceData.map(item => item.vaccine_day),
                 datasets: [{
                     label: 'Compliance Rate (%)',
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return number_format($item['compliance_rate'], 1);
-                            }, $analytics_report['vaccine_compliance'])); ?>,
+                    data: vaccineComplianceData.map(item => parseFloat(item.compliance_rate) || 0),
                     backgroundColor: ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800']
                 }]
             },
@@ -657,17 +672,15 @@ if (isset($analytics_report['error'])) {
 
         // Bite Site Chart - Using real data from PHP
         const biteSiteCtx = document.getElementById('biteSiteChart').getContext('2d');
+        const biteSiteData = <?php echo json_encode($analytics_report['bite_sites']); ?>;
+        
         new Chart(biteSiteCtx, {
             type: 'pie',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return $item['bite_site'];
-                        }, $analytics_report['bite_sites'])); ?>,
+                labels: biteSiteData.map(item => item.bite_site),
                 datasets: [{
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['count'];
-                            }, $analytics_report['bite_sites'])); ?>,
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                    data: biteSiteData.map(item => parseInt(item.count) || 0),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
                 }]
             },
             options: {
@@ -682,16 +695,14 @@ if (isset($analytics_report['error'])) {
 
         // Outcome Chart - Using real data from PHP
         const outcomeCtx = document.getElementById('outcomeChart').getContext('2d');
+        const outcomeData = <?php echo json_encode($analytics_report['outcomes']); ?>;
+        
         new Chart(outcomeCtx, {
             type: 'doughnut',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return $item['outcome_label'];
-                        }, $analytics_report['outcomes'])); ?>,
+                labels: outcomeData.map(item => item.outcome_label),
                 datasets: [{
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['count'];
-                            }, $analytics_report['outcomes'])); ?>,
+                    data: outcomeData.map(item => parseInt(item.count) || 0),
                     backgroundColor: ['#4CAF50', '#FF9800', '#f44336', '#9E9E9E']
                 }]
             },
@@ -706,19 +717,18 @@ if (isset($analytics_report['error'])) {
         });
 
         // Animal Status Chart - Using real data from PHP
+        <?php if (!empty($analytics_report['animal_status'])): ?>
         const animalStatusCtx = document.getElementById('animalStatusChart').getContext('2d');
+        const animalStatusData = <?php echo json_encode($analytics_report['animal_status']); ?>;
+        
         new Chart(animalStatusCtx, {
             type: 'bar',
             data: {
-                labels: <?php echo json_encode(array_map(function ($item) {
-                            return $item['animal_status'];
-                        }, $analytics_report['animal_status'])); ?>,
+                labels: animalStatusData.map(item => item.animal_status),
                 datasets: [{
                     label: 'Number of Animals',
-                    data: <?php echo json_encode(array_map(function ($item) {
-                                return $item['count'];
-                            }, $analytics_report['animal_status'])); ?>,
-                    backgroundColor: ['#4CAF50', '#f44336', '#FF9800']
+                    data: animalStatusData.map(item => parseInt(item.count) || 0),
+                    backgroundColor: ['#4CAF50', '#f44336', '#FF9800', '#9E9E9E']
                 }]
             },
             options: {
@@ -736,6 +746,7 @@ if (isset($analytics_report['error'])) {
                 }
             }
         });
+        <?php endif; ?>
     </script>
 </body>
 
