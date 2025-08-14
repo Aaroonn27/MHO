@@ -1,9 +1,31 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once 'db_conn.php';
+require_once 'analytics.php';
+
+// Get selected year (default to current year if not specified)
+$selected_year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');
+$available_years = get_available_years();
+
+// Get analytics data
+$analytics_report = generate_analytics_report($selected_year);
+
+// Check for errors
+if (isset($analytics_report['error'])) {
+    echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($analytics_report['message']) . '</div>';
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Analytics Dashboard - 2024</title>
+    <title>Enhanced Analytics Dashboard - <?php echo $selected_year; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -12,33 +34,39 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
+
         .dashboard-header {
             text-align: center;
             margin-bottom: 30px;
             color: white;
         }
+
         .dashboard-header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
         .year-selector {
             margin-bottom: 20px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 10px;
             backdrop-filter: blur(10px);
         }
+
         .year-selector select {
             padding: 8px 15px;
             border: none;
@@ -47,51 +75,59 @@
             background: white;
             cursor: pointer;
         }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
+
         .stat-card {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
+
         .stat-card h3 {
             margin: 0 0 15px 0;
             color: #333;
             font-size: 1.1rem;
             font-weight: 600;
         }
+
         .stat-value {
             font-size: 2.2rem;
             font-weight: bold;
             color: #667eea;
         }
+
         .stat-icon {
             float: right;
             font-size: 2rem;
             color: #667eea;
             opacity: 0.7;
         }
+
         .chart-container {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             margin-bottom: 30px;
         }
+
         .chart-container h2 {
             margin-top: 0;
             color: #333;
@@ -99,26 +135,30 @@
             font-size: 1.5rem;
             text-align: center;
         }
+
         .charts-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 30px;
             margin-bottom: 30px;
         }
+
         .table-container {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             margin-bottom: 30px;
         }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
         }
+
         .data-table th {
             background: #667eea;
             color: white;
@@ -126,35 +166,44 @@
             text-align: left;
             font-weight: 600;
         }
+
         .data-table td {
             padding: 10px 8px;
             border-bottom: 1px solid #eee;
         }
+
         .data-table tr:hover {
             background: #f5f5f5;
         }
+
         .highlight-card {
             border-left: 5px solid #667eea;
         }
+
         .danger-card {
             border-left: 5px solid #e74c3c;
         }
+
         .success-card {
             border-left: 5px solid #27ae60;
         }
+
         .warning-card {
             border-left: 5px solid #f39c12;
         }
+
         canvas {
             width: 100% !important;
             height: auto !important;
             max-height: 400px;
         }
+
         .metric-trend {
             font-size: 0.9rem;
             color: #666;
             margin-top: 5px;
         }
+
         .badge {
             display: inline-block;
             padding: 4px 8px;
@@ -163,21 +212,45 @@
             font-weight: bold;
             margin-left: 8px;
         }
-        .badge-high { background: #e74c3c; color: white; }
-        .badge-medium { background: #f39c12; color: white; }
-        .badge-low { background: #27ae60; color: white; }
+
+        .badge-high {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .badge-medium {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-low {
+            background: #27ae60;
+            color: white;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
     </style>
 </head>
+
 <body>
+    <?php if (file_exists('includes/header.php')) include 'includes/header.php'; ?>
+
     <div class="container">
         <div class="dashboard-header">
             <h1><i class="fas fa-chart-line"></i> Animal Bite Surveillance Dashboard</h1>
             <div class="year-selector">
                 <label for="year" style="color: white; font-weight: 600;">Select Year:</label>
                 <select id="year" name="year" onchange="changeYear(this.value)">
-                    <option value="2024" selected>2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
+                    <?php foreach ($available_years as $year): ?>
+                        <option value="<?php echo $year; ?>" <?php echo ($year == $selected_year) ? 'selected' : ''; ?>>
+                            <?php echo $year; ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>
@@ -187,49 +260,54 @@
             <div class="stat-card highlight-card">
                 <i class="fas fa-clipboard-list stat-icon"></i>
                 <h3>Total Cases</h3>
-                <div class="stat-value">1,247</div>
-                <div class="metric-trend">Active in 12 months</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['total_cases']; ?></div>
+                <div class="metric-trend">Active in <?php echo $analytics_report['summary']['active_months']; ?> months</div>
             </div>
             <div class="stat-card success-card">
                 <i class="fas fa-check-circle stat-icon"></i>
                 <h3>Treatment Completion</h3>
-                <div class="stat-value">87.3%</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['complete_outcome_rate']; ?></div>
                 <div class="metric-trend">Complete outcomes</div>
             </div>
             <div class="stat-card warning-card">
                 <i class="fas fa-syringe stat-icon"></i>
                 <h3>RIG Administration</h3>
-                <div class="stat-value">45.2%</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['rig_completion_rate']; ?></div>
                 <div class="metric-trend">For high-risk cases</div>
             </div>
             <div class="stat-card danger-card">
                 <i class="fas fa-exclamation-triangle stat-icon"></i>
                 <h3>High-Risk Cases</h3>
-                <div class="stat-value">23.8%</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['category3_percentage']; ?></div>
                 <div class="metric-trend">Category 3 exposures</div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-tint stat-icon"></i>
                 <h3>Wound Washing Rate</h3>
-                <div class="stat-value">78.5%</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['washing_rate']; ?></div>
                 <div class="metric-trend">Immediate first aid</div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-calendar-alt stat-icon"></i>
                 <h3>Average Response Time</h3>
-                <div class="stat-value">2.3</div>
+                <div class="stat-value">
+                    <?php
+                    $avg_days = $analytics_report['response_time']['avg_response_days'];
+                    echo number_format($avg_days !== null ? $avg_days : 0, 1);
+                    ?>
+                </div>
                 <div class="metric-trend">Days to first vaccine</div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-user-friends stat-icon"></i>
                 <h3>Gender Distribution</h3>
-                <div class="stat-value">56% M</div>
-                <div class="metric-trend">44% Female</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['male_percentage']; ?> M</div>
+                <div class="metric-trend"><?php echo $analytics_report['summary']['female_percentage']; ?> Female</div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-birthday-cake stat-icon"></i>
                 <h3>Average Age</h3>
-                <div class="stat-value">28.4</div>
+                <div class="stat-value"><?php echo $analytics_report['summary']['average_age']; ?></div>
                 <div class="metric-trend">Years old</div>
             </div>
         </div>
@@ -261,125 +339,93 @@
         <!-- Top Barangays Table -->
         <div class="table-container">
             <h2><i class="fas fa-map-marker-alt"></i> Top 10 Barangays with Most Cases</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Barangay</th>
-                        <th>Total Cases</th>
-                        <th>Percentage</th>
-                        <th>High-Risk Cases</th>
-                        <th>Completed Treatment</th>
-                        <th>Risk Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>BARANGAY POBLACION</td>
-                        <td>89</td>
-                        <td>7.1%</td>
-                        <td>23</td>
-                        <td>78</td>
-                        <td><span class="badge badge-high">HIGH</span></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>BARANGAY SAN JOSE</td>
-                        <td>76</td>
-                        <td>6.1%</td>
-                        <td>18</td>
-                        <td>68</td>
-                        <td><span class="badge badge-medium">MEDIUM</span></td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>BARANGAY SANTA MARIA</td>
-                        <td>63</td>
-                        <td>5.1%</td>
-                        <td>15</td>
-                        <td>55</td>
-                        <td><span class="badge badge-medium">MEDIUM</span></td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>BARANGAY MALIGAYA</td>
-                        <td>52</td>
-                        <td>4.2%</td>
-                        <td>12</td>
-                        <td>47</td>
-                        <td><span class="badge badge-low">LOW</span></td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>BARANGAY BAGONG SILANG</td>
-                        <td>48</td>
-                        <td>3.9%</td>
-                        <td>14</td>
-                        <td>41</td>
-                        <td><span class="badge badge-medium">MEDIUM</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <?php if (!empty($analytics_report['barangay_analysis'])): ?>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Barangay</th>
+                            <th>Total Cases</th>
+                            <th>Percentage</th>
+                            <th>High-Risk Cases</th>
+                            <th>Completed Treatment</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $rank = 1;
+                        foreach ($analytics_report['barangay_analysis'] as $barangay):
+                            $risk_level = 'LOW';
+                            $badge_class = 'badge-low';
+                            if ($barangay['high_risk_cases'] >= 20) {
+                                $risk_level = 'HIGH';
+                                $badge_class = 'badge-high';
+                            } elseif ($barangay['high_risk_cases'] >= 10) {
+                                $risk_level = 'MEDIUM';
+                                $badge_class = 'badge-medium';
+                            }
+                        ?>
+                            <tr>
+                                <td><?php echo $rank++; ?></td>
+                                <td><?php echo htmlspecialchars($barangay['barangay']); ?></td>
+                                <td><?php echo number_format($barangay['count']); ?></td>
+                                <td><?php echo number_format($barangay['percentage'], 1); ?>%</td>
+                                <td><?php echo number_format($barangay['high_risk_cases']); ?></td>
+                                <td><?php echo number_format($barangay['completed_cases']); ?></td>
+                                <td><span class="badge <?php echo $badge_class; ?>"><?php echo $risk_level; ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <div class="no-data">No barangay data available for this year.</div>
+            <?php endif; ?>
         </div>
 
         <!-- Bite Places Analysis -->
         <div class="table-container">
             <h2><i class="fas fa-location-arrow"></i> Most Common Bite Locations</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Location</th>
-                        <th>Cases</th>
-                        <th>Percentage</th>
-                        <th>High-Risk</th>
-                        <th>Prevention Priority</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>HOME/RESIDENCE</td>
-                        <td>312</td>
-                        <td>25.0%</td>
-                        <td>78</td>
-                        <td><span class="badge badge-high">URGENT</span></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>STREET/ROAD</td>
-                        <td>198</td>
-                        <td>15.9%</td>
-                        <td>52</td>
-                        <td><span class="badge badge-high">URGENT</span></td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>NEIGHBOR'S HOUSE</td>
-                        <td>147</td>
-                        <td>11.8%</td>
-                        <td>34</td>
-                        <td><span class="badge badge-medium">MODERATE</span></td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>SCHOOL</td>
-                        <td>89</td>
-                        <td>7.1%</td>
-                        <td>21</td>
-                        <td><span class="badge badge-medium">MODERATE</span></td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>MARKET</td>
-                        <td>67</td>
-                        <td>5.4%</td>
-                        <td>18</td>
-                        <td><span class="badge badge-low">LOW</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <?php if (!empty($analytics_report['bite_place_analysis'])): ?>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Location</th>
+                            <th>Cases</th>
+                            <th>Percentage</th>
+                            <th>High-Risk</th>
+                            <th>Prevention Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $rank = 1;
+                        foreach ($analytics_report['bite_place_analysis'] as $place):
+                            $priority = 'LOW';
+                            $badge_class = 'badge-low';
+                            if ($place['count'] >= 50 || $place['high_risk_cases'] >= 15) {
+                                $priority = 'URGENT';
+                                $badge_class = 'badge-high';
+                            } elseif ($place['count'] >= 20 || $place['high_risk_cases'] >= 5) {
+                                $priority = 'MODERATE';
+                                $badge_class = 'badge-medium';
+                            }
+                        ?>
+                            <tr>
+                                <td><?php echo $rank++; ?></td>
+                                <td><?php echo htmlspecialchars($place['bite_place']); ?></td>
+                                <td><?php echo number_format($place['count']); ?></td>
+                                <td><?php echo number_format($place['percentage'], 1); ?>%</td>
+                                <td><?php echo number_format($place['high_risk_cases']); ?></td>
+                                <td><span class="badge <?php echo $badge_class; ?>"><?php echo $priority; ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <div class="no-data">No bite location data available for this year.</div>
+            <?php endif; ?>
         </div>
 
         <!-- Charts Row 3 -->
@@ -395,35 +441,62 @@
         </div>
 
         <!-- Response Time Analysis -->
-        <div class="table-container">
-            <h2><i class="fas fa-clock"></i> Treatment Response Time Analysis</h2>
-            <div class="stats-grid">
-                <div class="stat-card success-card">
-                    <i class="fas fa-bolt stat-icon"></i>
-                    <h3>Within 24 Hours</h3>
-                    <div class="stat-value">456</div>
-                    <div class="metric-trend">36.6% of cases</div>
-                </div>
-                <div class="stat-card warning-card">
-                    <i class="fas fa-hourglass-half stat-icon"></i>
-                    <h3>Within 72 Hours</h3>
-                    <div class="stat-value">731</div>
-                    <div class="metric-trend">58.6% of cases</div>
-                </div>
-                <div class="stat-card danger-card">
-                    <i class="fas fa-exclamation-circle stat-icon"></i>
-                    <h3>Beyond 72 Hours</h3>
-                    <div class="stat-value">60</div>
-                    <div class="metric-trend">4.8% of cases</div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-calculator stat-icon"></i>
-                    <h3>Average Response</h3>
-                    <div class="stat-value">2.3</div>
-                    <div class="metric-trend">Days to treatment</div>
+        <?php if (!empty($analytics_report['response_time'])): ?>
+            <div class="table-container">
+                <h2><i class="fas fa-clock"></i> Treatment Response Time Analysis</h2>
+                <div class="stats-grid">
+                    <div class="stat-card success-card">
+                        <i class="fas fa-bolt stat-icon"></i>
+                        <h3>Within 24 Hours</h3>
+                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['within_24hrs']); ?></div>
+                        <div class="metric-trend">
+                            <?php
+                            $total = $analytics_report['response_time']['total_with_vaccine'];
+                            if ($total > 0) {
+                                echo number_format(($analytics_report['response_time']['within_24hrs'] / $total) * 100, 1) . '% of cases';
+                            } else {
+                                echo 'No data available';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div class="stat-card warning-card">
+                        <i class="fas fa-hourglass-half stat-icon"></i>
+                        <h3>Within 72 Hours</h3>
+                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['within_72hrs']); ?></div>
+                        <div class="metric-trend">
+                            <?php
+                            if ($total > 0) {
+                                echo number_format(($analytics_report['response_time']['within_72hrs'] / $total) * 100, 1) . '% of cases';
+                            } else {
+                                echo 'No data available';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div class="stat-card danger-card">
+                        <i class="fas fa-exclamation-circle stat-icon"></i>
+                        <h3>Beyond 72 Hours</h3>
+                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['beyond_72hrs']); ?></div>
+                        <div class="metric-trend">
+                            <?php
+                            if ($total > 0) {
+                                echo number_format(($analytics_report['response_time']['beyond_72hrs'] / $total) * 100, 1) . '% of cases';
+                            } else {
+                                echo 'No data available';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-calculator stat-icon"></i>
+                        <h3>Average Response</h3>
+                        <div class="stat-value"><?php echo number_format($analytics_report['response_time']['avg_response_days'], 1); ?></div>
+                        <div class="metric-trend">Days to treatment</div>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
 
         <!-- Animal Status Chart -->
         <div class="chart-container">
@@ -438,31 +511,34 @@
             window.location.href = '?year=' + year;
         }
 
-        // Sample data - replace with actual PHP data
-        const monthlyData = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Total Cases',
-                data: [89, 76, 94, 112, 98, 87, 103, 91, 85, 76, 68, 94],
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                fill: true,
-                tension: 0.4
-            }, {
-                label: 'High Risk (Category 3)',
-                data: [23, 18, 26, 31, 24, 19, 28, 22, 20, 17, 15, 21],
-                borderColor: '#e74c3c',
-                backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        };
-
-        // Monthly Trends Chart
+        // Monthly Trends Chart - Using real data from PHP
         const monthlyTrendsCtx = document.getElementById('monthlyTrendsChart').getContext('2d');
         new Chart(monthlyTrendsCtx, {
             type: 'line',
-            data: monthlyData,
+            data: {
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return date('M', mktime(0, 0, 0, $item['month'], 1));
+                        }, $analytics_report['monthly_trends'])); ?>,
+                datasets: [{
+                    label: 'Total Cases',
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['monthly_cases'];
+                            }, $analytics_report['monthly_trends'])); ?>,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'High Risk (Category 3)',
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['category3_cases'];
+                            }, $analytics_report['monthly_trends'])); ?>,
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
             options: {
                 responsive: true,
                 plugins: {
@@ -478,21 +554,20 @@
             }
         });
 
-        // Age Group Chart
+        // Age Group Chart - Using real data from PHP
         const ageGroupCtx = document.getElementById('ageGroupChart').getContext('2d');
         new Chart(ageGroupCtx, {
             type: 'doughnut',
             data: {
-                labels: ['0-4 years', '5-14 years', '15-29 years', '30-44 years', '45-59 years', '60+ years'],
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return $item['age_group'];
+                        }, $analytics_report['age_groups'])); ?>,
                 datasets: [{
-                    data: [89, 234, 312, 287, 198, 127],
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['count'];
+                            }, $analytics_report['age_groups'])); ?>,
                     backgroundColor: [
-                        '#FF6384',
-                        '#36A2EB', 
-                        '#FFCE56',
-                        '#4BC0C0',
-                        '#9966FF',
-                        '#FF9F40'
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
                     ]
                 }]
             },
@@ -506,19 +581,25 @@
             }
         });
 
-        // Animal Type Chart
+        // Animal Type Chart - Using real data from PHP
         const animalTypeCtx = document.getElementById('animalTypeChart').getContext('2d');
         new Chart(animalTypeCtx, {
             type: 'bar',
             data: {
-                labels: ['Dog', 'Cat', 'Bat', 'Monkey', 'Others'],
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return $item['animal_type'];
+                        }, $analytics_report['animal_types'])); ?>,
                 datasets: [{
                     label: 'Total Cases',
-                    data: [1089, 98, 34, 18, 8],
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['count'];
+                            }, $analytics_report['animal_types'])); ?>,
                     backgroundColor: '#4CAF50'
                 }, {
                     label: 'High Risk Cases',
-                    data: [267, 23, 12, 7, 3],
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['high_risk_cases'];
+                            }, $analytics_report['animal_types'])); ?>,
                     backgroundColor: '#e74c3c'
                 }]
             },
@@ -537,22 +618,20 @@
             }
         });
 
-        // Vaccine Compliance Chart
+        // Vaccine Compliance Chart - Using real data from PHP
         const vaccineComplianceCtx = document.getElementById('vaccineComplianceChart').getContext('2d');
         new Chart(vaccineComplianceCtx, {
             type: 'bar',
             data: {
-                labels: ['Day 0', 'Day 3', 'Day 7', 'Day 14', 'Day 28-30'],
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return $item['vaccine_day'];
+                        }, $analytics_report['vaccine_compliance'])); ?>,
                 datasets: [{
                     label: 'Compliance Rate (%)',
-                    data: [94.2, 89.7, 85.3, 78.9, 71.4],
-                    backgroundColor: [
-                        '#4CAF50',
-                        '#8BC34A', 
-                        '#CDDC39',
-                        '#FFC107',
-                        '#FF9800'
-                    ]
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return number_format($item['compliance_rate'], 1);
+                            }, $analytics_report['vaccine_compliance'])); ?>,
+                    backgroundColor: ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800']
                 }]
             },
             options: {
@@ -576,21 +655,19 @@
             }
         });
 
-        // Bite Site Chart
+        // Bite Site Chart - Using real data from PHP
         const biteSiteCtx = document.getElementById('biteSiteChart').getContext('2d');
         new Chart(biteSiteCtx, {
             type: 'pie',
             data: {
-                labels: ['Extremities', 'Head/Neck', 'Trunk', 'Multiple Sites', 'Others'],
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return $item['bite_site'];
+                        }, $analytics_report['bite_sites'])); ?>,
                 datasets: [{
-                    data: [756, 198, 167, 89, 37],
-                    backgroundColor: [
-                        '#FF6384',
-                        '#36A2EB',
-                        '#FFCE56', 
-                        '#4BC0C0',
-                        '#9966FF'
-                    ]
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['count'];
+                            }, $analytics_report['bite_sites'])); ?>,
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
                 }]
             },
             options: {
@@ -603,20 +680,19 @@
             }
         });
 
-        // Outcome Chart
+        // Outcome Chart - Using real data from PHP
         const outcomeCtx = document.getElementById('outcomeChart').getContext('2d');
         new Chart(outcomeCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Complete', 'Incomplete', 'Not Started', 'Died'],
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return $item['outcome_label'];
+                        }, $analytics_report['outcomes'])); ?>,
                 datasets: [{
-                    data: [1089, 98, 47, 13],
-                    backgroundColor: [
-                        '#4CAF50',
-                        '#FF9800',
-                        '#f44336',
-                        '#9E9E9E'
-                    ]
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['count'];
+                            }, $analytics_report['outcomes'])); ?>,
+                    backgroundColor: ['#4CAF50', '#FF9800', '#f44336', '#9E9E9E']
                 }]
             },
             options: {
@@ -629,20 +705,20 @@
             }
         });
 
-        // Animal Status Chart
+        // Animal Status Chart - Using real data from PHP
         const animalStatusCtx = document.getElementById('animalStatusChart').getContext('2d');
         new Chart(animalStatusCtx, {
             type: 'bar',
             data: {
-                labels: ['Alive', 'Dead', 'Lost/Unknown'],
+                labels: <?php echo json_encode(array_map(function ($item) {
+                            return $item['animal_status'];
+                        }, $analytics_report['animal_status'])); ?>,
                 datasets: [{
                     label: 'Number of Animals',
-                    data: [892, 234, 121],
-                    backgroundColor: [
-                        '#4CAF50',
-                        '#f44336', 
-                        '#FF9800'
-                    ]
+                    data: <?php echo json_encode(array_map(function ($item) {
+                                return $item['count'];
+                            }, $analytics_report['animal_status'])); ?>,
+                    backgroundColor: ['#4CAF50', '#f44336', '#FF9800']
                 }]
             },
             options: {
@@ -662,4 +738,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -356,20 +356,4 @@ function generate_analytics_report($year) {
     return $report;
 }
 
-// Function to get available years (you might need to add this to db_conn.php)
-function get_available_years() {
-    try {
-        $conn = connect_db();
-        $sql = "SELECT DISTINCT YEAR(date_recorded) as year FROM sheet1 WHERE date_recorded IS NOT NULL ORDER BY year DESC";
-        $result = $conn->query($sql);
-        $years = array();
-        while ($row = $result->fetch_assoc()) {
-            $years[] = $row['year'];
-        }
-        $conn->close();
-        return $years;
-    } catch (Exception $e) {
-        return array(date('Y')); // Return current year as fallback
-    }
-}
 ?>
