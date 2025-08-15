@@ -263,13 +263,6 @@ if (isset($analytics_report['error'])) {
                 </select>
             </div>
             
-            <!-- Debug Information -->
-            <div class="debug-info">
-                <strong>Debug Info:</strong> 
-                Total Cases: <?php echo $analytics_report['summary']['total_cases']; ?> | 
-                Selected Year: <?php echo $selected_year; ?> |
-                Available Years: <?php echo implode(', ', $available_years); ?>
-            </div>
         </div>
 
         <!-- Enhanced Summary Statistics -->
