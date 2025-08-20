@@ -1,3 +1,26 @@
+<?php
+session_start();
+include_once 'cslip_function.php';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate'])) {
+    save_charge_slip();
+}
+
+// Check if viewing a specific slip
+$viewing_slip = false;
+$current_slip = null;
+if (isset($_GET['id'])) {
+    $current_slip = get_charge_slip($_GET['id']);
+    if ($current_slip) {
+        $viewing_slip = true;
+    }
+}
+
+// Get charge slip history
+$history = get_charge_slip_history();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -157,8 +180,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
         }
 
         .page-title-content {
@@ -313,7 +343,7 @@
             accent-color: #667eea;
         }
 
-        .service-item input[type="radio"]:checked + label {
+        .service-item input[type="radio"]:checked+label {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: #667eea;
@@ -391,7 +421,7 @@
             accent-color: #667eea;
         }
 
-        .discount-option input[type="radio"]:checked + label {
+        .discount-option input[type="radio"]:checked+label {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: #667eea;
@@ -494,9 +524,17 @@
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); }
-            50% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 0 0 0 0 rgba(102, 126, 234, 0.4); }
-            100% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), 0 0 0 20px rgba(102, 126, 234, 0); }
+            0% {
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+
+            100% {
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), 0 0 0 20px rgba(102, 126, 234, 0);
+            }
         }
 
         /* Modal Styles */
@@ -515,8 +553,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -533,8 +576,15 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-content::before {
@@ -710,18 +760,19 @@
             body * {
                 visibility: hidden;
             }
-            
-            .print-section, .print-section * {
+
+            .print-section,
+            .print-section * {
                 visibility: visible;
             }
-            
+
             .print-section {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
             }
-            
+
             .no-print {
                 display: none;
             }
@@ -834,6 +885,43 @@
                 font-size: 1.2rem;
             }
         }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Ensure only slip prints */
+            .main-header,
+            .page-title-section,
+            nav,
+            .no-print {
+                display: none !important;
+            }
+
+            .print-section {
+                display: block !important;
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .printed-charge-slip {
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+            }
+
+            /* Avoid transparent / blurred containers */
+            .charge-slip-container {
+                background: white !important;
+                backdrop-filter: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -884,7 +972,7 @@
                             </div>
                             <h2>CHARGE SLIP</h2>
                         </div>
-                        
+
                         <div class="printed-form">
                             <div class="printed-form-row">
                                 <div>
@@ -894,7 +982,7 @@
                                     <strong>Date/Time:</strong> <?php echo isset($current_slip) ? $current_slip['timeanddate'] : date('Y-m-d H:i:s'); ?>
                                 </div>
                             </div>
-                            
+
                             <table class="printed-table">
                                 <thead>
                                     <tr>
@@ -1020,9 +1108,6 @@
                     <button type="submit" name="generate" class="button generate-btn" form="charge-slip-form">
                         <i class="fas fa-file-plus"></i> Generate Charge Slip
                     </button>
-                    <button type="button" onclick="window.history.back()" class="button back-btn">
-                        <i class="fas fa-arrow-left"></i> Back to Dashboard
-                    </button>
                 </div>
 
                 <!-- History Button -->
@@ -1081,13 +1166,15 @@
     <!-- Status Messages -->
     <?php if (isset($_SESSION['success_message'])): ?>
         <div id="successMessage" style="position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); z-index: 3000; animation: slideInRight 0.5s ease;">
-            <i class="fas fa-check-circle"></i> <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+            <i class="fas fa-check-circle"></i> <?php echo $_SESSION['success_message'];
+                                                unset($_SESSION['success_message']); ?>
         </div>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['error_message'])): ?>
         <div id="errorMessage" style="position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3); z-index: 3000; animation: slideInRight 0.5s ease;">
-            <i class="fas fa-exclamation-triangle"></i> <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+            <i class="fas fa-exclamation-triangle"></i> <?php echo $_SESSION['error_message'];
+                                                        unset($_SESSION['error_message']); ?>
         </div>
     <?php endif; ?>
 
@@ -1155,12 +1242,12 @@
             setTimeout(() => {
                 const successMsg = document.getElementById('successMessage');
                 const errorMsg = document.getElementById('errorMessage');
-                
+
                 if (successMsg) {
                     successMsg.style.animation = 'slideOutRight 0.5s ease';
                     setTimeout(() => successMsg.remove(), 500);
                 }
-                
+
                 if (errorMsg) {
                     errorMsg.style.animation = 'slideOutRight 0.5s ease';
                     setTimeout(() => errorMsg.remove(), 500);
