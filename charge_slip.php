@@ -2,10 +2,8 @@
 session_start();
 include_once 'cslip_function.php';
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate'])) {
-    save_charge_slip();
-}
+// Process form submission
+save_charge_slip();
 
 // Check if viewing a specific slip
 $viewing_slip = false;
@@ -756,28 +754,23 @@ $history = get_charge_slip_history();
         }
 
         /* Print Media Query */
+        /* Additional print styles */
         @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            .print-section,
-            .print-section * {
-                visibility: visible;
-            }
-
-            .print-section {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-
             .no-print {
                 display: none;
             }
 
-            .printed-charge-slip {
+            .print-section {
+                padding: 0;
+                margin: 0;
+            }
+
+            body {
+                background-color: #def;
+            }
+
+            .charge-slip-container {
+                border: none;
                 box-shadow: none;
             }
         }
@@ -883,43 +876,6 @@ $history = get_charge_slip_history();
 
             .section-header h3 {
                 font-size: 1.2rem;
-            }
-        }
-
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            /* Ensure only slip prints */
-            .main-header,
-            .page-title-section,
-            nav,
-            .no-print {
-                display: none !important;
-            }
-
-            .print-section {
-                display: block !important;
-                background: white !important;
-                color: black !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-
-            .printed-charge-slip {
-                background: white !important;
-                color: black !important;
-                box-shadow: none !important;
-            }
-
-            /* Avoid transparent / blurred containers */
-            .charge-slip-container {
-                background: white !important;
-                backdrop-filter: none !important;
             }
         }
     </style>
