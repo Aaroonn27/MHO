@@ -756,22 +756,51 @@ $history = get_charge_slip_history();
         /* Print Media Query */
         /* Additional print styles */
         @media print {
-            .no-print {
-                display: none;
+
+            /* Hide elements that shouldn't print */
+            .no-print,
+            .main-header,
+            header,
+            nav,
+            .page-title-section,
+            .logo-container,
+            .button-row {
+                display: none !important;
             }
 
-            .print-section {
-                padding: 0;
-                margin: 0;
-            }
-
+            /* Reset body for printing */
             body {
-                background-color: #def;
+                background: white !important;
+                color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Make only the charge slip visible */
+            .main-content {
+                padding: 0 !important;
+                margin: 0 !important;
             }
 
             .charge-slip-container {
-                border: none;
-                box-shadow: none;
+                background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .printed-charge-slip {
+                background: white !important;
+                box-shadow: none !important;
+                padding: 20px !important;
+                margin: 0 !important;
+            }
+
+            .print-section {
+                padding: 0 !important;
+                margin: 0 !important;
             }
         }
 
@@ -883,7 +912,7 @@ $history = get_charge_slip_history();
 
 <body>
     <!-- Header -->
-    <header class="main-header">
+    <header class="main-header no-print">
         <div class="logo-container">
             <div class="logo-img">
                 <img src="/MHO/media/chologo.png" alt="CHO Logo">
@@ -902,7 +931,7 @@ $history = get_charge_slip_history();
     </header>
 
     <!-- Page Title Section -->
-    <section class="page-title-section">
+    <section class="page-title-section no-print">
         <div class="page-title-content">
             <h1>CHARGE SLIP</h1>
             <p>Generate professional charge slips for healthcare services with ease</p>
@@ -1060,7 +1089,7 @@ $history = get_charge_slip_history();
                 </form>
 
                 <!-- Action Buttons -->
-                <div class="button-row">
+                <div class="button-row no-print">
                     <button type="submit" name="generate" class="button generate-btn" form="charge-slip-form">
                         <i class="fas fa-file-plus"></i> Generate Charge Slip
                     </button>
