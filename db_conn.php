@@ -612,7 +612,6 @@ function calculate_quarterly_totals($report_data) {
     return $quarterly_totals;
 }
 
-// Function to generate the CSV export for all categories
 function generate_csv($report_data, $quarterly_totals, $year) {
     $filename = "Quarterly_Report_$year.csv";
     header('Content-Type: text/csv');
@@ -669,6 +668,113 @@ function generate_csv($report_data, $quarterly_totals, $year) {
     }
     
     fclose($output);
+    exit;
+}
+
+function generate_excel($report_data, $quarterly_totals, $year) {
+    $filename = "Quarterly_Report_$year.xls";
+    
+    // Set headers for Excel
+    header('Content-Type: application/vnd.ms-excel');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+    
+    // Start HTML table that Excel will interpret
+    echo "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+    echo "<head>";
+    echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>";
+    echo "<style>";
+    echo ".header { background-color: #4472C4; color: white; font-weight: bold; text-align: center; }";
+    echo ".quarter { background-color: #E7E6E6; font-weight: bold; }";
+    echo ".data { text-align: center; }";
+    echo "table { border-collapse: collapse; }";
+    echo "td, th { border: 1px solid black; padding: 5px; }";
+    echo "</style>";
+    echo "</head>";
+    echo "<body>";
+    
+    echo "<table>";
+    
+    // Header Row 1
+    echo "<tr>";
+    echo "<th class='header' rowspan='2'>Quarter & Year</th>";
+    echo "<th class='header' colspan='6'>Category 1 Exposure</th>";
+    echo "<th class='header' colspan='6'>Category 2 Exposure</th>";
+    echo "<th class='header' colspan='6'>Category 3 Exposure</th>";
+    echo "</tr>";
+    
+    // Header Row 2
+    echo "<tr>";
+    for ($i = 0; $i < 3; $i++) {
+        echo "<th class='header'>No. of Registered Exposures</th>";
+        echo "<th class='header'>No. of patients who received RIG</th>";
+        echo "<th class='header'>Outcome Complete</th>";
+        echo "<th class='header'>Outcome Incomplete</th>";
+        echo "<th class='header'>Outcome None</th>";
+        echo "<th class='header'>Outcome Died</th>";
+    }
+    echo "</tr>";
+    
+    // Data rows
+    $quarters = [
+        'FIRST QUARTER' => ['January', 'February', 'March'],
+        'SECOND QUARTER' => ['April', 'May', 'June'],
+        'THIRD QUARTER' => ['July', 'August', 'September'],
+        'FOURTH QUARTER' => ['October', 'November', 'December']
+    ];
+    
+    foreach ($quarters as $quarter_name => $months) {
+        // Monthly data
+        foreach ($months as $month) {
+            echo "<tr>";
+            echo "<td class='data'>" . htmlspecialchars("$month $year") . "</td>";
+            
+            foreach ([1, 2, 3] as $cat) {
+                $data = isset($report_data[$month][$cat]) ? $report_data[$month][$cat] : [
+                    'registered_exposures' => 0,
+                    'patients_received_rig' => 0,
+                    'outcome_complete' => 0,
+                    'outcome_incomplete' => 0,
+                    'outcome_none' => 0,
+                    'outcome_died' => 0
+                ];
+                
+                echo "<td class='data'>" . $data['registered_exposures'] . "</td>";
+                echo "<td class='data'>" . $data['patients_received_rig'] . "</td>";
+                echo "<td class='data'>" . $data['outcome_complete'] . "</td>";
+                echo "<td class='data'>" . $data['outcome_incomplete'] . "</td>";
+                echo "<td class='data'>" . $data['outcome_none'] . "</td>";
+                echo "<td class='data'>" . $data['outcome_died'] . "</td>";
+            }
+            echo "</tr>";
+        }
+        
+        // Quarterly total
+        echo "<tr>";
+        echo "<td class='quarter'>" . htmlspecialchars("$quarter_name $year") . "</td>";
+        
+        foreach ([1, 2, 3] as $cat) {
+            $data = isset($quarterly_totals[$quarter_name][$cat]) ? $quarterly_totals[$quarter_name][$cat] : [
+                'registered_exposures' => 0,
+                'patients_received_rig' => 0,
+                'outcome_complete' => 0,
+                'outcome_incomplete' => 0,
+                'outcome_none' => 0,
+                'outcome_died' => 0
+            ];
+            
+            echo "<td class='quarter'>" . $data['registered_exposures'] . "</td>";
+            echo "<td class='quarter'>" . $data['patients_received_rig'] . "</td>";
+            echo "<td class='quarter'>" . $data['outcome_complete'] . "</td>";
+            echo "<td class='quarter'>" . $data['outcome_incomplete'] . "</td>";
+            echo "<td class='quarter'>" . $data['outcome_none'] . "</td>";
+            echo "<td class='quarter'>" . $data['outcome_died'] . "</td>";
+        }
+        echo "</tr>";
+    }
+    
+    echo "</table>";
+    echo "</body></html>";
     exit;
 }
 
