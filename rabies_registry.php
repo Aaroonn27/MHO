@@ -705,9 +705,9 @@ $current_page = $result['current_page'];
                                     <td><?php echo htmlspecialchars($patient['animal_status']); ?></td>
                                     <td><?php echo htmlspecialchars($patient['remarks']); ?></td>
                                     <td class="action-buttons">
-                                        <a href="rabies_view.php?id=<?php echo $patient['new_id']; ?>" class="action-btn info" title="View Details">
+                                        <!-- <a href="rabies_view.php?id=<?php echo $patient['new_id']; ?>" class="action-btn info" title="View Details">
                                             <i class="fas fa-eye"></i> View
-                                        </a>
+                                        </a> -->
                                         <a href="rabies_form.php?id=<?php echo $patient['new_id']; ?>" class="action-btn warning" title="Edit Record">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
