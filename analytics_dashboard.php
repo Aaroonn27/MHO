@@ -39,6 +39,99 @@ if (isset($analytics_report['error'])) {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header Styles - Integrated from appointment.php */
+        .main-header {
+            position: relative;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.15);
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-container h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline-block;
+        }
+
+        nav ul li a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+            position: relative;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        nav ul li a i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        nav ul li a span {
+            font-size: 13px;
+            font-weight: 600;
         }
 
         .container {
@@ -243,11 +336,116 @@ if (isset($analytics_report['error'])) {
             border-radius: 10px;
             font-size: 0.9rem;
         }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 20px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                padding: 15px 20px;
+                gap: 20px;
+            }
+
+            .logo-container {
+                text-align: center;
+            }
+
+            .logo-container h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            nav ul li a {
+                padding: 10px 15px;
+            }
+
+            nav ul li a i {
+                font-size: 18px;
+                margin-bottom: 4px;
+            }
+
+            nav ul li a span {
+                font-size: 11px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-header {
+                padding: 10px 15px;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+                margin-right: 15px;
+            }
+
+            .logo-container h1 {
+                font-size: 1.4rem;
+            }
+
+            .container {
+                padding: 15px 10px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .chart-container,
+            .table-container {
+                padding: 20px 15px;
+            }
+
+            .stat-card {
+                padding: 20px 15px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <?php if (file_exists('includes/header.php')) include 'includes/header.php'; ?>
+    <!-- Integrated Header -->
+    <header class="main-header">
+        <div class="logo-container">
+            <div class="logo-img">
+                <img src="/MHO/media/chologo.png" alt="CHO Logo">
+            </div>
+            <h1>City Health Office of San Pablo</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.php"><i class="fas fa-home"></i><span>Home</span></a></li>
+                <li><a href="appointment.php"><i class="far fa-calendar-alt"></i><span>Appointment</span></a></li>
+                <li><a href="charge_slip.php"><i class="fas fa-file-invoice"></i><span>Charge Slip</span></a></li>
+                <li><a href="inventory.php"><i class="fas fa-box"></i><span>Inventory</span></a></li>
+                <li><a href="rabies_registry.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>
+                <!-- <li><a href="analytics_dashboard.php" class="active"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li> -->
+            </ul>
+        </nav>
+    </header>
 
     <div class="container">
         <div class="dashboard-header">
