@@ -237,6 +237,152 @@
             margin: 0 auto;
         }
 
+        /* Announcements Section */
+        .announcements-section {
+            margin-bottom: 80px;
+        }
+
+        .announcements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .announcements-title {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .announcements-title i {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            color: #ffd700;
+        }
+
+        .announcements-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .admin-link {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .admin-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .admin-link i {
+            margin-right: 8px;
+        }
+
+        .announcements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .announcement-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .announcement-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .announcement-content {
+            padding: 25px;
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .announcement-category {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .announcement-date {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .announcement-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .announcement-text {
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .no-announcements {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .no-announcements i {
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .no-announcements h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .no-announcements p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -579,6 +725,10 @@
             .content-grid {
                 gap: 30px;
             }
+
+            .announcements-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -645,6 +795,21 @@
                 font-size: 2.2rem;
             }
 
+            .announcements-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .announcements-title h2 {
+                font-size: 2rem;
+            }
+
+            .announcements-grid {
+                grid-template-columns: 1fr;
+            }
+
             .footer {
                 padding: 40px 20px 30px;
             }
@@ -680,6 +845,14 @@
             .dropdown-content {
                 padding: 20px;
                 font-size: 14px;
+            }
+
+            .announcement-content {
+                padding: 20px;
+            }
+
+            .announcement-title {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -730,6 +903,62 @@
 
     <!-- Main Content -->
     <main>
+        <!-- Announcements Section -->
+        <section class="announcements-section">
+            <div class="announcements-header">
+                <div class="announcements-title">
+                    <i class="fas fa-bullhorn"></i>
+                    <h2>Latest Announcements</h2>
+                </div>
+                <a href="manage_announcements.php" class="admin-link">
+                    <i class="fas fa-plus"></i>Manage Announcements
+                </a>
+            </div>
+
+            <div class="announcements-grid">
+                <?php
+                // Include database connection
+                require_once 'db_conn.php';
+                
+                // Connect to database
+                $conn = connect_db();
+                
+                // Fetch announcements
+                $sql = "SELECT * FROM announcements WHERE status = 'active' ORDER BY created_at DESC LIMIT 6";
+                $result = $conn->query($sql);
+                
+                if ($result && $result->num_rows > 0) {
+                    while ($announcement = $result->fetch_assoc()) {
+                        echo '<div class="announcement-card">';
+                        
+                        if ($announcement['image_path']) {
+                            echo '<img src="' . htmlspecialchars($announcement['image_path']) . '" alt="Announcement Image" class="announcement-image">';
+                        }
+                        
+                        echo '<div class="announcement-content">';
+                        echo '<div class="announcement-header">';
+                        echo '<span class="announcement-category">' . htmlspecialchars($announcement['category']) . '</span>';
+                        echo '<span class="announcement-date">' . date('M j, Y', strtotime($announcement['created_at'])) . '</span>';
+                        echo '</div>';
+                        echo '<h3 class="announcement-title">' . htmlspecialchars($announcement['title']) . '</h3>';
+                        echo '<p class="announcement-text">' . htmlspecialchars(substr($announcement['content'], 0, 150)) . '...</p>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<div class="no-announcements">';
+                    echo '<i class="fas fa-bell-slash"></i>';
+                    echo '<h3>No Announcements Yet</h3>';
+                    echo '<p>Check back later for important updates and announcements from the City Health Office.</p>';
+                    echo '</div>';
+                }
+                
+                // Close connection
+                $conn->close();
+                ?>
+            </div>
+        </section>
+
         <div class="section-title">
             <h2>Our Services & Programs</h2>
             <p>Comprehensive healthcare solutions tailored for our community's needs</p>
