@@ -1,4 +1,11 @@
 <?php
+
+session_start();
+require_once 'auth.php';
+
+$required_roles = ['admin', 'abtc_employee']; 
+check_page_access($required_roles);
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 

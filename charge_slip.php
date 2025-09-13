@@ -1,5 +1,10 @@
 <?php
 session_start();
+require_once 'auth.php';
+
+$required_roles = ['admin', 'cho_employee']; 
+check_page_access($required_roles);
+
 include_once 'cslip_function.php';
 
 // Process form submission

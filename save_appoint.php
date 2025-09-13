@@ -1,4 +1,10 @@
 <?php
+session_start();
+require_once 'auth.php';
+
+$required_roles = ['admin', 'abtc_employee']; 
+check_page_access($required_roles);
+
 // Include SMS service
 include 'sms_service.php';
 

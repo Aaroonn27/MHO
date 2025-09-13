@@ -1,5 +1,10 @@
 <?php
-// Include database connection
+session_start();
+require_once 'auth.php';
+
+$required_roles = ['admin', 'abtc_employee']; 
+check_page_access($required_roles);
+
 require_once('db_conn.php');
 
 // Process form submissions
