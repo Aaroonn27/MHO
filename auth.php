@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once 'db_conn.php';
+// require_once 'db_conn.php';
 
 // Check if user is logged in
 function is_logged_in() {
