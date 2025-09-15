@@ -3,10 +3,6 @@ session_start();
 require_once 'auth.php';
 require_once 'db_conn.php';
 
-// Debug: Enable error reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 // Check if user has admin access
 $required_roles = ['admin'];
 check_page_access($required_roles);
