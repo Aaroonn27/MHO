@@ -16,9 +16,9 @@ $success_message = '';
 
 // Handle form submission - COMPLETELY REWRITTEN
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['role'])) {
-    
-    
-    
+
+
+
     $username = trim($_POST['username']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -26,79 +26,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     $full_name = trim($_POST['full_name']);
     $email = trim($_POST['email'] ?? '');
     $status = $_POST['status'] ?? 'active';
-    
-    
-    
+
+
+
     // Validation
     if (empty($username) || empty($password) || empty($role) || empty($full_name)) {
         $error_message = 'Please fill in all required fields.';
-        
     } elseif ($password !== $confirm_password) {
         $error_message = 'Passwords do not match.';
-        
     } elseif (strlen($password) < 6) {
         $error_message = 'Password must be at least 6 characters long.';
-        
     } elseif (strlen($username) < 3) {
         $error_message = 'Username must be at least 3 characters long.';
-        
     } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Please enter a valid email address.';
-        
     } else {
-        
-        
+
+
         try {
             $conn = connect_db();
-            
+
             if (!$conn) {
                 throw new Exception("Database connection failed");
             }
-            
-            
-            
+
+
+
             // Check if username already exists
             $check_stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
             if (!$check_stmt) {
                 throw new Exception("Prepare failed for username check: " . $conn->error);
             }
-            
+
             $check_stmt->bind_param("s", $username);
             $check_stmt->execute();
             $check_result = $check_stmt->get_result();
-            
-            
+
+
             if ($check_result->num_rows > 0) {
                 $error_message = 'Username already exists. Please choose a different username.';
             } else {
                 // Hash password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                
+
                 // Insert new user
                 $insert_query = "INSERT INTO users (username, password, role, full_name, email, status) VALUES (?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($insert_query);
-                
+
                 if (!$stmt) {
                     throw new Exception("Prepare failed for insert: " . $conn->error);
                 }
-                
-                
+
+
                 $stmt->bind_param("ssssss", $username, $hashed_password, $role, $full_name, $email, $status);
-                
-                
+
+
                 if ($stmt->execute()) {
                     $new_user_id = $conn->insert_id;
                     $success_message = 'Account created successfully for ' . htmlspecialchars($full_name) . '! (User ID: ' . $new_user_id . ')';
                 } else {
                     throw new Exception("Execute failed: " . $stmt->error);
                 }
-                
+
                 $stmt->close();
             }
-            
+
             $check_stmt->close();
             $conn->close();
-            
         } catch (Exception $e) {
             $error_message = 'Database error: ' . $e->getMessage();
         }
@@ -111,6 +105,7 @@ $current_user = get_user_info();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -126,7 +121,7 @@ $current_user = get_user_info();
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #8c9be0ff 0%, #8260a5ff 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -134,7 +129,10 @@ $current_user = get_user_info();
 
         /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             padding: 20px 0;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
@@ -152,22 +150,36 @@ $current_user = get_user_info();
             align-items: center;
         }
 
-        .logo-section {
+        .logo-container {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
-        .logo {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.15);
+            margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-container h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
             color: white;
-            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header-title {
@@ -180,11 +192,11 @@ $current_user = get_user_info();
             display: flex;
             align-items: center;
             gap: 15px;
-            color: #666;
+            color: #ffffffff;
         }
 
         .user-info i {
-            color: #667eea;
+            color: white;
         }
 
         /* Main Container */
@@ -268,6 +280,7 @@ $current_user = get_user_info();
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -321,7 +334,8 @@ $current_user = get_user_info();
             z-index: 2;
         }
 
-        .form-input, .form-select {
+        .form-input,
+        .form-select {
             width: 100%;
             padding: 15px 15px 15px 45px;
             border: 2px solid rgba(102, 126, 234, 0.2);
@@ -338,7 +352,8 @@ $current_user = get_user_info();
             cursor: pointer;
         }
 
-        .form-input:focus, .form-select:focus {
+        .form-input:focus,
+        .form-select:focus {
             outline: none;
             border-color: #667eea;
             background: rgba(255, 255, 255, 0.95);
@@ -497,7 +512,9 @@ $current_user = get_user_info();
         }
 
         @media (max-width: 480px) {
-            .form-input, .form-select {
+
+            .form-input,
+            .form-select {
                 padding: 12px 12px 12px 40px;
                 font-size: 15px;
             }
@@ -513,11 +530,11 @@ $current_user = get_user_info();
 <body>
     <header class="header">
         <div class="header-content">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-hospital"></i>
+            <div class="logo-container">
+                <div class="logo-img">
+                    <img src="/MHO/media/chologo.png" alt="CHO Logo">
                 </div>
-                <h1 class="header-title">City Health Office</h1>
+                <h1>City Health Office of San Pablo</h1>
             </div>
             <div class="user-info">
                 <i class="fas fa-user-shield"></i>
@@ -559,15 +576,15 @@ $current_user = get_user_info();
                         <label for="username">Username <span class="required">*</span></label>
                         <div class="input-wrapper">
                             <i class="fas fa-user"></i>
-                            <input type="text" 
-                                   id="username" 
-                                   name="username" 
-                                   class="form-input" 
-                                   placeholder="Enter username"
-                                   value="<?php echo ($success_message ? '' : (isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '')); ?>"
-                                   required
-                                   minlength="3"
-                                   maxlength="50">
+                            <input type="text"
+                                id="username"
+                                name="username"
+                                class="form-input"
+                                placeholder="Enter username"
+                                value="<?php echo ($success_message ? '' : (isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '')); ?>"
+                                required
+                                minlength="3"
+                                maxlength="50">
                         </div>
                     </div>
 
@@ -589,14 +606,14 @@ $current_user = get_user_info();
                     <label for="full_name">Full Name <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <i class="fas fa-id-card"></i>
-                        <input type="text" 
-                               id="full_name" 
-                               name="full_name" 
-                               class="form-input" 
-                               placeholder="Enter full name"
-                               value="<?php echo ($success_message ? '' : (isset($_POST['full_name']) ? htmlspecialchars($_POST['full_name']) : '')); ?>"
-                               required
-                               maxlength="100">
+                        <input type="text"
+                            id="full_name"
+                            name="full_name"
+                            class="form-input"
+                            placeholder="Enter full name"
+                            value="<?php echo ($success_message ? '' : (isset($_POST['full_name']) ? htmlspecialchars($_POST['full_name']) : '')); ?>"
+                            required
+                            maxlength="100">
                     </div>
                 </div>
 
@@ -604,13 +621,13 @@ $current_user = get_user_info();
                     <label for="email">Email Address</label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" 
-                               id="email" 
-                               name="email" 
-                               class="form-input" 
-                               placeholder="Enter email address (optional)"
-                               value="<?php echo ($success_message ? '' : (isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '')); ?>"
-                               maxlength="100">
+                        <input type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="Enter email address (optional)"
+                            value="<?php echo ($success_message ? '' : (isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '')); ?>"
+                            maxlength="100">
                     </div>
                 </div>
 
@@ -619,13 +636,13 @@ $current_user = get_user_info();
                         <label for="password">Password <span class="required">*</span></label>
                         <div class="input-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" 
-                                   id="password" 
-                                   name="password" 
-                                   class="form-input" 
-                                   placeholder="Enter password"
-                                   required
-                                   minlength="6">
+                            <input type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                placeholder="Enter password"
+                                required
+                                minlength="6">
                         </div>
                         <div class="password-strength" id="passwordStrength">
                             <div class="strength-bar"></div>
@@ -640,13 +657,13 @@ $current_user = get_user_info();
                         <label for="confirm_password">Confirm Password <span class="required">*</span></label>
                         <div class="input-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" 
-                                   id="confirm_password" 
-                                   name="confirm_password" 
-                                   class="form-input" 
-                                   placeholder="Confirm password"
-                                   required
-                                   minlength="6">
+                            <input type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                class="form-input"
+                                placeholder="Confirm password"
+                                required
+                                minlength="6">
                         </div>
                     </div>
                 </div>
@@ -689,14 +706,14 @@ $current_user = get_user_info();
                 console.log('Form submitted!');
                 console.log('Form action:', form.action);
                 console.log('Form method:', form.method);
-                
+
                 // Check if create_account button is in the form data
                 const formData = new FormData(form);
                 console.log('Form data:');
                 for (let [key, value] of formData.entries()) {
                     console.log(key + ': ' + value);
                 }
-                
+
                 // Update button text
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
                 submitBtn.disabled = true;
@@ -711,23 +728,23 @@ $current_user = get_user_info();
 
             function calculatePasswordStrength(password) {
                 let strength = 0;
-                
+
                 if (password.length >= 6) strength++;
                 if (password.match(/[a-z]/)) strength++;
                 if (password.match(/[A-Z]/)) strength++;
                 if (password.match(/[0-9]/)) strength++;
                 if (password.match(/[^A-Za-z0-9]/)) strength++;
-                
+
                 return Math.min(strength, 4);
             }
 
             function updateStrengthBars(strength) {
                 strengthBars.forEach((bar, index) => {
                     bar.classList.remove('active', 'weak', 'medium', 'strong');
-                    
+
                     if (index < strength) {
                         bar.classList.add('active');
-                        
+
                         if (strength <= 2) {
                             bar.classList.add('weak');
                         } else if (strength <= 3) {
@@ -743,7 +760,7 @@ $current_user = get_user_info();
             function validatePasswords() {
                 const password = passwordInput.value;
                 const confirmPassword = confirmPasswordInput.value;
-                
+
                 if (confirmPassword && password !== confirmPassword) {
                     confirmPasswordInput.setCustomValidity('Passwords do not match');
                 } else {
@@ -762,4 +779,5 @@ $current_user = get_user_info();
         });
     </script>
 </body>
+
 </html>
