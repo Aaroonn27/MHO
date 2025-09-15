@@ -17,7 +17,7 @@ $success_message = '';
 // Handle form submission - COMPLETELY REWRITTEN
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['role'])) {
     
-    echo "<!-- DEBUG: Processing form submission -->";
+    
     
     $username = trim($_POST['username']);
     $password = $_POST['password'];
@@ -27,27 +27,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     $email = trim($_POST['email'] ?? '');
     $status = $_POST['status'] ?? 'active';
     
-    echo "<!-- DEBUG: Form data extracted successfully -->";
-    echo "<!-- DEBUG: Username: $username, Role: $role, Full Name: $full_name -->";
+    
     
     // Validation
     if (empty($username) || empty($password) || empty($role) || empty($full_name)) {
         $error_message = 'Please fill in all required fields.';
-        echo "<!-- DEBUG: Validation failed - empty required fields -->";
+        
     } elseif ($password !== $confirm_password) {
         $error_message = 'Passwords do not match.';
-        echo "<!-- DEBUG: Validation failed - password mismatch -->";
+        
     } elseif (strlen($password) < 6) {
         $error_message = 'Password must be at least 6 characters long.';
-        echo "<!-- DEBUG: Validation failed - password too short -->";
+        
     } elseif (strlen($username) < 3) {
         $error_message = 'Username must be at least 3 characters long.';
-        echo "<!-- DEBUG: Validation failed - username too short -->";
+        
     } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Please enter a valid email address.';
-        echo "<!-- DEBUG: Validation failed - invalid email -->";
+        
     } else {
-        echo "<!-- DEBUG: All validation passed, proceeding to database -->";
+        
         
         try {
             $conn = connect_db();
@@ -56,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 throw new Exception("Database connection failed");
             }
             
-            echo "<!-- DEBUG: Database connection successful -->";
+            
             
             // Check if username already exists
             $check_stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
@@ -68,15 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $check_stmt->execute();
             $check_result = $check_stmt->get_result();
             
-            echo "<!-- DEBUG: Username check completed. Existing users with this name: " . $check_result->num_rows . " -->";
             
             if ($check_result->num_rows > 0) {
                 $error_message = 'Username already exists. Please choose a different username.';
-                echo "<!-- DEBUG: Username already exists -->";
             } else {
                 // Hash password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                echo "<!-- DEBUG: Password hashed successfully -->";
                 
                 // Insert new user
                 $insert_query = "INSERT INTO users (username, password, role, full_name, email, status) VALUES (?, ?, ?, ?, ?, ?)";
@@ -86,16 +82,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                     throw new Exception("Prepare failed for insert: " . $conn->error);
                 }
                 
-                echo "<!-- DEBUG: Insert statement prepared -->";
                 
                 $stmt->bind_param("ssssss", $username, $hashed_password, $role, $full_name, $email, $status);
                 
-                echo "<!-- DEBUG: Parameters bound. Executing insert... -->";
                 
                 if ($stmt->execute()) {
                     $new_user_id = $conn->insert_id;
                     $success_message = 'Account created successfully for ' . htmlspecialchars($full_name) . '! (User ID: ' . $new_user_id . ')';
-                    echo "<!-- DEBUG: SUCCESS! User created with ID: $new_user_id -->";
                 } else {
                     throw new Exception("Execute failed: " . $stmt->error);
                 }
@@ -105,20 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             
             $check_stmt->close();
             $conn->close();
-            echo "<!-- DEBUG: Database connection closed -->";
             
         } catch (Exception $e) {
             $error_message = 'Database error: ' . $e->getMessage();
-            echo "<!-- DEBUG: Exception caught: " . $e->getMessage() . " -->";
         }
-    }
-} else {
-    echo "<!-- DEBUG: Form not submitted or missing required fields -->";
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        echo "<!-- DEBUG: POST request received but missing fields -->";
-        echo "<!-- DEBUG: username isset: " . (isset($_POST['username']) ? 'YES' : 'NO') . " -->";
-        echo "<!-- DEBUG: password isset: " . (isset($_POST['password']) ? 'YES' : 'NO') . " -->";
-        echo "<!-- DEBUG: role isset: " . (isset($_POST['role']) ? 'YES' : 'NO') . " -->";
     }
 }
 
@@ -528,25 +511,6 @@ $current_user = get_user_info();
 </head>
 
 <body>
-    <!-- Debug info -->
-    <div style="background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc; font-family: monospace; font-size: 12px;">
-        <strong>DEBUG INFO:</strong><br>
-        Request Method: <?php echo $_SERVER['REQUEST_METHOD']; ?><br>
-        POST isset: <?php echo isset($_POST) ? 'Yes' : 'No'; ?><br>
-        POST count: <?php echo count($_POST ?? []); ?><br>
-        Current User: <?php echo $current_user ? $current_user['username'] : 'None'; ?><br>
-        Current Role: <?php echo $current_user ? $current_user['role'] : 'None'; ?><br>
-        <strong>POST DATA:</strong><br>
-        <?php 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            foreach ($_POST as $key => $value) {
-                echo htmlspecialchars($key) . " = " . htmlspecialchars($value) . "<br>";
-            }
-        }
-        ?>
-    </div>
-
-    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="logo-section">
