@@ -676,7 +676,7 @@ $current_user = get_user_info();
                 </div>
 
                 <div class="form-actions">
-                    <a href="dashboard.php" class="btn btn-secondary">
+                    <a href="manage_accounts.php" class="btn btn-secondary">
                         <i class="fas fa-times"></i>
                         Cancel
                     </a>

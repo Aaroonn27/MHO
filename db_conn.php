@@ -940,4 +940,259 @@ function fetch_appointments_with_sms() {
         return $appointment;
     }
 
+    function get_all_users() {
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+        
+        $query = "SELECT id, username, role, full_name, email, status, created_at 
+                  FROM users 
+                  ORDER BY created_at DESC";
+        
+        $result = $conn->query($query);
+        $users = [];
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $users[] = $row;
+            }
+        }
+        
+        $conn->close();
+        return $users;
+        
+    } catch (Exception $e) {
+        error_log("Error in get_all_users: " . $e->getMessage());
+        return [];
+    }
+}
+
+function update_user_status($user_id, $status)
+{
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+
+        $stmt = $conn->prepare("UPDATE users SET status = ? WHERE id = ?");
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("si", $status, $user_id);
+        $success = $stmt->execute();
+
+        $stmt->close();
+        $conn->close();
+
+        return $success;
+    } catch (Exception $e) {
+        error_log("Error in update_user_status: " . $e->getMessage());
+        return false;
+    }
+}
+
+function delete_user($user_id)
+{
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("i", $user_id);
+        $success = $stmt->execute();
+
+        $stmt->close();
+        $conn->close();
+
+        return $success;
+    } catch (Exception $e) {
+        error_log("Error in delete_user: " . $e->getMessage());
+        return false;
+    }
+}
+
+function get_user_by_id($user_id)
+{
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+
+        $stmt = $conn->prepare("SELECT id, username, role, full_name, email, status, created_at 
+                               FROM users WHERE id = ?");
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $user = null;
+        if ($row = $result->fetch_assoc()) {
+            $user = $row;
+        }
+
+        $stmt->close();
+        $conn->close();
+
+        return $user;
+    } catch (Exception $e) {
+        error_log("Error in get_user_by_id: " . $e->getMessage());
+        return null;
+    }
+}
+
+function get_user_statistics()
+{
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+
+        $stats = [];
+
+        // Total users
+        $result = $conn->query("SELECT COUNT(*) as total FROM users");
+        $stats['total_users'] = $result ? $result->fetch_assoc()['total'] : 0;
+
+        // Active users
+        $result = $conn->query("SELECT COUNT(*) as active FROM users WHERE status = 'active'");
+        $stats['active_users'] = $result ? $result->fetch_assoc()['active'] : 0;
+
+        // Inactive users
+        $result = $conn->query("SELECT COUNT(*) as inactive FROM users WHERE status = 'inactive'");
+        $stats['inactive_users'] = $result ? $result->fetch_assoc()['inactive'] : 0;
+
+        // Users by role
+        $result = $conn->query("SELECT role, COUNT(*) as count FROM users GROUP BY role");
+        $stats['users_by_role'] = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $stats['users_by_role'][$row['role']] = $row['count'];
+            }
+        }
+
+        // Recent registrations (last 30 days)
+        $result = $conn->query("SELECT COUNT(*) as recent FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+        $stats['recent_registrations'] = $result ? $result->fetch_assoc()['recent'] : 0;
+
+        $conn->close();
+        return $stats;
+    } catch (Exception $e) {
+        error_log("Error in get_user_statistics: " . $e->getMessage());
+        return [
+            'total_users' => 0,
+            'active_users' => 0,
+            'inactive_users' => 0,
+            'users_by_role' => [],
+            'recent_registrations' => 0
+        ];
+    }
+}
+
+function search_users($search_term, $role = null, $status = null)
+{
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+
+        $query = "SELECT id, username, role, full_name, email, status, created_at 
+                  FROM users 
+                  WHERE (username LIKE ? OR full_name LIKE ? OR email LIKE ?)";
+
+        $params = ["%$search_term%", "%$search_term%", "%$search_term%"];
+        $types = "sss";
+
+        if ($role) {
+            $query .= " AND role = ?";
+            $params[] = $role;
+            $types .= "s";
+        }
+
+        if ($status) {
+            $query .= " AND status = ?";
+            $params[] = $status;
+            $types .= "s";
+        }
+
+        $query .= " ORDER BY created_at DESC";
+
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+
+        $stmt->close();
+        $conn->close();
+
+        return $users;
+    } catch (Exception $e) {
+        error_log("Error in search_users: " . $e->getMessage());
+        return [];
+    }
+}
+
+function username_exists($username, $exclude_user_id = null)
+{
+    try {
+        $conn = connect_db();
+        if (!$conn) {
+            throw new Exception("Database connection failed");
+        }
+
+        $query = "SELECT id FROM users WHERE username = ?";
+        $params = [$username];
+        $types = "s";
+
+        if ($exclude_user_id) {
+            $query .= " AND id != ?";
+            $params[] = $exclude_user_id;
+            $types .= "i";
+        }
+
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $exists = $result->num_rows > 0;
+
+        $stmt->close();
+        $conn->close();
+
+        return $exists;
+    } catch (Exception $e) {
+        error_log("Error in username_exists: " . $e->getMessage());
+        return false;
+    }
+}
+
 ?>

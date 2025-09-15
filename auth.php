@@ -240,10 +240,10 @@ function get_accessible_pages() {
     
     if (can_create_accounts()) {
         $pages[] = [
-            'title' => 'Create Account',
-            'url' => 'create_account.php',
+            'title' => 'Manage Accounts',
+            'url' => 'manage_accounts.php',
             'icon' => 'fas fa-user-plus',
-            'description' => 'Create new employee accounts'
+            'description' => 'Manage employee accounts'
         ];
     }
     
