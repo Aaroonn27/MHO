@@ -870,10 +870,7 @@
         <nav>
             <ul>
                 <li><a href="index.php"><i class="fas fa-home"></i><span>Home</span></a></li>
-                <li><a href="appointment.php"><i class="far fa-calendar-alt"></i><span>Appointment</span></a></li>
-                <li><a href="charge_slip.php"><i class="fas fa-file-invoice"></i><span>Charge Slip</span></a></li>
-                <li><a href="inventory.php"><i class="fas fa-box"></i><span>Inventory</span></a></li>
-                <li><a href="rabies_registry.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>
+                <li><a href="login.php"><i class="fas fa-sign-in-alt"></i><span>Employee Login</span></a></li>
             </ul>
         </nav>
     </header>
@@ -919,22 +916,22 @@
                 <?php
                 // Include database connection
                 require_once 'db_conn.php';
-                
+
                 // Connect to database
                 $conn = connect_db();
-                
+
                 // Fetch announcements
                 $sql = "SELECT * FROM announcements WHERE status = 'active' ORDER BY created_at DESC LIMIT 6";
                 $result = $conn->query($sql);
-                
+
                 if ($result && $result->num_rows > 0) {
                     while ($announcement = $result->fetch_assoc()) {
                         echo '<div class="announcement-card">';
-                        
+
                         if ($announcement['image_path']) {
                             echo '<img src="' . htmlspecialchars($announcement['image_path']) . '" alt="Announcement Image" class="announcement-image">';
                         }
-                        
+
                         echo '<div class="announcement-content">';
                         echo '<div class="announcement-header">';
                         echo '<span class="announcement-category">' . htmlspecialchars($announcement['category']) . '</span>';
@@ -952,7 +949,7 @@
                     echo '<p>Check back later for important updates and announcements from the City Health Office.</p>';
                     echo '</div>';
                 }
-                
+
                 // Close connection
                 $conn->close();
                 ?>
