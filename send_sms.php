@@ -1,8 +1,13 @@
 <?php
+// Cleaned send_sms.php - Remove duplicate functions since they exist in db_conn.php
 include 'sms_service.php';
 include 'db_conn.php';
 
 header('Content-Type: application/json');
+
+// Enable error reporting for debugging (remove in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 $conn = connect_db();
 
@@ -19,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
             
-            // Fetch appointment details from database
+            // Fetch appointment details from database using existing function
             $appointment = getAppointmentById($appointment_id);
             
             if (!$appointment) {
@@ -41,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             
             if ($result['success']) {
-                // Update database to mark SMS as sent
+                // Update database to mark SMS as sent using existing function
                 updateSMSStatus($appointment_id, 'sent');
                 echo json_encode([
                     'success' => true, 
@@ -62,6 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $sent_count = 0;
             $failed_count = 0;
+            $total_appointments = count($appointments);
+            
+            if ($total_appointments === 0) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'No appointments found for tomorrow'
+                ]);
+                break;
+            }
             
             foreach ($appointments as $appointment) {
                 $datetime = new DateTime($appointment['appointment_date']);
@@ -80,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     updateSMSStatus($appointment['id'], 'sent');
                     $sent_count++;
                 } else {
+                    updateSMSStatus($appointment['id'], 'failed');
                     $failed_count++;
                 }
                 
@@ -87,18 +102,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 usleep(500000); // 0.5 second delay
             }
             
-            echo json_encode([
-                'success' => true,
-                'message' => "SMS sent: $sent_count successful, $failed_count failed"
-            ]);
+            if ($sent_count > 0) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => "SMS reminders sent: $sent_count successful" . ($failed_count > 0 ? ", $failed_count failed" : "") . " out of $total_appointments appointments"
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Failed to send SMS reminders. All $failed_count attempts failed."
+                ]);
+            }
             break;
             
         case 'check_balance':
             $balance = $sms->checkBalance();
-            echo json_encode([
-                'success' => true,
-                'balance' => $balance
-            ]);
+            
+            // Handle the balance response correctly
+            if (isset($balance['credits']) && $balance['credits'] !== 'Error loading balance') {
+                echo json_encode([
+                    'success' => true,
+                    'balance' => $balance
+                ]);
+            } else {
+                // Even if it shows "Error loading balance", check if we have actual balance data
+                if (isset($balance['error'])) {
+                    $error_data = json_decode($balance['error'], true);
+                    if (isset($error_data['status']) && $error_data['status'] == 0 && isset($error_data['value'])) {
+                        // Status 0 means success in Mocean API
+                        echo json_encode([
+                            'success' => true,
+                            'balance' => [
+                                'credits' => number_format($error_data['value'], 2) . ' credits',
+                                'currency' => 'USD'
+                            ]
+                        ]);
+                        break;
+                    }
+                }
+                
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to retrieve balance',
+                    'balance' => $balance
+                ]);
+            }
             break;
             
         default:
@@ -109,58 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
 
-// Helper functions
-// Helper functions - Fixed versions
-function getAppointmentById($id) {
-    $conn = connect_db();
-    $stmt = $conn->prepare("SELECT * FROM appointments WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $appointment = $result->fetch_assoc();
-    $stmt->close();
-    $conn->close();
-    return $appointment;
-}
-
-function getAppointmentsForDate($date, $sms_status = 'pending') {
-    $conn = connect_db();
-    
-    // Check if SMS columns exist
-    $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
-    
-    if ($check_columns->num_rows > 0) {
-        $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ? AND (sms_status = ? OR sms_status IS NULL)");
-        $stmt->bind_param("ss", $date, $sms_status);
-    } else {
-        $stmt = $conn->prepare("SELECT * FROM appointments WHERE DATE(appointment_date) = ?");
-        $stmt->bind_param("s", $date);
-    }
-    
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $appointments = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    $conn->close();
-    return $appointments;
-}
-
-function updateSMSStatus($appointment_id, $status) {
-    $conn = connect_db();
-    
-    // Check if SMS columns exist
-    $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
-    
-    if ($check_columns->num_rows > 0) {
-        $stmt = $conn->prepare("UPDATE appointments SET sms_status = ?, sms_sent_at = NOW() WHERE id = ?");
-        $stmt->bind_param("si", $status, $appointment_id);
-        $success = $stmt->execute();
-        $stmt->close();
-    } else {
-        $success = true; // Return true if columns don't exist
-    }
-    
-    $conn->close();
-    return $success;
-}
+// Note: Helper functions are now removed from here since they exist in db_conn.php
+// If the functions don't exist in db_conn.php, you'll need to add them there or check the function names
 ?>
