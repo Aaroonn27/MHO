@@ -1,9 +1,9 @@
 <?php
-// mocean_single_token_sms_service.php - For single token accounts
+// mocean_sms_service.php - FIXED VERSION with Bearer token authentication
 
 class SMSService {
-    private $api_token = 'apit-tRaNRyrsaIUYn6wIuzAa0L7GEKey80Es-HC3oY'; // Your full token here
-    private $sender_id = 'Aaron'; // Your sender name (max 11 characters)
+    private $api_token = 'apit-tRaNRyrsaIUYn6wIuzAa0L7GEKey80Es-HC3oY';
+    private $sender_id = 'SPCITYHEALTH';
     
     public function sendSMS($number, $message) {
         // Format phone number for Mocean
@@ -12,25 +12,24 @@ class SMSService {
         $url = 'https://rest.moceanapi.com/rest/2/sms';
         
         $data = array(
-            'mocean-api-key' => $this->api_token,
             'mocean-from' => $this->sender_id,
             'mocean-to' => $formatted_number,
             'mocean-text' => $message,
             'mocean-resp-format' => 'json'
         );
         
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization: Bearer ' . $this->api_token,
             'Content-Type: application/x-www-form-urlencoded'
         ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         
-        $output = curl_exec($ch);
+        $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curl_error = curl_error($ch);
         curl_close($ch);
@@ -45,42 +44,42 @@ class SMSService {
             );
         }
         
-        $response = json_decode($output, true);
+        $response_data = json_decode($response, true);
         
         // Check if SMS was sent successfully
         if ($httpcode >= 200 && $httpcode < 300) {
-            if (isset($response['messages']) && is_array($response['messages']) && count($response['messages']) > 0) {
-                $message_status = $response['messages'][0];
+            if (isset($response_data['messages']) && is_array($response_data['messages']) && count($response_data['messages']) > 0) {
+                $message_status = $response_data['messages'][0];
                 
                 if (isset($message_status['status']) && $message_status['status'] == '0') {
                     return array(
                         'success' => true,
                         'message' => 'SMS sent successfully',
-                        'response' => $response,
+                        'response' => $response_data,
                         'message_id' => $message_status['message-id'] ?? 'unknown'
                     );
                 } else {
                     return array(
                         'success' => false,
-                        'message' => 'SMS failed: ' . ($message_status['err-msg'] ?? 'Unknown error'),
-                        'response' => $response,
-                        'error' => $output
+                        'message' => 'SMS failed: ' . ($message_status['err_msg'] ?? 'Unknown error'),
+                        'response' => $response_data,
+                        'error' => $response
                     );
                 }
             } else {
                 return array(
                     'success' => false,
                     'message' => 'Invalid response format from Mocean',
-                    'response' => $response,
-                    'error' => $output
+                    'response' => $response_data,
+                    'error' => $response
                 );
             }
         } else {
             return array(
                 'success' => false,
                 'message' => 'HTTP Error: ' . $httpcode,
-                'response' => $response,
-                'error' => $output
+                'response' => $response_data,
+                'error' => $response
             );
         }
     }
@@ -104,7 +103,6 @@ class SMSService {
             // Remove + sign
             return substr($number, 1);
         } else {
-            // Assume it's a Philippine number and add 63 prefix
             return '63' . ltrim($number, '0');
         }
     }
@@ -134,13 +132,15 @@ class SMSService {
         $url = 'https://rest.moceanapi.com/rest/2/account/balance';
         
         $data = array(
-            'mocean-api-key' => $this->api_token,
             'mocean-resp-format' => 'json'
         );
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url . '?' . http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization: Bearer ' . $this->api_token
+        ));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         
@@ -150,17 +150,26 @@ class SMSService {
         
         $response = json_decode($output, true);
         
-        if ($httpcode === 200 && isset($response['value'])) {
-            return array(
-                'credits' => number_format($response['value'], 2) . ' credits',
-                'currency' => $response['currency'] ?? 'USD'
-            );
-        } else {
-            return array(
-                'credits' => 'Error loading balance',
-                'error' => $output
-            );
+        if ($httpcode === 200) {
+            // Check for successful response (status 0 = success in Mocean)
+            if (isset($response['status']) && $response['status'] == 0 && isset($response['value'])) {
+                return array(
+                    'credits' => number_format($response['value'], 2) . ' credits',
+                    'currency' => $response['currency'] ?? 'USD'
+                );
+            } else if (isset($response['value'])) {
+                // Sometimes value exists without status field
+                return array(
+                    'credits' => number_format($response['value'], 2) . ' credits',
+                    'currency' => $response['currency'] ?? 'USD'
+                );
+            }
         }
+        
+        return array(
+            'credits' => 'Error loading balance',
+            'error' => $output
+        );
     }
     
     // Test connection to Mocean API
@@ -168,13 +177,15 @@ class SMSService {
         $url = 'https://rest.moceanapi.com/rest/2/account/pricing/outbound/sms';
         
         $data = array(
-            'mocean-api-key' => $this->api_token,
             'mocean-resp-format' => 'json'
         );
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url . '?' . http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization: Bearer ' . $this->api_token
+        ));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         
