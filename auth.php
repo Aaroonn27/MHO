@@ -144,7 +144,6 @@ function generate_navigation() {
         return '
         <nav>
             <ul>
-                <li><a href="index.php"><i class="fas fa-home"></i><span>Home</span></a></li>
                 <li><a href="login.php"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
             </ul>
         </nav>';
