@@ -1,3 +1,8 @@
+<?php
+session_start();
+require_once 'auth.php';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -868,10 +873,7 @@
             <h1>City Health Office of San Pablo</h1>
         </div>
         <nav>
-            <ul>
-                <li><a href="index.php"><i class="fas fa-home"></i><span>Home</span></a></li>
-                <li><a href="login.php"><i class="fas fa-sign-in-alt"></i><span>Employee Login</span></a></li>
-            </ul>
+            <?php echo generate_navigation(); ?>
         </nav>
     </header>
 

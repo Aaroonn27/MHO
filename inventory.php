@@ -1,3 +1,10 @@
+<?php
+session_start();
+require_once 'auth.php';
+
+$required_roles = ['admin', 'abtc_employee']; 
+check_page_access($required_roles);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -809,15 +816,7 @@
             </div>
             <h1>City Health Office of San Pablo</h1>
         </div>
-        <nav>
-            <ul>
-                <li><a href="index.php"><i class="fas fa-home"></i><span>Home</span></a></li>
-                <li><a href="appointment.php"><i class="far fa-calendar-alt"></i><span>Appointment</span></a></li>
-                <li><a href="charge_slip.php"><i class="fas fa-file-invoice"></i><span>Charge Slip</span></a></li>
-                <li><a href="inventory.php" class="active"><i class="fas fa-box"></i><span>Inventory</span></a></li>
-                <li><a href="rabies_registry.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>
-            </ul>
-        </nav>
+        <?php echo generate_navigation(); ?>
     </header>
 
     <main>
