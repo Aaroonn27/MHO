@@ -356,7 +356,7 @@
             <div class="message bot">
                 <div class="message-avatar">🤖</div>
                 <div class="message-content">
-                    🏥 Welcome to San Pablo City Health Office AI Assistant!
+🏥 Welcome to San Pablo City Health Office AI Assistant!
 
 I'm here to help you with:
 • 🐕 Animal bite treatment (ABTC services)
