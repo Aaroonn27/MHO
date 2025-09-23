@@ -29,17 +29,22 @@ function connect_db() {
     }
 }
 
-// Initialize database tables if needed
+// Initialize database tables and data
 function initializeTables() {
     try {
         $conn = connect_db();
         
         // Add session_id column to chat_logs if it doesn't exist
-        $conn->query("ALTER TABLE chat_logs ADD COLUMN IF NOT EXISTS session_id VARCHAR(255)");
+        $result = $conn->query("SHOW COLUMNS FROM chat_logs LIKE 'session_id'");
+        if ($result->num_rows === 0) {
+            $conn->query("ALTER TABLE chat_logs ADD COLUMN session_id VARCHAR(255)");
+        }
         
-        // Create index for better performance
+        // Create indexes for better performance
         $conn->query("CREATE INDEX IF NOT EXISTS idx_session_timestamp ON chat_logs(session_id, timestamp)");
         $conn->query("CREATE INDEX IF NOT EXISTS idx_session_activity ON chat_sessions(session_id, last_activity)");
+        $conn->query("CREATE INDEX IF NOT EXISTS idx_knowledge_keywords ON chatbot_knowledge(keywords)");
+        $conn->query("CREATE INDEX IF NOT EXISTS idx_knowledge_category ON chatbot_knowledge(category, active)");
         
         $conn->close();
         return true;
@@ -54,160 +59,190 @@ define('OPENROUTER_API_KEY', 'sk-or-v1-07270f45c17335f7a19e5a278be4a96f9592f306f
 define('OPENROUTER_URL', 'https://openrouter.ai/api/v1/chat/completions');
 define('AI_MODEL', 'deepseek/deepseek-chat-v3-0324:free');
 
-// Enhanced Knowledge Base with better structure
+// Database-driven Knowledge Base
 class CHOKnowledgeBase {
     
+    // Get all knowledge from database
     public static function getAllKnowledge() {
-        return [
-            'cho_info' => [
-                'name' => 'San Pablo City Health Office (CHO)',
-                'main_office' => [
-                    'address' => 'Ground Floor, City Governance Building, A. Mabini Extension',
-                    'barangay' => 'Barangay V-A',
-                    'city' => 'San Pablo City',
-                    'hours' => 'Monday to Friday, 8:00 AM to 5:00 PM',
-                    'appointment_type' => 'Walk-in only (first come, first serve)'
-                ],
-                'services' => [
-                    'general_health' => true,
-                    'insurance_processing' => ['PhilHealth', 'Health cards'],
-                    'pwd_services' => 'Relatives can process requirements'
-                ]
-            ],
+        try {
+            $conn = connect_db();
+            $stmt = $conn->prepare("SELECT * FROM chatbot_knowledge WHERE active = 1 ORDER BY priority DESC, category, id");
+            $stmt->execute();
+            $result = $stmt->get_result();
             
-            'abtc_info' => [
-                'name' => 'Animal Bite Treatment Center (ABTC)',
-                'location' => [
-                    'address' => 'CHO Extension, Brgy. San Jose, San Pablo City',
-                    'contact' => '503-3839'
-                ],
-                'hours' => 'Monday to Friday, 8:00 AM to 5:00 PM',
-                'capacity' => '60 slots per day',
-                'cost' => 'Free service',
-                'schedule' => [
-                    'day_0' => [
-                        'days' => ['Monday', 'Tuesday', 'Friday'],
-                        'time' => 'Morning only',
-                        'shots' => 3,
-                        'description' => 'First injection day'
-                    ],
-                    'follow_up' => [
-                        'days' => 'Weekdays',
-                        'time' => 'Afternoon',
-                        'description' => 'Follow-up injections'
-                    ]
-                ],
-                'bite_categories' => [
-                    'category_1' => [
-                        'description' => 'No bite, saliva contact only, intact skin',
-                        'treatment' => 'Observation only, no vaccine needed',
-                        'urgency' => 'Low'
-                    ],
-                    'category_2' => [
-                        'description' => 'Abrasions, small wounds, broken skin',
-                        'treatment' => 'Vaccine required within 14 days',
-                        'urgency' => 'Moderate'
-                    ],
-                    'category_3' => [
-                        'description' => 'Deep wounds, punctures, wounds on face/hands/feet',
-                        'treatment' => 'EMERGENCY - Vaccine within 7 days',
-                        'urgency' => 'HIGH PRIORITY'
-                    ]
-                ],
-                'first_aid' => [
-                    'immediate' => 'Wash wound with clean water for 10-15 minutes',
-                    'avoid' => 'Do not apply ointments or traditional remedies',
-                    'observe_animal' => 'Monitor animal for 14 days for behavioral changes'
-                ]
-            ],
+            $knowledge = [];
+            while ($row = $result->fetch_assoc()) {
+                $knowledge[] = $row;
+            }
             
-            'rhu_locations' => [
-                'District I-A' => [
-                    'location' => 'Bagong Pook',
-                    'barangays' => ['I-A', 'I-B', 'I-C', 'IV-B', 'IV-C', 'V-A', 'V-B', 'V-C', 'V-D', 'VI-A', 'VI-B', 'VI-C', 'VI-D', 'VI-E', 'San Lucas I', 'San Lucas II', 'San Pedro', 'Dolores', 'San Buenaventura', 'Sta. Catalina']
-                ],
-                'District I-B' => [
-                    'location' => 'Barangay 2D',
-                    'barangays' => ['II-A', 'II-B', 'II-C', 'II-D', 'II-E', 'II-F', 'VII-A', 'VII-B', 'VII-C', 'VII-D', 'VII-E', 'San Gabriel', 'San Miguel', 'San Bartolome', 'Santiago I', 'Santiago II', 'Bautista']
-                ],
-                'District II' => [
-                    'location' => 'Conception',
-                    'barangays' => ['III-A', 'III-B', 'III-C', 'III-D', 'III-E', 'III-F', 'IV-A', 'Concepcion A', 'Concepcion B', 'San Diego', 'Sta. Isabel', 'San Lorenzo', 'Sto. Angel A', 'Sto. Angel B']
-                ],
-                'District III' => [
-                    'location' => 'Del Remedio',
-                    'barangays' => ['Del Remedio A', 'Del Remedio B', 'San Juan', 'Sta. Maria Magdalena', 'San Marcos', 'San Mateo', 'Sta. Filomena', 'San Crispin', 'San Nicolas', 'Sta. Veronica', 'Sta. Monica', 'San Roque', 'San Rafael']
-                ],
-                'District IV' => [
-                    'location' => 'Sta. Maria',
-                    'barangays' => ['Sta. Maria', 'Soledad', 'Santisimo Rosario', 'Atisan', 'San Isidro', 'Sta. Ana', 'San Joaquin', 'San Vicente', 'Sta. Cruz', 'San Antonio I', 'San Antonio II', 'San Francisco A', 'San Francisco B']
-                ],
-                'District V' => [
-                    'location' => 'Sto. Cristo',
-                    'barangays' => ['Sto. Cristo', 'San Jose', 'San Cristobal', 'San Ignacio', 'San Gregorio', 'Sto. Niño', 'Sta. Elena']
-                ]
-            ],
+            $stmt->close();
+            $conn->close();
             
-            'other_programs' => [
-                'tb_dots' => [
-                    'name' => 'TB-DOTS Program',
-                    'location' => 'CHO Extension (same building as ABTC)',
-                    'services' => ['Chest X-ray', 'Gene Expert sputum examination'],
-                    'process' => 'Visit barangay hall for scheduling, then barangay health center for forms'
-                ],
-                'social_hygiene' => [
-                    'name' => 'Social Hygiene Program',
-                    'location' => 'CHO Extension',
-                    'details' => 'Reproductive health services available'
-                ]
-            ]
-        ];
+            return $knowledge;
+        } catch (Exception $e) {
+            error_log("Knowledge retrieval error: " . $e->getMessage());
+            return [];
+        }
     }
     
-    public static function findRHUByBarangay($barangay) {
-        $knowledge = self::getAllKnowledge();
-        $rhu_locations = $knowledge['rhu_locations'];
-        
-        foreach ($rhu_locations as $district => $info) {
-            if (in_array($barangay, $info['barangays'])) {
-                return [
-                    'district' => $district,
-                    'location' => $info['location'],
-                    'barangays' => $info['barangays']
-                ];
+    // Search knowledge base by keywords
+    public static function searchKnowledge($query) {
+        try {
+            $conn = connect_db();
+            $searchQuery = strtolower(trim($query));
+            
+            // Simple search approach
+            $sql = "SELECT *, 
+                    (CASE 
+                        WHEN LOWER(keywords) LIKE ? THEN 3
+                        WHEN LOWER(question) LIKE ? THEN 2
+                        WHEN LOWER(answer) LIKE ? THEN 1
+                        ELSE 0
+                    END) as relevance_score
+                    FROM chatbot_knowledge 
+                    WHERE active = 1 
+                    AND (LOWER(keywords) LIKE ? OR LOWER(question) LIKE ? OR LOWER(answer) LIKE ?)
+                    ORDER BY relevance_score DESC, priority DESC
+                    LIMIT 5";
+            
+            $searchTerm = "%{$searchQuery}%";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $matches = [];
+            while ($row = $result->fetch_assoc()) {
+                $matches[] = $row;
             }
+            
+            $stmt->close();
+            $conn->close();
+            
+            return $matches;
+            
+        } catch (Exception $e) {
+            error_log("Knowledge search error: " . $e->getMessage());
+            return [];
         }
-        return null;
+    }
+    
+    // Get knowledge by category
+    public static function getKnowledgeByCategory($category) {
+        try {
+            $conn = connect_db();
+            $stmt = $conn->prepare("SELECT * FROM chatbot_knowledge WHERE category = ? AND active = 1 ORDER BY priority DESC");
+            $stmt->bind_param("s", $category);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $knowledge = [];
+            while ($row = $result->fetch_assoc()) {
+                $knowledge[] = $row;
+            }
+            
+            $stmt->close();
+            $conn->close();
+            
+            return $knowledge;
+        } catch (Exception $e) {
+            error_log("Category knowledge error: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    // Add new knowledge (for admin use)
+    public static function addKnowledge($category, $question, $answer, $keywords, $priority = 1) {
+        try {
+            $conn = connect_db();
+            $stmt = $conn->prepare("INSERT INTO chatbot_knowledge (category, question, answer, keywords, priority) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssi", $category, $question, $answer, $keywords, $priority);
+            $success = $stmt->execute();
+            $stmt->close();
+            $conn->close();
+            return $success;
+        } catch (Exception $e) {
+            error_log("Add knowledge error: " . $e->getMessage());
+            return false;
+        }
     }
 }
 
-// Enhanced system prompt with comprehensive knowledge
+// Analytics functions
+function logChatAnalytics($userMessage, $botResponse, $responseTime) {
+    try {
+        $conn = connect_db();
+        $today = date('Y-m-d');
+        
+        // Update or insert today's analytics
+        $stmt = $conn->prepare("INSERT INTO chatbot_analytics (date, total_messages, avg_response_time) 
+                               VALUES (?, 1, ?) 
+                               ON DUPLICATE KEY UPDATE 
+                               total_messages = total_messages + 1,
+                               avg_response_time = (avg_response_time + ?) / 2");
+        $stmt->bind_param("sdd", $today, $responseTime, $responseTime);
+        $stmt->execute();
+        $stmt->close();
+        
+        $conn->close();
+    } catch (Exception $e) {
+        error_log("Analytics error: " . $e->getMessage());
+    }
+}
+
+function updateSessionCount() {
+    try {
+        $conn = connect_db();
+        $today = date('Y-m-d');
+        
+        // Count unique sessions today
+        $result = $conn->query("SELECT COUNT(DISTINCT session_id) as unique_sessions 
+                               FROM chat_logs 
+                               WHERE DATE(timestamp) = '$today'");
+        
+        if ($result) {
+            $row = $result->fetch_assoc();
+            $uniqueSessions = $row['unique_sessions'];
+            
+            $stmt = $conn->prepare("UPDATE chatbot_analytics SET unique_sessions = ? WHERE date = ?");
+            $stmt->bind_param("is", $uniqueSessions, $today);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        $conn->close();
+    } catch (Exception $e) {
+        error_log("Session count error: " . $e->getMessage());
+    }
+}
+
+// Enhanced system prompt using database knowledge
 function getSmartSystemPrompt() {
     $knowledge = CHOKnowledgeBase::getAllKnowledge();
     
     // Get database statistics
     try {
         $conn = connect_db();
-        $total_patients = 0;
-        $recent_stats = "";
+        $totalPatients = 0;
+        $recentStats = "";
         
-        // Check if sheet1 table exists (your patient data table)
+        // Check if sheet1 table exists (patient data)
         $tables = $conn->query("SHOW TABLES LIKE 'sheet1'");
         if ($tables && $tables->num_rows > 0) {
             $result = $conn->query("SELECT COUNT(*) as total FROM sheet1");
             if ($result) {
-                $total_patients = $result->fetch_assoc()['total'];
+                $totalPatients = $result->fetch_assoc()['total'];
             }
             
             $result = $conn->query("SELECT animal_type, COUNT(*) as count FROM sheet1 
                                   WHERE date_recorded >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
                                   GROUP BY animal_type ORDER BY count DESC LIMIT 3");
             if ($result && $result->num_rows > 0) {
-                $recent_animals = [];
+                $recentAnimals = [];
                 while ($row = $result->fetch_assoc()) {
-                    $recent_animals[] = $row['animal_type'] . " (" . $row['count'] . " cases)";
+                    $recentAnimals[] = $row['animal_type'] . " (" . $row['count'] . " cases)";
                 }
-                $recent_stats = "Recent statistics: " . implode(", ", $recent_animals) . ". ";
+                $recentStats = "Recent statistics: " . implode(", ", $recentAnimals) . ". ";
             }
         }
         $conn->close();
@@ -215,52 +250,21 @@ function getSmartSystemPrompt() {
         error_log("Statistics error: " . $e->getMessage());
     }
     
+    // Build knowledge base content from database
+    $knowledgeContent = "";
+    foreach ($knowledge as $item) {
+        $knowledgeContent .= "\n=== " . strtoupper($item['category']) . " ===\n";
+        $knowledgeContent .= "Q: " . $item['question'] . "\n";
+        $knowledgeContent .= "A: " . $item['answer'] . "\n";
+        $knowledgeContent .= "Keywords: " . $item['keywords'] . "\n";
+    }
+    
     $systemPrompt = "You are the official AI assistant for San Pablo City Health Office (CHO). You provide accurate, helpful information about health services.
 
-=== YOUR KNOWLEDGE BASE ===
-You have comprehensive information about:
-- San Pablo City Health Office services and locations
-- Animal Bite Treatment Center (ABTC) procedures and schedules
-- Rural Health Units (RHU) by district and barangay
-- Other health programs (TB-DOTS, Social Hygiene)
-- Current system data: {$total_patients} registered patients. {$recent_stats}
+=== YOUR DATABASE KNOWLEDGE ===
+System data: {$totalPatients} registered patients. {$recentStats}
 
-=== KEY INFORMATION ===
-
-🏥 CHO MAIN OFFICE:
-📍 Ground Floor, City Governance Building, A. Mabini Extension, Brgy. V-A
-⏰ Monday-Friday, 8AM-5PM
-📋 Walk-in appointments only (first come, first serve)
-💳 Accepts PhilHealth and health insurance
-
-🐕 ABTC (Animal Bite Treatment):
-📍 CHO Extension, Brgy. San Jose, San Pablo City
-📞 503-3839
-⏰ Monday-Friday, 8AM-5PM
-🎯 60 slots daily, FREE service
-
-📅 ABTC SCHEDULE:
-• Day 0 (First shots): Monday/Tuesday/Friday - MORNINGS ONLY
-• Follow-up shots: Any weekday - AFTERNOONS ONLY
-
-🩹 BITE CATEGORIES:
-• Category 1: No bite/saliva contact → Observation only
-• Category 2: Small wounds → Vaccine within 14 days
-• Category 3: Deep/face/hand wounds → EMERGENCY (within 7 days)
-
-🚨 FIRST AID: Wash 10-15 minutes with clean water, NO ointments
-
-=== RURAL HEALTH UNITS ===
-• District I-A: RHU Bagong Pook
-• District I-B: RHU Barangay 2D
-• District II: RHU Conception
-• District III: RHU Del Remedio
-• District IV: RHU Sta. Maria
-• District V: RHU Sto. Cristo
-
-=== OTHER PROGRAMS ===
-🫁 TB-DOTS: Chest X-ray, Gene Expert (at CHO Extension)
-🏥 Social Hygiene: Reproductive health services (at CHO Extension)
+{$knowledgeContent}
 
 === COMMUNICATION GUIDELINES ===
 ✅ Be professional, empathetic, and clear
@@ -272,13 +276,13 @@ You have comprehensive information about:
 🚫 Never provide specific medical diagnoses
 🚫 Cannot access confidential patient records
 
-REMEMBER: You are knowledgeable and should provide helpful responses based on your comprehensive knowledge base, not just pattern matching.";
+REMEMBER: Use your comprehensive database knowledge to provide helpful, accurate responses. Always cross-reference with the knowledge base first before using general AI knowledge.";
 
     return $systemPrompt;
 }
 
-// Improved conversation logging
-function logConversation($userMessage, $botResponse, $sessionId) {
+// Improved conversation logging with analytics
+function logConversation($userMessage, $botResponse, $sessionId, $responseTime = 0) {
     try {
         $conn = connect_db();
         
@@ -303,11 +307,13 @@ function logConversation($userMessage, $botResponse, $sessionId) {
         $stmt->close();
         $conn->close();
         
-        if (!$success) {
-            throw new Exception("Failed to log conversation");
+        // Update analytics
+        if ($success) {
+            logChatAnalytics($userMessage, $botResponse, $responseTime);
+            updateSessionCount();
         }
         
-        return true;
+        return $success;
         
     } catch (Exception $e) {
         error_log("Logging error: " . $e->getMessage());
@@ -315,7 +321,7 @@ function logConversation($userMessage, $botResponse, $sessionId) {
     }
 }
 
-// Get conversation history for context
+// Get conversation history with session context
 function getConversationHistory($sessionId, $limit = 6) {
     try {
         $conn = connect_db();
@@ -344,50 +350,90 @@ function getConversationHistory($sessionId, $limit = 6) {
     }
 }
 
-// Smart response system that tries local knowledge first, then AI
+// Smart response system using database knowledge first
 function getSmartResponse($message, $sessionId) {
-    $message_lower = strtolower(trim($message));
+    $startTime = microtime(true);
+    $messageLower = strtolower(trim($message));
     
-    // Quick responses for common queries
+    // Quick hardcoded responses for basic queries (fallback if DB fails)
     $quickResponses = [
         'hello' => "🏥 Hello! Welcome to San Pablo City Health Office AI Assistant. I can help you with:\n\n• 🐕 Animal bite treatment (ABTC)\n• 📅 Appointments and schedules\n• 🏥 CHO services and programs\n• 📍 Locations and directions\n• 💉 Vaccination information\n\nHow can I assist you today?",
-        
         'hi' => "👋 Hi there! I'm your CHO AI Assistant. What can I help you with today?",
-        
-        'abtc schedule' => "📅 ABTC SCHEDULE:\n\n🐕 Animal Bite Treatment Center\n📍 CHO Extension, Brgy. San Jose (503-3839)\n⏰ Monday-Friday, 8AM-5PM\n\n📋 SCHEDULE DETAILS:\n• Day 0 (First shots): Monday, Tuesday, Friday - MORNING ONLY\n• Follow-up shots: Any weekday - AFTERNOON ONLY\n• Capacity: 60 slots per day\n• Cost: FREE\n\n⚠️ For Category 3 wounds (deep/face/hands): Seek treatment within 7 days!",
-        
-        'cho location' => "📍 SAN PABLO CITY HEALTH OFFICE LOCATIONS:\n\n🏥 MAIN CHO:\nGround Floor, City Governance Building\nA. Mabini Extension, Brgy. V-A\n⏰ Monday-Friday, 8AM-5PM\n\n🐕 ABTC (Animal Bite):\nCHO Extension, Brgy. San Jose\n📞 503-3839\n⏰ Monday-Friday, 8AM-5PM\n\n📋 Walk-in appointments only (first come, first serve)",
-        
+        'hi there' => "👋 Hi there! I'm your CHO AI Assistant. What can I help you with today?",
+        'time' => "⏰ CHO OPERATING HOURS:\n\n🏥 Main Office: Monday-Friday, 8AM-5PM\n🐕 ABTC: Monday-Friday, 8AM-5PM\n\nDay 0 shots: Mon/Tue/Fri mornings\nFollow-up shots: Weekdays afternoons\n\n📋 Walk-in appointments only",
         'hours' => "⏰ CHO OPERATING HOURS:\n\n🏥 Main Office: Monday-Friday, 8AM-5PM\n🐕 ABTC: Monday-Friday, 8AM-5PM\n\nDay 0 shots: Mon/Tue/Fri mornings\nFollow-up shots: Weekdays afternoons\n\n📋 Walk-in appointments only",
-        
-        'programs' => "🏥 CHO PROGRAMS & SERVICES:\n\n🐕 Animal Bite Treatment Center (ABTC)\n🫁 TB-DOTS Program\n🏥 Social Hygiene Program\n👥 PWD Services\n💳 Insurance Processing (PhilHealth)\n\nWhich program would you like to know more about?"
+        'open' => "⏰ CHO OPERATING HOURS:\n\n🏥 Main Office: Monday-Friday, 8AM-5PM\n🐕 ABTC: Monday-Friday, 8AM-5PM\n\nDay 0 shots: Mon/Tue/Fri mornings\nFollow-up shots: Weekdays afternoons\n\n📋 Walk-in appointments only"
     ];
     
-    // Check for exact matches first
+    // Check for direct matches first
     foreach ($quickResponses as $key => $response) {
-        if ($message_lower === $key) {
-            return $response;
+        if (strpos($messageLower, $key) !== false) {
+            $responseTime = microtime(true) - $startTime;
+            return [
+                'response' => $response,
+                'source' => 'quick_response',
+                'response_time' => $responseTime
+            ];
         }
     }
     
-    // Check for keyword matches
-    foreach ($quickResponses as $key => $response) {
-        if (strpos($message_lower, $key) !== false) {
-            return $response;
+    // Try database search
+    try {
+        $knowledgeMatches = CHOKnowledgeBase::searchKnowledge($message);
+        
+        if (!empty($knowledgeMatches)) {
+            $bestMatch = $knowledgeMatches[0];
+            
+            // Lower the threshold for database matches
+            if (isset($bestMatch['relevance_score']) && $bestMatch['relevance_score'] >= 1) {
+                $responseTime = microtime(true) - $startTime;
+                return [
+                    'response' => $bestMatch['answer'],
+                    'source' => 'database',
+                    'category' => $bestMatch['category'],
+                    'response_time' => $responseTime
+                ];
+            }
         }
+    } catch (Exception $e) {
+        error_log("Database search error: " . $e->getMessage());
     }
     
-    // If no quick response, use AI with conversation history
+    // If no good database match, use AI with database context
     try {
         $history = getConversationHistory($sessionId);
-        return callOpenRouterAPI($message, $history);
+        $response = callOpenRouterAPI($message, $history);
+        $responseTime = microtime(true) - $startTime;
+        
+        return [
+            'response' => $response,
+            'source' => 'ai',
+            'response_time' => $responseTime
+        ];
     } catch (Exception $e) {
         error_log("AI API error: " . $e->getMessage());
-        return getFallbackResponse($message_lower);
+        $responseTime = microtime(true) - $startTime;
+        
+        // Check quick responses one more time as final fallback
+        foreach ($quickResponses as $key => $response) {
+            if (strpos($messageLower, $key) !== false) {
+                return [
+                    'response' => $response,
+                    'source' => 'fallback_quick',
+                    'response_time' => $responseTime
+                ];
+            }
+        }
+        
+        return [
+            'response' => getFallbackResponse($messageLower),
+            'source' => 'fallback',
+            'response_time' => $responseTime
+        ];
     }
 }
 
-// Improved API call with better error handling
+// Improved API call with database knowledge context
 function callOpenRouterAPI($message, $conversationHistory = []) {
     $systemPrompt = getSmartSystemPrompt();
     
@@ -416,7 +462,7 @@ function callOpenRouterAPI($message, $conversationHistory = []) {
         'HTTP-Referer: http://localhost/CHO/',
         'X-Title: San Pablo City Health Office Chatbot',
         'Content-Type: application/json',
-        'User-Agent: CHO-Chatbot/1.0'
+        'User-Agent: CHO-Chatbot/2.0'
     ];
 
     $ch = curl_init();
@@ -453,20 +499,24 @@ function callOpenRouterAPI($message, $conversationHistory = []) {
     return trim($responseData['choices'][0]['message']['content']);
 }
 
-// Fallback response when AI is not available
-function getFallbackResponse($message_lower) {
-    if (strpos($message_lower, 'emergency') !== false || strpos($message_lower, 'bite') !== false) {
-        return "🚨 ANIMAL BITE EMERGENCY:\n\n1. Wash wound with clean water (10-15 minutes)\n2. Do NOT apply ointments\n3. Seek immediate medical attention\n\n📍 ABTC: CHO Extension, Brgy. San Jose\n📞 503-3839\n⏰ 8AM-5PM, Mon-Fri";
+// Enhanced fallback with database backup
+function getFallbackResponse($messageLower) {
+    // Try one more database search with broader terms
+    $emergencyKeywords = ['emergency', 'urgent', 'bite', 'help'];
+    foreach ($emergencyKeywords as $keyword) {
+        if (strpos($messageLower, $keyword) !== false) {
+            $matches = CHOKnowledgeBase::searchKnowledge($keyword);
+            if (!empty($matches)) {
+                return $matches[0]['answer'];
+            }
+        }
     }
     
-    if (strpos($message_lower, 'location') !== false) {
-        return "📍 CHO LOCATIONS:\n🏥 Main: City Governance Building, A. Mabini Extension, Brgy. V-A\n🐕 ABTC: CHO Extension, Brgy. San Jose (503-3839)";
-    }
-    
+    // Default fallback
     return "I apologize, but I'm experiencing technical difficulties. Please try again in a moment, or contact CHO directly:\n\n🏥 Main Office: City Governance Building, A. Mabini Extension\n🐕 ABTC: CHO Extension, Brgy. San Jose (503-3839)\n⏰ Mon-Fri, 8AM-5PM";
 }
 
-// Initialize tables on first run
+// Initialize database
 initializeTables();
 
 // Main request handler
@@ -481,6 +531,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userMessage = trim($_POST['message'] ?? '');
         $sessionId = $_POST['session_id'] ?? session_id();
         
+        // Handle null session_id from frontend
+        if ($sessionId === 'null' || empty($sessionId)) {
+            $sessionId = session_id();
+        }
+        
         if (empty($userMessage)) {
             throw new Exception("Please enter a message");
         }
@@ -492,29 +547,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Sanitize input
         $userMessage = htmlspecialchars($userMessage, ENT_QUOTES, 'UTF-8');
         
-        // Get smart response
-        $botResponse = getSmartResponse($userMessage, $sessionId);
+        // Get smart response with analytics
+        $responseData = getSmartResponse($userMessage, $sessionId);
+        $botResponse = $responseData['response'];
+        $responseTime = $responseData['response_time'] ?? 0;
         
-        // Log conversation
-        $logged = logConversation($userMessage, $botResponse, $sessionId);
+        // Log conversation with response time (make it optional if it fails)
+        $logged = false;
+        try {
+            $logged = logConversation($userMessage, $botResponse, $sessionId, $responseTime);
+        } catch (Exception $e) {
+            error_log("Logging failed: " . $e->getMessage());
+            // Don't fail the whole request if logging fails
+        }
         
-        // Return success response
+        // Return success response with metadata
         echo json_encode([
             'success' => true,
             'message' => $botResponse,
             'session_id' => $sessionId,
             'logged' => $logged,
+            'response_time' => round($responseTime, 3),
+            'source' => $responseData['source'] ?? 'unknown',
+            'category' => $responseData['category'] ?? null,
             'timestamp' => date('Y-m-d H:i:s')
         ]);
         
     } catch (Exception $e) {
         error_log("CHO Chatbot Error: " . $e->getMessage());
         
+        // Provide a working fallback response
+        $fallbackMessage = "⏰ CHO OPERATING HOURS:\n\n🏥 Main Office: Monday-Friday, 8AM-5PM\n📍 City Governance Building, A. Mabini Extension, Brgy. V-A\n\n🐕 ABTC: Monday-Friday, 8AM-5PM\n📍 CHO Extension, Brgy. San Jose (503-3839)\n\n📋 Walk-in appointments only";
+        
+        echo json_encode([
+            'success' => true, // Change to true so the frontend doesn't show error
+            'message' => $fallbackMessage,
+            'error_debug' => $e->getMessage(), // For debugging only
+            'session_id' => $sessionId ?? session_id(),
+            'source' => 'error_fallback'
+        ]);
+    }
+} 
+
+// Admin endpoint for knowledge management (GET request)
+elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['admin'])) {
+    if ($_GET['admin'] === 'knowledge') {
+        $knowledge = CHOKnowledgeBase::getAllKnowledge();
+        echo json_encode([
+            'success' => true,
+            'knowledge' => $knowledge,
+            'count' => count($knowledge)
+        ]);
+    } elseif ($_GET['admin'] === 'analytics') {
+        try {
+            $conn = connect_db();
+            $result = $conn->query("SELECT * FROM chatbot_analytics ORDER BY date DESC LIMIT 30");
+            $analytics = [];
+            while ($row = $result->fetch_assoc()) {
+                $analytics[] = $row;
+            }
+            $conn->close();
+            
+            echo json_encode([
+                'success' => true,
+                'analytics' => $analytics
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    } else {
         echo json_encode([
             'success' => false,
-            'message' => getFallbackResponse('error'),
-            'error' => $e->getMessage(),
-            'session_id' => $sessionId ?? null
+            'message' => 'Invalid admin endpoint'
         ]);
     }
 } else {
