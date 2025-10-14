@@ -2,7 +2,7 @@
 // mocean_sms_service.php - FIXED VERSION with Bearer token authentication
 
 class SMSService {
-    private $api_token = 'apit-tRaNRyrsaIUYn6wIuzAa0L7GEKey80Es-HC3oY';
+    private $api_token = 'apit-uMSyeWKNcxbZYIyEDPdcASzttMj5zVWT-vEgzo';
     private $sender_id = 'SPCITYHEALTH';
     
     public function sendSMS($number, $message) {
