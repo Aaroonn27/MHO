@@ -27,9 +27,23 @@ $accessible_pages = get_accessible_pages();
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            /* San Pablo Green Color Palette */
+            --primary-green: #1a5f3f;
+            --primary-green-dark: #0f3d28;
+            --primary-green-light: #2a7f5f;
+            --accent-green: #3a9b6f;
+            --light-green-bg: #e8f5f0;
+            --white: #ffffff;
+            --gray-text: #555555;
+            --gray-light: #f8f9fa;
+            --shadow: rgba(26, 95, 63, 0.1);
+            --shadow-hover: rgba(26, 95, 63, 0.2);
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            color: var(--gray-text);
             min-height: 100vh;
             line-height: 1.6;
         }
@@ -42,9 +56,9 @@ $accessible_pages = get_accessible_pages();
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px var(--shadow);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -168,27 +182,32 @@ $accessible_pages = get_accessible_pages();
         main {
             padding: 60px 40px;
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 40px auto;
+            background: var(--light-green-bg);
+            border-radius: 20px;
+            min-height: calc(100vh - 400px);
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+        .section-title h2 {
+            color: var(--primary-green-dark) !important;
+            text-shadow: none !important;
+        }
+
+        .section-title p {
+            color: var(--gray-text) !important;
         }
 
         .dashboard-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
+            background: var(--white);
+            box-shadow: 0 15px 35px var(--shadow);
+            border: 1px solid var(--primary-green-light);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             text-align: center;
             position: relative;
             overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .dashboard-card::before {
@@ -198,7 +217,7 @@ $accessible_pages = get_accessible_pages();
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
             border-radius: 20px 20px 0 0;
         }
 
@@ -210,7 +229,7 @@ $accessible_pages = get_accessible_pages();
         .card-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -218,7 +237,7 @@ $accessible_pages = get_accessible_pages();
             margin: 0 auto 25px;
             font-size: 35px;
             color: white;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 25px var(--shadow);
         }
 
         .card-title {
@@ -235,7 +254,7 @@ $accessible_pages = get_accessible_pages();
         }
 
         .card-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
             color: white;
             padding: 12px 25px;
             border: none;
@@ -247,11 +266,11 @@ $accessible_pages = get_accessible_pages();
             gap: 8px;
             transition: all 0.3s ease;
             cursor: pointer;
+            box-shadow: 0 8px 20px var(--shadow);
         }
 
         .card-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 20px var(--shadow-hover);
         }
 
         /* No access message */
@@ -273,7 +292,7 @@ $accessible_pages = get_accessible_pages();
 
         /* Footer */
         .footer {
-            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green) 100%);
             color: white;
             padding: 40px 40px 30px;
             text-align: center;
@@ -287,7 +306,31 @@ $accessible_pages = get_accessible_pages();
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background: linear-gradient(90deg, var(--accent-green), var(--primary-green-light), var(--accent-green));
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Update responsive design for dashboard grid */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Responsive Design */

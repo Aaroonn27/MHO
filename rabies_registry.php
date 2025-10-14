@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 
 require_once('db_conn.php');
@@ -50,7 +50,7 @@ $current_page = $result['current_page'];
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -64,10 +64,10 @@ $current_page = $result['current_page'];
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
         }
 
         .logo-container {
@@ -80,13 +80,13 @@ $current_page = $result['current_page'];
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -104,7 +104,7 @@ $current_page = $result['current_page'];
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
         }
@@ -116,18 +116,17 @@ $current_page = $result['current_page'];
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
         }
 
         nav ul li a:hover,
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -151,6 +150,10 @@ $current_page = $result['current_page'];
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title h1 {
@@ -163,20 +166,20 @@ $current_page = $result['current_page'];
 
         .page-title p {
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             max-width: 600px;
             margin: 0 auto;
         }
 
         /* Filter Section */
         .filter-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .filter-header {
@@ -190,12 +193,12 @@ $current_page = $result['current_page'];
 
         .filter-header h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
         }
 
         .filter-header h3 i {
-            color: #667eea;
+            color: #4a8f5f;
             margin-right: 10px;
         }
 
@@ -213,7 +216,7 @@ $current_page = $result['current_page'];
 
         .filter-group label {
             font-weight: 600;
-            color: #333;
+            color: #2d5f3f;
             margin-bottom: 8px;
             font-size: 14px;
         }
@@ -221,7 +224,7 @@ $current_page = $result['current_page'];
         .filter-input {
             padding: 12px 15px;
             border: 2px solid #e9ecef;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
             background: white;
@@ -229,8 +232,8 @@ $current_page = $result['current_page'];
 
         .filter-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4a8f5f;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
         }
 
         .filter-actions {
@@ -242,7 +245,7 @@ $current_page = $result['current_page'];
         .filter-btn {
             padding: 12px 25px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -251,39 +254,37 @@ $current_page = $result['current_page'];
             align-items: center;
             gap: 8px;
             text-decoration: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .filter-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .filter-btn.success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #4a8f5f 0%, #5aa070 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
         .filter-btn.info {
             background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
         }
 
         .filter-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* Content Container */
         .content-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             margin-bottom: 30px;
         }
 
@@ -298,15 +299,15 @@ $current_page = $result['current_page'];
 
         .content-header h2 {
             font-size: 1.8rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
         }
 
         /* Table Styles */
         .table-container {
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             border: 1px solid #e9ecef;
             overflow-x: auto;
         }
@@ -318,14 +319,14 @@ $current_page = $result['current_page'];
         }
 
         .table-header {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
-            border-bottom: 2px solid #e9ecef;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-bottom: 2px solid #4a8f5f;
         }
 
         .table-header th {
             padding: 15px 12px;
             font-weight: 700;
-            color: #333;
+            color: white;
             font-size: 12px;
             text-align: left;
             white-space: nowrap;
@@ -340,8 +341,17 @@ $current_page = $result['current_page'];
         }
 
         .patient-table tbody tr:hover {
-            background: #f8f9ff;
+            background: #f8fdf9;
             transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.1);
+        }
+
+        .patient-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .patient-table tbody tr:nth-child(even):hover {
+            background: #f8fdf9;
         }
 
         .patient-table td {
@@ -349,10 +359,15 @@ $current_page = $result['current_page'];
             font-size: 13px;
             white-space: nowrap;
             border-right: 1px solid #f0f0f0;
+            color: #333;
         }
 
         .patient-table td:last-child {
             border-right: none;
+        }
+
+        .patient-table td strong {
+            color: #2d5f3f;
         }
 
         .action-buttons {
@@ -397,12 +412,12 @@ $current_page = $result['current_page'];
 
         /* Pagination */
         .pagination-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .pagination {
@@ -422,19 +437,20 @@ $current_page = $result['current_page'];
         .page-link {
             padding: 10px 16px;
             border: 2px solid #e9ecef;
-            border-radius: 10px;
+            border-radius: 8px;
             text-decoration: none;
-            color: #667eea;
+            color: #2d5f3f;
             font-weight: 600;
             transition: all 0.3s ease;
             background: white;
         }
 
         .page-link:hover {
-            background: #667eea;
+            background: #2d5f3f;
             color: white;
+            border-color: #2d5f3f;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         .page-item.disabled .page-link {
@@ -447,35 +463,41 @@ $current_page = $result['current_page'];
         .page-item.disabled .page-link:hover {
             transform: none;
             box-shadow: none;
+            background: #f8f9fa;
+            color: #6c757d;
         }
 
         /* Messages/Alerts */
         .alert {
             padding: 15px 20px;
-            border-radius: 12px;
+            border-radius: 10px;
             margin-bottom: 20px;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .alert-success {
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border: 2px solid #c3e6cb;
+            border-left: 4px solid #28a745;
         }
 
         .alert-danger {
             background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
             color: #721c24;
-            border: 1px solid #f1b0b7;
+            border: 2px solid #f1b0b7;
+            border-left: 4px solid #dc3545;
         }
 
         .alert-info {
             background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
             color: #0c5460;
-            border: 1px solid #bee5eb;
+            border: 2px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
         }
 
         /* Empty State */
@@ -489,11 +511,12 @@ $current_page = $result['current_page'];
             font-size: 3rem;
             margin-bottom: 20px;
             opacity: 0.5;
+            color: #4a8f5f;
         }
 
         .empty-state h3 {
             margin-bottom: 10px;
-            color: #495057;
+            color: #2d5f3f;
         }
 
         /* Responsive Design */
@@ -518,6 +541,12 @@ $current_page = $result['current_page'];
             .logo-container h1 {
                 font-size: 1.6rem;
                 text-align: center;
+            }
+
+            nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .content-header {
@@ -552,6 +581,10 @@ $current_page = $result['current_page'];
             .table-header th,
             .patient-table td {
                 padding: 8px 6px;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -734,13 +767,13 @@ $current_page = $result['current_page'];
                                 </a>
                             </li>
                         <?php endif; ?>
-                        
+
                         <li class="page-item disabled">
                             <span class="page-link">
                                 <i class="fas fa-file-alt"></i> Page <?php echo $current_page; ?> of <?php echo $total_pages; ?>
                             </span>
                         </li>
-                        
+
                         <?php if ($current_page < $total_pages): ?>
                             <li class="page-item">
                                 <a class="page-link" href="?page=<?php echo ($current_page + 1); ?><?php echo isset($_GET['search']) ? '&search=1' : ''; ?><?php echo !empty($_GET['date_from']) ? '&date_from=' . htmlspecialchars($_GET['date_from']) : ''; ?><?php echo !empty($_GET['date_to']) ? '&date_to=' . htmlspecialchars($_GET['date_to']) : ''; ?><?php echo !empty($_GET['name']) ? '&name=' . htmlspecialchars($_GET['name']) : ''; ?><?php echo !empty($_GET['animal_type']) ? '&animal_type=' . htmlspecialchars($_GET['animal_type']) : ''; ?>" aria-label="Next">
@@ -778,7 +811,7 @@ $current_page = $result['current_page'];
                     const originalText = searchBtn.innerHTML;
                     searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
                     searchBtn.disabled = true;
-                    
+
                     // Re-enable after a short delay (form will submit)
                     setTimeout(() => {
                         searchBtn.innerHTML = originalText;
@@ -792,7 +825,7 @@ $current_page = $result['current_page'];
             deleteLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
+
                     // Create custom confirmation modal
                     const confirmation = confirm(
                         '⚠️ DELETE CONFIRMATION\n\n' +
@@ -804,12 +837,12 @@ $current_page = $result['current_page'];
                         '• All related data\n\n' +
                         'This action CANNOT be undone!'
                     );
-                    
+
                     if (confirmation) {
                         // Add loading state
                         link.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
                         link.style.pointerEvents = 'none';
-                        
+
                         // Proceed with deletion
                         window.location.href = link.href;
                     }
@@ -822,7 +855,7 @@ $current_page = $result['current_page'];
                 btn.addEventListener('mouseenter', function() {
                     this.style.transform = 'translateY(-2px) scale(1.05)';
                 });
-                
+
                 btn.addEventListener('mouseleave', function() {
                     this.style.transform = 'translateY(0) scale(1)';
                 });
@@ -834,7 +867,7 @@ $current_page = $result['current_page'];
                 row.addEventListener('mouseenter', function() {
                     this.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.1)';
                 });
-                
+
                 row.addEventListener('mouseleave', function() {
                     this.style.boxShadow = 'none';
                 });
@@ -847,7 +880,7 @@ $current_page = $result['current_page'];
                     e.preventDefault();
                     document.getElementById('name').focus();
                 }
-                
+
                 // Escape key to clear filters
                 if (e.key === 'Escape') {
                     const currentUrl = new URL(window.location);
@@ -881,7 +914,7 @@ $current_page = $result['current_page'];
                         `;
                         overlay.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i>Loading...';
                         document.body.appendChild(overlay);
-                        
+
                         // Remove overlay if page doesn't change (for same-page actions)
                         setTimeout(() => {
                             if (document.body.contains(overlay)) {
@@ -897,7 +930,7 @@ $current_page = $result['current_page'];
         function printTable() {
             const printWindow = window.open('', '_blank');
             const tableHTML = document.querySelector('.table-container').outerHTML;
-            
+
             printWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
@@ -921,7 +954,7 @@ $current_page = $result['current_page'];
                 </body>
                 </html>
             `);
-            
+
             printWindow.document.close();
             printWindow.print();
         }
@@ -930,7 +963,7 @@ $current_page = $result['current_page'];
         function exportToCSV() {
             const table = document.querySelector('.patient-table');
             const rows = Array.from(table.querySelectorAll('tr'));
-            
+
             const csvContent = rows.map(row => {
                 const cells = Array.from(row.querySelectorAll('th, td'));
                 return cells.slice(0, -1).map(cell => {
@@ -939,15 +972,17 @@ $current_page = $result['current_page'];
                     return `"${content}"`;
                 }).join(',');
             }).join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            const blob = new Blob([csvContent], {
+                type: 'text/csv;charset=utf-8;'
+            });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
-            
+
             link.setAttribute('href', url);
             link.setAttribute('download', `rabies_registry_${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
-            
+
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

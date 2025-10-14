@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 
 // Include database connection
@@ -40,7 +40,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -54,10 +54,10 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
             margin-bottom: 0;
         }
 
@@ -71,13 +71,13 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -96,7 +96,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
             margin: 0;
@@ -114,18 +114,17 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
         }
 
         nav ul li a:hover,
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -150,6 +149,10 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title h1 {
@@ -162,7 +165,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
 
         .page-title p {
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -170,14 +173,14 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         /* Report Header */
         .report-header {
             text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             padding: 25px;
-            border-radius: 20px 20px 0 0;
+            border-radius: 15px 15px 0 0;
             font-size: 28px;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.2);
         }
 
         /* Report Tools */
@@ -187,10 +190,9 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             align-items: center;
             margin: 0;
             padding: 25px 30px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-left: 1px solid rgba(255, 255, 255, 0.2);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border-left: 1px solid #e9ecef;
+            border-right: 1px solid #e9ecef;
             flex-wrap: wrap;
             gap: 20px;
         }
@@ -203,16 +205,16 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
 
         .year-selector label {
             font-weight: 700;
-            color: #333;
+            color: #2d5f3f;
             font-size: 16px;
         }
 
         .year-selector select {
             padding: 12px 20px;
             border: 2px solid #e9ecef;
-            border-radius: 12px;
+            border-radius: 8px;
             background: white;
-            color: #333;
+            color: #2d5f3f;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -222,9 +224,9 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
 
         .year-selector select:hover,
         .year-selector select:focus {
-            border-color: #667eea;
+            border-color: #4a8f5f;
             outline: none;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 15px rgba(74, 143, 95, 0.2);
         }
 
         .tool-buttons {
@@ -237,7 +239,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             color: white;
             padding: 12px 25px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
             font-weight: 700;
@@ -246,21 +248,21 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             align-items: center;
             gap: 10px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
         }
 
         .export-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
         /* Report Table Container */
         .report-table-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: none;
             overflow: hidden;
             overflow-x: auto;
             width: 100%;
@@ -270,7 +272,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             width: 100%;
             min-width: 1200px;
             border-collapse: collapse;
-            background-color: transparent;
+            background-color: white;
             font-size: 14px;
         }
 
@@ -283,8 +285,8 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         }
 
         .report-table th {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
-            color: #333;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            color: white;
             padding: 15px 8px;
             font-weight: 700;
             font-size: 13px;
@@ -297,24 +299,28 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         }
 
         .report-table tbody tr:nth-child(even) {
-            background-color: rgba(248, 249, 255, 0.5);
+            background-color: #fafafa;
         }
 
         .report-table tbody tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
-            transform: scale(1.01);
+            background-color: #f8fdf9;
+            transform: scale(1.005);
         }
 
         .month-row {
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: white;
+        }
+
+        .month-row:nth-child(even) {
+            background-color: #fafafa;
         }
 
         .quarter-row {
-            background: linear-gradient(135deg, rgba(255, 238, 238, 0.9) 0%, rgba(255, 228, 228, 0.9) 100%);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             font-weight: bold;
-            color: #d63384;
-            border-top: 2px solid #d63384;
-            border-bottom: 2px solid #d63384;
+            color: #1b5e20;
+            border-top: 2px solid #4a8f5f;
+            border-bottom: 2px solid #4a8f5f;
         }
 
         .quarter-row td {
@@ -323,19 +329,19 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         }
 
         .outcome-cols {
-            background-color: rgba(102, 126, 234, 0.08);
+            background-color: rgba(74, 143, 95, 0.08);
         }
 
         /* Chart Container */
         .chart-container {
             margin-top: 30px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .button-group {
@@ -346,15 +352,15 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         }
 
         .show-graph-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             padding: 15px 30px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
             font-size: 16px;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.2);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -363,8 +369,8 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         }
 
         .show-graph-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.3);
         }
 
         .show-graph-btn i {
@@ -405,7 +411,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
 
             nav ul {
                 flex-wrap: wrap;
-                gap: 15px;
+                gap: 10px;
                 justify-content: center;
             }
 
@@ -482,10 +488,12 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             }
 
             .report-header {
-                background: transparent !important;
-                color: black !important;
+                background: #2d5f3f !important;
+                color: white !important;
                 text-shadow: none !important;
                 box-shadow: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
             .report-table-container {
@@ -495,12 +503,22 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
             }
 
             .report-table th {
-                background: #eee !important;
-                color: black !important;
+                background: #2d5f3f !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
             .quarter-row {
-                background: #f5f5f5 !important;
+                background: #e8f5e9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .outcome-cols {
+                background-color: rgba(74, 143, 95, 0.08) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
