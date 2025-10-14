@@ -73,7 +73,7 @@ if ($_POST && isset($_POST['login'])) {
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e4d2b 0%, #2d5a3d 50%, #3d6b4d 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -92,7 +92,7 @@ if ($_POST && isset($_POST['login'])) {
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
             animation: float 8s ease-in-out infinite;
         }
 
@@ -103,7 +103,7 @@ if ($_POST && isset($_POST['login'])) {
             right: -50%;
             width: 150%;
             height: 150%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
             animation: float 6s ease-in-out infinite reverse;
         }
 
@@ -121,17 +121,17 @@ if ($_POST && isset($_POST['login'])) {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             margin: 0 20px;
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 50px 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 50px 45px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             position: relative;
             overflow: hidden;
         }
@@ -142,9 +142,9 @@ if ($_POST && isset($_POST['login'])) {
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-            border-radius: 25px 25px 0 0;
+            height: 6px;
+            background: linear-gradient(90deg, #2d5a3d, #4a7c5c, #2d5a3d);
+            border-radius: 20px 20px 0 0;
         }
 
         /* Header */
@@ -158,20 +158,21 @@ if ($_POST && isset($_POST['login'])) {
             justify-content: center;
             align-items: center;
             margin-bottom: 25px;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .logo-img {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(45, 90, 61, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 4px solid rgba(102, 126, 234, 0.2);
-            backdrop-filter: blur(10px);
-            margin-right: 20px;
+            border: 5px solid #2d5a3d;
+            box-shadow: 0 8px 20px rgba(45, 90, 61, 0.3);
         }
 
         .logo-img img {
@@ -180,26 +181,34 @@ if ($_POST && isset($_POST['login'])) {
             object-fit: cover;
         }
 
+        .header-text {
+            text-align: center;
+        }
+
         .login-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #2d5a3d;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }
 
         .login-subtitle {
-            color: #666;
+            color: #4a7c5c;
             font-size: 1rem;
             font-weight: 500;
         }
 
+        .city-name {
+            color: #1e4d2b;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
         /* Alert Messages */
         .alert {
-            padding: 15px 20px;
+            padding: 16px 20px;
             border-radius: 12px;
             margin-bottom: 25px;
             font-weight: 500;
@@ -209,20 +218,20 @@ if ($_POST && isset($_POST['login'])) {
         }
 
         .alert i {
-            margin-right: 10px;
+            margin-right: 12px;
             font-size: 18px;
         }
 
         .alert-error {
-            background: rgba(255, 107, 107, 0.15);
-            color: #dc3545;
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            background: rgba(220, 53, 69, 0.1);
+            color: #c82333;
+            border: 2px solid rgba(220, 53, 69, 0.3);
         }
 
         .alert-success {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            background: rgba(45, 90, 61, 0.1);
+            color: #2d5a3d;
+            border: 2px solid rgba(45, 90, 61, 0.3);
         }
 
         @keyframes slideDown {
@@ -249,9 +258,9 @@ if ($_POST && isset($_POST['login'])) {
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
-            color: #333;
+            color: #2d5a3d;
             font-size: 0.95rem;
         }
 
@@ -263,8 +272,8 @@ if ($_POST && isset($_POST['login'])) {
 
         .input-wrapper i {
             position: absolute;
-            left: 18px;
-            color: #667eea;
+            left: 20px;
+            color: #4a7c5c;
             font-size: 18px;
             z-index: 2;
         }
@@ -272,11 +281,10 @@ if ($_POST && isset($_POST['login'])) {
         .form-input {
             width: 100%;
             padding: 18px 20px 18px 55px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             font-size: 16px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: #ffffff;
             transition: all 0.3s ease;
             color: #333;
             position: relative;
@@ -284,10 +292,9 @@ if ($_POST && isset($_POST['login'])) {
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
-            transform: translateY(-2px);
+            border-color: #2d5a3d;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(45, 90, 61, 0.1);
         }
 
         .form-input::placeholder {
@@ -297,18 +304,19 @@ if ($_POST && isset($_POST['login'])) {
 
         /* Login Button */
         .login-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5a3d 0%, #3d6b4d 100%);
             color: white;
             padding: 18px 30px;
             border: none;
-            border-radius: 15px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 17px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             margin-top: 10px;
+            box-shadow: 0 8px 20px rgba(45, 90, 61, 0.3);
         }
 
         .login-button::before {
@@ -327,12 +335,13 @@ if ($_POST && isset($_POST['login'])) {
         }
 
         .login-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(45, 90, 61, 0.4);
+            background: linear-gradient(135deg, #3d6b4d 0%, #2d5a3d 100%);
         }
 
         .login-button:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
         .login-button i {
@@ -344,24 +353,24 @@ if ($_POST && isset($_POST['login'])) {
             text-align: center;
             margin-top: 30px;
             padding-top: 25px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 2px solid #e8f5e9;
         }
 
         .back-link {
-            color: #667eea;
+            color: #2d5a3d;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
         }
 
         .back-link:hover {
-            color: #764ba2;
-            background: rgba(102, 126, 234, 0.1);
+            color: #1e4d2b;
+            background: rgba(45, 90, 61, 0.1);
             transform: translateX(-3px);
         }
 
@@ -400,16 +409,12 @@ if ($_POST && isset($_POST['login'])) {
             }
 
             .login-title {
-                font-size: 1.8rem;
-            }
-
-            .logo-container {
-                flex-direction: column;
-                gap: 15px;
+                font-size: 1.75rem;
             }
 
             .logo-img {
-                margin-right: 0;
+                width: 90px;
+                height: 90px;
             }
 
             .form-input {
@@ -419,7 +424,7 @@ if ($_POST && isset($_POST['login'])) {
 
             .login-button {
                 padding: 16px 25px;
-                font-size: 15px;
+                font-size: 16px;
             }
         }
 
@@ -430,16 +435,17 @@ if ($_POST && isset($_POST['login'])) {
             justify-content: center;
             gap: 8px;
             margin-top: 20px;
-            padding: 10px;
-            background: rgba(40, 167, 69, 0.1);
-            border-radius: 8px;
-            color: #28a745;
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.08);
+            border-radius: 10px;
+            color: #2d5a3d;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
+            border: 1px solid rgba(45, 90, 61, 0.15);
         }
 
         .security-badge i {
-            color: #28a745;
+            color: #4a7c5c;
         }
     </style>
 </head>
@@ -452,16 +458,17 @@ if ($_POST && isset($_POST['login'])) {
                     <div class="logo-img">
                         <img src="/MHO/media/chologo.png" alt="CHO Logo">
                     </div>
-                    <div>
-                        <h1 class="login-title">CHO Login</h1>
+                    <div class="header-text">
+                        <h1 class="login-title">CHO Login Portal</h1>
                         <p class="login-subtitle">City Health Office System</p>
+                        <p class="city-name">San Pablo City</p>
                     </div>
                 </div>
             </div>
 
             <?php if ($error_message): ?>
                 <div class="alert alert-error">
-                    <i class="fas fa-exclamation-triangle"></i>
+                    <i class="fas fa-exclamation-circle"></i>
                     <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
@@ -536,11 +543,11 @@ if ($_POST && isset($_POST['login'])) {
             const inputs = document.querySelectorAll('.form-input');
             inputs.forEach(input => {
                 input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'translateY(-2px)';
+                    this.parentElement.style.transform = 'scale(1.01)';
                 });
 
                 input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'translateY(0)';
+                    this.parentElement.style.transform = 'scale(1)';
                 });
             });
 
