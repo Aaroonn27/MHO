@@ -218,6 +218,30 @@ if (isset($analytics_report['error'])) {
             opacity: 0.7;
         }
 
+        .gender-distribution {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .gender-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .gender-item .gender-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .gender-item .gender-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
         .chart-container {
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
@@ -344,6 +368,21 @@ if (isset($analytics_report['error'])) {
             font-size: 0.9rem;
         }
 
+        .filter-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-left: 14px;
+            align-items: center;
+            gap: 8px;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .container {
@@ -459,6 +498,9 @@ if (isset($analytics_report['error'])) {
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <a type="button" class="filter-button" href="descriptive_analysis.php">
+                        <i class="fas fa-search"></i> View Analysis
+                    </a>
             </div>
             
         </div>
@@ -470,12 +512,6 @@ if (isset($analytics_report['error'])) {
                 <h3>Total Cases</h3>
                 <div class="stat-value"><?php echo $analytics_report['summary']['total_cases']; ?></div>
                 <div class="metric-trend">Active in <?php echo $analytics_report['summary']['active_months']; ?> months</div>
-            </div>
-            <div class="stat-card success-card">
-                <i class="fas fa-check-circle stat-icon"></i>
-                <h3>Treatment Completion</h3>
-                <div class="stat-value"><?php echo $analytics_report['summary']['complete_outcome_rate']; ?></div>
-                <div class="metric-trend">Complete outcomes</div>
             </div>
             <div class="stat-card warning-card">
                 <i class="fas fa-syringe stat-icon"></i>
@@ -496,21 +532,18 @@ if (isset($analytics_report['error'])) {
                 <div class="metric-trend">Immediate first aid</div>
             </div>
             <div class="stat-card">
-                <i class="fas fa-calendar-alt stat-icon"></i>
-                <h3>Average Response Time</h3>
-                <div class="stat-value">
-                    <?php
-                    $avg_days = $analytics_report['response_time']['avg_response_days'] ?? 0;
-                    echo is_numeric($avg_days) ? number_format(floatval($avg_days), 1) : '0.0';
-                    ?>
-                </div>
-                <div class="metric-trend">Days to first vaccine</div>
-            </div>
-            <div class="stat-card">
                 <i class="fas fa-user-friends stat-icon"></i>
                 <h3>Gender Distribution</h3>
-                <div class="stat-value"><?php echo $analytics_report['summary']['male_percentage']; ?> M</div>
-                <div class="metric-trend"><?php echo $analytics_report['summary']['female_percentage']; ?> Female</div>
+                <div class="gender-distribution">
+                    <div class="gender-item">
+                        <div class="gender-label">Male</div>
+                        <div class="gender-value"><?php echo $analytics_report['summary']['male_percentage']; ?></div>
+                    </div>
+                    <div class="gender-item">
+                        <div class="gender-label">Female</div>
+                        <div class="gender-value"><?php echo $analytics_report['summary']['female_percentage']; ?></div>
+                    </div>
+                </div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-birthday-cake stat-icon"></i>
@@ -557,22 +590,12 @@ if (isset($analytics_report['error'])) {
                             <th>Percentage</th>
                             <th>High-Risk Cases</th>
                             <th>Completed Treatment</th>
-                            <th>Risk Level</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $rank = 1;
                         foreach ($analytics_report['barangay_analysis'] as $barangay):
-                            $risk_level = 'LOW';
-                            $badge_class = 'badge-low';
-                            if (intval($barangay['high_risk_cases']) >= 20) {
-                                $risk_level = 'HIGH';
-                                $badge_class = 'badge-high';
-                            } elseif (intval($barangay['high_risk_cases']) >= 10) {
-                                $risk_level = 'MEDIUM';
-                                $badge_class = 'badge-medium';
-                            }
                         ?>
                             <tr>
                                 <td><?php echo $rank++; ?></td>
@@ -581,7 +604,6 @@ if (isset($analytics_report['error'])) {
                                 <td><?php echo number_format(floatval($barangay['percentage']), 1); ?>%</td>
                                 <td><?php echo number_format(intval($barangay['high_risk_cases'])); ?></td>
                                 <td><?php echo number_format(intval($barangay['completed_cases'])); ?></td>
-                                <td><span class="badge <?php echo $badge_class; ?>"><?php echo $risk_level; ?></span></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -603,22 +625,12 @@ if (isset($analytics_report['error'])) {
                             <th>Cases</th>
                             <th>Percentage</th>
                             <th>High-Risk</th>
-                            <th>Prevention Priority</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $rank = 1;
                         foreach ($analytics_report['bite_place_analysis'] as $place):
-                            $priority = 'LOW';
-                            $badge_class = 'badge-low';
-                            if (intval($place['count']) >= 50 || intval($place['high_risk_cases']) >= 15) {
-                                $priority = 'URGENT';
-                                $badge_class = 'badge-high';
-                            } elseif (intval($place['count']) >= 20 || intval($place['high_risk_cases']) >= 5) {
-                                $priority = 'MODERATE';
-                                $badge_class = 'badge-medium';
-                            }
                         ?>
                             <tr>
                                 <td><?php echo $rank++; ?></td>
@@ -626,7 +638,6 @@ if (isset($analytics_report['error'])) {
                                 <td><?php echo number_format(intval($place['count'])); ?></td>
                                 <td><?php echo number_format(floatval($place['percentage']), 1); ?>%</td>
                                 <td><?php echo number_format(intval($place['high_risk_cases'])); ?></td>
-                                <td><span class="badge <?php echo $badge_class; ?>"><?php echo $priority; ?></span></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -647,77 +658,6 @@ if (isset($analytics_report['error'])) {
                 <canvas id="outcomeChart"></canvas>
             </div>
         </div>
-
-        <!-- Response Time Analysis -->
-        <?php if (!empty($analytics_report['response_time']) && intval($analytics_report['response_time']['total_with_vaccine']) > 0): ?>
-            <div class="table-container">
-                <h2><i class="fas fa-clock"></i> Treatment Response Time Analysis</h2>
-                <div class="stats-grid">
-                    <div class="stat-card success-card">
-                        <i class="fas fa-bolt stat-icon"></i>
-                        <h3>Within 24 Hours</h3>
-                        <div class="stat-value"><?php echo number_format(intval($analytics_report['response_time']['within_24hrs'])); ?></div>
-                        <div class="metric-trend">
-                            <?php
-                            $total = intval($analytics_report['response_time']['total_with_vaccine']);
-                            if ($total > 0) {
-                                echo number_format((intval($analytics_report['response_time']['within_24hrs']) / $total) * 100, 1) . '% of cases';
-                            } else {
-                                echo 'No data available';
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    <div class="stat-card warning-card">
-                        <i class="fas fa-hourglass-half stat-icon"></i>
-                        <h3>Within 72 Hours</h3>
-                        <div class="stat-value"><?php echo number_format(intval($analytics_report['response_time']['within_72hrs'])); ?></div>
-                        <div class="metric-trend">
-                            <?php
-                            if ($total > 0) {
-                                echo number_format((intval($analytics_report['response_time']['within_72hrs']) / $total) * 100, 1) . '% of cases';
-                            } else {
-                                echo 'No data available';
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    <div class="stat-card danger-card">
-                        <i class="fas fa-exclamation-circle stat-icon"></i>
-                        <h3>Beyond 72 Hours</h3>
-                        <div class="stat-value"><?php echo number_format(intval($analytics_report['response_time']['beyond_72hrs'])); ?></div>
-                        <div class="metric-trend">
-                            <?php
-                            if ($total > 0) {
-                                echo number_format((intval($analytics_report['response_time']['beyond_72hrs']) / $total) * 100, 1) . '% of cases';
-                            } else {
-                                echo 'No data available';
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-calculator stat-icon"></i>
-                        <h3>Average Response</h3>
-                        <div class="stat-value">
-                            <?php 
-                            $avg_response = floatval($analytics_report['response_time']['avg_response_days'] ?? 0);
-                            echo number_format($avg_response, 1); 
-                            ?>
-                        </div>
-                        <div class="metric-trend">Days to treatment</div>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <!-- Animal Status Chart -->
-        <?php if (!empty($analytics_report['animal_status'])): ?>
-        <div class="chart-container">
-            <h2>Animal Status Distribution</h2>
-            <canvas id="animalStatusChart"></canvas>
-        </div>
-        <?php endif; ?>
     </div>
 
     <script>
@@ -906,38 +846,6 @@ if (isset($analytics_report['error'])) {
                 }
             }
         });
-
-        // Animal Status Chart - Using real data from PHP
-        <?php if (!empty($analytics_report['animal_status'])): ?>
-        const animalStatusCtx = document.getElementById('animalStatusChart').getContext('2d');
-        const animalStatusData = <?php echo json_encode($analytics_report['animal_status']); ?>;
-        
-        new Chart(animalStatusCtx, {
-            type: 'bar',
-            data: {
-                labels: animalStatusData.map(item => item.animal_status),
-                datasets: [{
-                    label: 'Number of Animals',
-                    data: animalStatusData.map(item => parseInt(item.count) || 0),
-                    backgroundColor: ['#4CAF50', '#f44336', '#FF9800', '#9E9E9E']
-                }]
-            },
-            options: {
-                responsive: true,
-                indexAxis: 'y',
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        <?php endif; ?>
     </script>
 </body>
 
