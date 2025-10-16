@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 ?>
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ check_page_access($required_roles);
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -37,10 +37,10 @@ check_page_access($required_roles);
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
         }
 
         .logo-container {
@@ -53,13 +53,13 @@ check_page_access($required_roles);
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -77,7 +77,7 @@ check_page_access($required_roles);
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
         }
@@ -89,18 +89,17 @@ check_page_access($required_roles);
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
         }
 
         nav ul li a:hover,
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -124,6 +123,10 @@ check_page_access($required_roles);
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title h1 {
@@ -136,19 +139,19 @@ check_page_access($required_roles);
 
         .page-title p {
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             max-width: 600px;
             margin: 0 auto;
         }
 
         /* Form Container */
         .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -162,7 +165,7 @@ check_page_access($required_roles);
 
         .form-header h2 {
             font-size: 1.8rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
             margin-bottom: 10px;
         }
@@ -176,30 +179,46 @@ check_page_access($required_roles);
         .status-message {
             padding: 15px 20px;
             margin-bottom: 25px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 14px;
+            animation: slideIn 0.3s ease;
         }
-        
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .status-success {
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border: 2px solid #c3e6cb;
+            border-left: 4px solid #28a745;
         }
-        
+
         .status-error {
             background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
             color: #721c24;
-            border: 1px solid #f1aeb5;
+            border: 2px solid #f1aeb5;
+            border-left: 4px solid #dc3545;
         }
-        
+
         .status-warning {
             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
             color: #856404;
-            border: 1px solid #ffeaa7;
+            border: 2px solid #ffeaa7;
+            border-left: 4px solid #ffc107;
         }
 
         /* Form Groups */
@@ -211,8 +230,13 @@ check_page_access($required_roles);
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #2d5f3f;
             font-size: 14px;
+        }
+
+        .form-group label i {
+            color: #4a8f5f;
+            margin-right: 5px;
         }
 
         .form-group input,
@@ -221,20 +245,20 @@ check_page_access($required_roles);
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e9ecef;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
             transition: all 0.3s ease;
-            background: #fafbfc;
+            background: white;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4a8f5f;
+            background: #fafffe;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
         }
 
         .form-group textarea {
@@ -247,21 +271,27 @@ check_page_access($required_roles);
             color: #6c757d;
             margin-top: 8px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 5px;
+            line-height: 1.4;
+        }
+
+        .phone-info i {
+            margin-top: 2px;
+            color: #4a8f5f;
         }
 
         /* SMS Preview */
         .sms-preview {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
-            border: 2px solid #e3f2fd;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #a5d6a7;
             border-radius: 12px;
             padding: 20px;
             margin-top: 20px;
         }
-        
+
         .sms-preview h4 {
-            color: #495057;
+            color: #2d5f3f;
             margin-bottom: 12px;
             font-size: 14px;
             font-weight: 600;
@@ -269,26 +299,31 @@ check_page_access($required_roles);
             align-items: center;
             gap: 8px;
         }
-        
+
+        .sms-preview h4 i {
+            color: #4a8f5f;
+        }
+
         .sms-preview .message {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            background: white;
             padding: 15px;
             border-radius: 8px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 13px;
-            border-left: 4px solid #2196f3;
-            color: #1565c0;
+            border-left: 4px solid #4a8f5f;
+            color: #333;
             line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         /* Submit Button */
         .btn-submit {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -298,34 +333,58 @@ check_page_access($required_roles);
             justify-content: center;
             gap: 10px;
             margin-top: 30px;
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 20px rgba(45, 95, 63, 0.4);
         }
 
         .btn-submit:active {
             transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.3);
         }
 
-        /* Back Link */
+        /* Back Link - Now styled as a button */
         .back-link {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             margin-top: 20px;
-            color: #667eea;
+            width: 100%;
+            padding: 12px 20px;
+            color: #2d5f3f;
             text-decoration: none;
             font-weight: 600;
             font-size: 14px;
-            padding: 10px 0;
+            border: 2px solid #4a8f5f;
+            border-radius: 8px;
+            background: white;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .back-link:hover {
-            color: #764ba2;
-            transform: translateX(-5px);
+            background: #2d5f3f;
+            color: white;
+            border-color: #2d5f3f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.2);
+        }
+
+        .back-link:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover i {
+            transform: translateX(-3px);
         }
 
         /* Responsive Design */
@@ -347,19 +406,19 @@ check_page_access($required_roles);
                 text-align: center;
             }
 
-            .form-container {
-                padding: 25px;
-                margin: 0 15px;
+            nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .page-title h1 {
                 font-size: 2rem;
             }
 
-            nav ul {
-                flex-wrap: wrap;
-                gap: 15px;
-                justify-content: center;
+            .form-container {
+                padding: 25px;
+                margin: 0 15px;
             }
 
             nav ul li a {
@@ -383,6 +442,14 @@ check_page_access($required_roles);
             .btn-submit {
                 padding: 12px;
                 font-size: 14px;
+            }
+
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .form-header h2 {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -495,30 +562,30 @@ check_page_access($required_roles);
             const dateInput = document.getElementById('appointment_date');
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            
+
             // Format date for datetime-local input
             const year = tomorrow.getFullYear();
             const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
             const day = String(tomorrow.getDate()).padStart(2, '0');
             const hours = '09'; // Default to 9 AM
             const minutes = '00';
-            
+
             const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
             dateInput.min = minDateTime;
-            
+
             // Validate form before submission
             document.getElementById('appointment-form').addEventListener('submit', function(e) {
                 const contact = document.getElementById('contact').value.trim();
                 const appointmentDate = new Date(document.getElementById('appointment_date').value);
                 const now = new Date();
-                
+
                 // Validate phone number
                 if (!isValidPhoneNumber(contact)) {
                     e.preventDefault();
                     alert('Please enter a valid Philippine mobile number (e.g., 09123456789)');
                     return;
                 }
-                
+
                 // Validate appointment date
                 if (appointmentDate <= now) {
                     e.preventDefault();
@@ -531,7 +598,7 @@ check_page_access($required_roles);
         function isValidPhoneNumber(phone) {
             // Remove all non-digits
             const digits = phone.replace(/\D/g, '');
-            
+
             // Check if it's a valid Philippine mobile number
             if (digits.length === 11 && digits.startsWith('09')) {
                 return true;
@@ -542,7 +609,7 @@ check_page_access($required_roles);
             if (digits.length === 10 && digits.startsWith('9')) {
                 return true;
             }
-            
+
             return false;
         }
 
@@ -550,22 +617,22 @@ check_page_access($required_roles);
             const name = document.getElementById('name').value;
             const program = document.getElementById('program').value;
             const appointmentDate = document.getElementById('appointment_date').value;
-            
+
             if (name && program && appointmentDate) {
                 const date = new Date(appointmentDate);
-                const formattedDate = date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 });
-                const formattedTime = date.toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
+                const formattedTime = date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
                     minute: '2-digit',
-                    hour12: true 
+                    hour12: true
                 });
-                
+
                 const message = `Dear ${name}, your appointment for ${program} is confirmed on ${formattedDate} at ${formattedTime}. Please arrive 15 minutes early. - City Health Office of San Pablo`;
-                
+
                 document.getElementById('smsMessage').textContent = message;
                 document.getElementById('smsPreview').style.display = 'block';
             } else {

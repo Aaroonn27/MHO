@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'cho_employee']; 
+$required_roles = ['admin', 'cho_employee'];
 check_page_access($required_roles);
 
 include_once 'cslip_function.php';
@@ -42,7 +42,7 @@ $history = get_charge_slip_history();
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -56,10 +56,10 @@ $history = get_charge_slip_history();
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
         }
 
         .logo-container {
@@ -72,13 +72,13 @@ $history = get_charge_slip_history();
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -96,7 +96,7 @@ $history = get_charge_slip_history();
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
             margin: 0;
@@ -114,18 +114,17 @@ $history = get_charge_slip_history();
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
             overflow: hidden;
         }
 
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(74, 143, 95, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a::before {
@@ -144,9 +143,9 @@ $history = get_charge_slip_history();
         }
 
         nav ul li a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -162,11 +161,10 @@ $history = get_charge_slip_history();
         /* Page Title Section */
         .page-title-section {
             padding: 60px 40px 40px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-            backdrop-filter: blur(15px);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             text-align: center;
             color: white;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 3px solid #4a8f5f;
             position: relative;
             overflow: hidden;
         }
@@ -224,25 +222,15 @@ $history = get_charge_slip_history();
 
         /* Charge Slip Container */
         .charge-slip-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             margin-bottom: 40px;
             position: relative;
             overflow: hidden;
-        }
-
-        .charge-slip-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
         }
 
         /* Form Styles */
@@ -254,11 +242,11 @@ $history = get_charge_slip_history();
         }
 
         .form-section {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
-            border-radius: 15px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
             padding: 25px;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #a5d6a7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -271,12 +259,12 @@ $history = get_charge_slip_history();
             left: 0;
             width: 4px;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #4a8f5f 100%);
         }
 
         .form-section:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(45, 95, 63, 0.15);
         }
 
         .section-header {
@@ -284,19 +272,19 @@ $history = get_charge_slip_history();
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+            border-bottom: 2px solid rgba(74, 143, 95, 0.2);
         }
 
         .section-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 15px;
-            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         .section-icon i {
@@ -306,7 +294,7 @@ $history = get_charge_slip_history();
 
         .section-header h3 {
             font-size: 1.4rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
         }
 
@@ -326,16 +314,16 @@ $history = get_charge_slip_history();
             align-items: center;
             padding: 15px 20px;
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .service-item label:hover {
-            background: linear-gradient(135deg, #f0f3ff 0%, #e6ebff 100%);
-            border-color: rgba(102, 126, 234, 0.3);
+            background: #f8fdf9;
+            border-color: rgba(74, 143, 95, 0.3);
             transform: translateX(5px);
         }
 
@@ -343,14 +331,15 @@ $history = get_charge_slip_history();
             margin-right: 12px;
             width: 18px;
             height: 18px;
-            accent-color: #667eea;
+            accent-color: #2d5f3f;
         }
 
         .service-item input[type="radio"]:checked+label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            border-color: #667eea;
+            border-color: #2d5f3f;
             transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         /* Name Fields */
@@ -368,14 +357,14 @@ $history = get_charge_slip_history();
 
         .field-group label {
             font-weight: 600;
-            color: #555;
+            color: #2d5f3f;
             font-size: 14px;
         }
 
         .field-group input {
             padding: 12px 16px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 10px;
+            border: 2px solid rgba(74, 143, 95, 0.2);
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: white;
@@ -383,8 +372,8 @@ $history = get_charge_slip_history();
 
         .field-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4a8f5f;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
             transform: translateY(-2px);
         }
 
@@ -404,16 +393,16 @@ $history = get_charge_slip_history();
             align-items: center;
             padding: 15px 20px;
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .discount-option label:hover {
-            background: linear-gradient(135deg, #f0f3ff 0%, #e6ebff 100%);
-            border-color: rgba(102, 126, 234, 0.3);
+            background: #f8fdf9;
+            border-color: rgba(74, 143, 95, 0.3);
             transform: translateX(5px);
         }
 
@@ -421,14 +410,15 @@ $history = get_charge_slip_history();
             margin-right: 12px;
             width: 18px;
             height: 18px;
-            accent-color: #667eea;
+            accent-color: #2d5f3f;
         }
 
         .discount-option input[type="radio"]:checked+label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            border-color: #667eea;
+            border-color: #2d5f3f;
             transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         /* Button Styles */
@@ -438,13 +428,13 @@ $history = get_charge_slip_history();
             gap: 20px;
             margin-top: 40px;
             padding-top: 30px;
-            border-top: 1px solid rgba(102, 126, 234, 0.1);
+            border-top: 2px solid #f0f0f0;
         }
 
         .button {
             padding: 15px 35px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
             font-size: 16px;
@@ -453,6 +443,7 @@ $history = get_charge_slip_history();
             overflow: hidden;
             text-transform: uppercase;
             letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .button::before {
@@ -471,25 +462,26 @@ $history = get_charge_slip_history();
         }
 
         .generate-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
 
         .generate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 95, 63, 0.3);
         }
 
         .back-btn {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            color: white;
-            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+            background: white;
+            color: #2d5f3f;
+            border: 2px solid #4a8f5f;
         }
 
         .back-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(108, 117, 125, 0.4);
+            background: #2d5f3f;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 95, 63, 0.3);
         }
 
         /* History Button */
@@ -497,7 +489,7 @@ $history = get_charge_slip_history();
             position: fixed;
             bottom: 30px;
             left: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             border: none;
             border-radius: 50%;
             width: 70px;
@@ -510,7 +502,7 @@ $history = get_charge_slip_history();
             color: white;
             font-size: 12px;
             font-weight: 600;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.4);
             transition: all 0.3s ease;
             z-index: 1000;
             animation: pulse 2s infinite;
@@ -518,7 +510,7 @@ $history = get_charge_slip_history();
 
         .history-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 25px rgba(45, 95, 63, 0.5);
         }
 
         .history-btn i {
@@ -528,15 +520,15 @@ $history = get_charge_slip_history();
 
         @keyframes pulse {
             0% {
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 4px 15px rgba(45, 95, 63, 0.4);
             }
 
             50% {
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 0 0 0 0 rgba(102, 126, 234, 0.4);
+                box-shadow: 0 4px 15px rgba(45, 95, 63, 0.6), 0 0 0 0 rgba(45, 95, 63, 0.4);
             }
 
             100% {
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), 0 0 0 20px rgba(102, 126, 234, 0);
+                box-shadow: 0 4px 15px rgba(45, 95, 63, 0.4), 0 0 0 20px rgba(45, 95, 63, 0);
             }
         }
 
@@ -572,8 +564,9 @@ $history = get_charge_slip_history();
             border: none;
             width: 90%;
             max-width: 800px;
-            border-radius: 20px;
+            border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-top: 4px solid #2d5f3f;
             position: relative;
             animation: slideIn 0.3s ease;
         }
@@ -588,17 +581,6 @@ $history = get_charge_slip_history();
                 transform: translateY(0);
                 opacity: 1;
             }
-        }
-
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-            border-radius: 20px 20px 0 0;
         }
 
         .close {
@@ -617,14 +599,19 @@ $history = get_charge_slip_history();
         }
 
         .close:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+            color: #2d5f3f;
+            background: rgba(45, 95, 63, 0.1);
         }
 
         .modal h2 {
-            color: #333;
+            color: #2d5f3f;
             margin-bottom: 25px;
             font-size: 1.8rem;
+        }
+
+        .modal h2 i {
+            color: #4a8f5f;
+            margin-right: 10px;
         }
 
         /* History Table */
@@ -634,18 +621,18 @@ $history = get_charge_slip_history();
             margin-top: 20px;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .history-table th,
         .history-table td {
             padding: 15px 20px;
             text-align: left;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .history-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             font-weight: 700;
             font-size: 14px;
@@ -659,23 +646,27 @@ $history = get_charge_slip_history();
         }
 
         .history-table tr:hover td {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
+            background: #f8fdf9;
         }
 
         .history-table a {
-            color: #667eea;
+            color: #2d5f3f;
             text-decoration: none;
             font-weight: 600;
             padding: 8px 15px;
-            border-radius: 20px;
-            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            background: rgba(45, 95, 63, 0.1);
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .history-table a:hover {
-            background: #667eea;
+            background: #2d5f3f;
             color: white;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         /* Print Styles */
@@ -685,7 +676,7 @@ $history = get_charge_slip_history();
             max-width: 800px;
             margin: 0 auto;
             font-family: Arial, sans-serif;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border-radius: 15px;
         }
 
@@ -693,7 +684,7 @@ $history = get_charge_slip_history();
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #2d5f3f;
         }
 
         .printed-header img {
@@ -711,14 +702,14 @@ $history = get_charge_slip_history();
             margin: 20px 0;
             font-size: 28px;
             font-weight: bold;
-            color: #667eea;
+            color: #2d5f3f;
         }
 
         .printed-form {
-            background: #f8f9ff;
+            background: #f8fdf9;
             padding: 25px;
             border-radius: 10px;
-            border: 2px solid #667eea;
+            border: 2px solid #2d5f3f;
         }
 
         .printed-form-row {
@@ -738,14 +729,14 @@ $history = get_charge_slip_history();
 
         .printed-table th,
         .printed-table td {
-            border: 2px solid #667eea;
+            border: 2px solid #2d5f3f;
             padding: 12px 15px;
             text-align: center;
             font-size: 16px;
         }
 
         .printed-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             font-weight: bold;
         }
@@ -755,14 +746,12 @@ $history = get_charge_slip_history();
             padding: 15px;
             font-weight: bold;
             font-size: 18px;
-            background: linear-gradient(135deg, #f0f3ff 0%, #e6ebff 100%);
+            background: #e8f5e9;
         }
 
         /* Print Media Query */
-        /* Additional print styles */
         @media print {
 
-            /* Hide elements that shouldn't print */
             .no-print,
             .main-header,
             header,
@@ -773,7 +762,6 @@ $history = get_charge_slip_history();
                 display: none !important;
             }
 
-            /* Reset body for printing */
             body {
                 background: white !important;
                 color: black !important;
@@ -781,7 +769,6 @@ $history = get_charge_slip_history();
                 padding: 0 !important;
             }
 
-            /* Make only the charge slip visible */
             .main-content {
                 padding: 0 !important;
                 margin: 0 !important;
@@ -807,6 +794,13 @@ $history = get_charge_slip_history();
                 padding: 0 !important;
                 margin: 0 !important;
             }
+
+            .printed-table th {
+                background: #2d5f3f !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
 
         /* Responsive Design */
@@ -829,7 +823,7 @@ $history = get_charge_slip_history();
             }
 
             nav ul {
-                gap: 15px;
+                gap: 10px;
                 flex-wrap: wrap;
                 justify-content: center;
             }
@@ -886,6 +880,15 @@ $history = get_charge_slip_history();
                 width: 95%;
                 margin: 10% auto;
                 padding: 20px;
+            }
+
+            .history-table {
+                font-size: 12px;
+            }
+
+            .history-table th,
+            .history-table td {
+                padding: 10px;
             }
         }
 

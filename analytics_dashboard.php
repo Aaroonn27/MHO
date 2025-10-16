@@ -3,7 +3,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 
 error_reporting(E_ALL);
@@ -44,12 +44,12 @@ if (isset($analytics_report['error'])) {
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
             line-height: 1.6;
         }
 
-        /* Header Styles - Integrated from appointment.php */
+        /* Header Styles */
         .main-header {
             position: relative;
             z-index: 100;
@@ -57,10 +57,10 @@ if (isset($analytics_report['error'])) {
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
             margin-bottom: 0;
         }
 
@@ -74,13 +74,13 @@ if (isset($analytics_report['error'])) {
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -99,7 +99,7 @@ if (isset($analytics_report['error'])) {
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
             margin: 0;
@@ -117,18 +117,17 @@ if (isset($analytics_report['error'])) {
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
         }
 
         nav ul li a:hover,
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -150,30 +149,53 @@ if (isset($analytics_report['error'])) {
         .dashboard-header {
             text-align: center;
             margin-bottom: 30px;
-            color: white;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .dashboard-header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
+            color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .year-selector {
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 10px;
             backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .year-selector label {
+            color: white;
+            font-weight: 600;
         }
 
         .year-selector select {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 8px;
             font-size: 16px;
             background: white;
+            color: #2d5f3f;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .year-selector select:focus {
+            outline: none;
+            border-color: #4a8f5f;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.2);
         }
 
         .stats-grid {
@@ -184,23 +206,22 @@ if (isset($analytics_report['error'])) {
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(45, 95, 63, 0.15);
         }
 
         .stat-card h3 {
             margin: 0 0 15px 0;
-            color: #333;
+            color: #2d5f3f;
             font-size: 1.1rem;
             font-weight: 600;
         }
@@ -208,13 +229,13 @@ if (isset($analytics_report['error'])) {
         .stat-value {
             font-size: 2.2rem;
             font-weight: bold;
-            color: #667eea;
+            color: #2d5f3f;
         }
 
         .stat-icon {
             float: right;
             font-size: 2rem;
-            color: #667eea;
+            color: #4a8f5f;
             opacity: 0.7;
         }
 
@@ -239,22 +260,22 @@ if (isset($analytics_report['error'])) {
         .gender-item .gender-value {
             font-size: 1.8rem;
             font-weight: bold;
-            color: #667eea;
+            color: #2d5f3f;
         }
 
         .chart-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             margin-bottom: 30px;
         }
 
         .chart-container h2 {
             margin-top: 0;
-            color: #333;
+            color: #2d5f3f;
             margin-bottom: 20px;
             font-size: 1.5rem;
             text-align: center;
@@ -268,13 +289,26 @@ if (isset($analytics_report['error'])) {
         }
 
         .table-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             margin-bottom: 30px;
+        }
+
+        .table-container h2 {
+            color: #2d5f3f;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-container h2 i {
+            color: #4a8f5f;
         }
 
         .data-table {
@@ -284,7 +318,7 @@ if (isset($analytics_report['error'])) {
         }
 
         .data-table th {
-            background: #667eea;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             padding: 12px 8px;
             text-align: left;
@@ -293,15 +327,23 @@ if (isset($analytics_report['error'])) {
 
         .data-table td {
             padding: 10px 8px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .data-table tr:hover {
-            background: #f5f5f5;
+            background: #f8fdf9;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .data-table tbody tr:nth-child(even):hover {
+            background: #f8fdf9;
         }
 
         .highlight-card {
-            border-left: 5px solid #667eea;
+            border-left: 5px solid #2d5f3f;
         }
 
         .danger-card {
@@ -360,27 +402,39 @@ if (isset($analytics_report['error'])) {
         }
 
         .debug-info {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: rgba(45, 95, 63, 0.1);
+            color: #2d5f3f;
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 10px;
             font-size: 0.9rem;
+            border: 1px solid #4a8f5f;
         }
 
         .filter-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
             transition: all 0.3s ease;
-            margin-left: 14px;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.3);
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.4);
+        }
+
+        .filter-button i {
+            font-size: 14px;
         }
 
         /* Responsive Design */
@@ -402,13 +456,13 @@ if (isset($analytics_report['error'])) {
             }
 
             .logo-container h1 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
 
             nav ul {
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 15px;
+                gap: 10px;
             }
 
             nav ul li a {
@@ -424,8 +478,17 @@ if (isset($analytics_report['error'])) {
                 font-size: 11px;
             }
 
+            .dashboard-header {
+                padding: 20px;
+            }
+
             .dashboard-header h1 {
                 font-size: 2rem;
+            }
+
+            .year-selector {
+                flex-direction: column;
+                gap: 10px;
             }
 
             .stats-grid {
@@ -434,6 +497,20 @@ if (isset($analytics_report['error'])) {
 
             .charts-row {
                 grid-template-columns: 1fr;
+            }
+
+            .chart-container,
+            .table-container {
+                padding: 20px 15px;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 6px;
             }
         }
 
@@ -457,7 +534,7 @@ if (isset($analytics_report['error'])) {
             }
 
             .dashboard-header h1 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
 
             .chart-container,
@@ -467,6 +544,19 @@ if (isset($analytics_report['error'])) {
 
             .stat-card {
                 padding: 20px 15px;
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .year-selector select {
+                width: 100%;
+            }
+
+            .filter-button {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -499,10 +589,10 @@ if (isset($analytics_report['error'])) {
                     <?php endforeach; ?>
                 </select>
                 <a type="button" class="filter-button" href="descriptive_analysis.php">
-                        <i class="fas fa-search"></i> View Analysis
-                    </a>
+                    <i class="fas fa-search"></i> View Analysis
+                </a>
             </div>
-            
+
         </div>
 
         <!-- Enhanced Summary Statistics -->
@@ -669,7 +759,7 @@ if (isset($analytics_report['error'])) {
         // Monthly Trends Chart - Using real data from PHP
         const monthlyTrendsCtx = document.getElementById('monthlyTrendsChart').getContext('2d');
         const monthlyData = <?php echo json_encode($analytics_report['monthly_trends']); ?>;
-        
+
         new Chart(monthlyTrendsCtx, {
             type: 'line',
             data: {
@@ -711,7 +801,7 @@ if (isset($analytics_report['error'])) {
         // Age Group Chart - Using real data from PHP
         const ageGroupCtx = document.getElementById('ageGroupChart').getContext('2d');
         const ageGroupData = <?php echo json_encode($analytics_report['age_groups']); ?>;
-        
+
         new Chart(ageGroupCtx, {
             type: 'doughnut',
             data: {
@@ -736,7 +826,7 @@ if (isset($analytics_report['error'])) {
         // Animal Type Chart - Using real data from PHP
         const animalTypeCtx = document.getElementById('animalTypeChart').getContext('2d');
         const animalTypeData = <?php echo json_encode($analytics_report['animal_types']); ?>;
-        
+
         new Chart(animalTypeCtx, {
             type: 'bar',
             data: {
@@ -769,7 +859,7 @@ if (isset($analytics_report['error'])) {
         // Vaccine Compliance Chart - Using real data from PHP
         const vaccineComplianceCtx = document.getElementById('vaccineComplianceChart').getContext('2d');
         const vaccineComplianceData = <?php echo json_encode($analytics_report['vaccine_compliance']); ?>;
-        
+
         new Chart(vaccineComplianceCtx, {
             type: 'bar',
             data: {
@@ -804,7 +894,7 @@ if (isset($analytics_report['error'])) {
         // Bite Site Chart - Using real data from PHP
         const biteSiteCtx = document.getElementById('biteSiteChart').getContext('2d');
         const biteSiteData = <?php echo json_encode($analytics_report['bite_sites']); ?>;
-        
+
         new Chart(biteSiteCtx, {
             type: 'pie',
             data: {
@@ -827,7 +917,7 @@ if (isset($analytics_report['error'])) {
         // Outcome Chart - Using real data from PHP
         const outcomeCtx = document.getElementById('outcomeChart').getContext('2d');
         const outcomeData = <?php echo json_encode($analytics_report['outcomes']); ?>;
-        
+
         new Chart(outcomeCtx, {
             type: 'doughnut',
             data: {

@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 ?>
 <!DOCTYPE html>
@@ -23,13 +23,13 @@ check_page_access($required_roles);
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
         }
 
-        /* Header Styles (same as homepage) */
+        /* Header Styles */
         .main-header {
             position: relative;
             z-index: 100;
@@ -37,10 +37,10 @@ check_page_access($required_roles);
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
         }
 
         .logo-container {
@@ -53,13 +53,13 @@ check_page_access($required_roles);
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -77,7 +77,7 @@ check_page_access($required_roles);
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
         }
@@ -89,18 +89,17 @@ check_page_access($required_roles);
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
         }
 
         nav ul li a:hover,
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -124,6 +123,10 @@ check_page_access($required_roles);
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title h1 {
@@ -136,20 +139,20 @@ check_page_access($required_roles);
 
         .page-title p {
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             max-width: 600px;
             margin: 0 auto;
         }
 
         /* SMS Panel */
         .sms-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .panel-header {
@@ -163,23 +166,23 @@ check_page_access($required_roles);
 
         .panel-header h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
         }
 
         .panel-header h3 i {
-            color: #667eea;
+            color: #4a8f5f;
             margin-right: 10px;
         }
 
         .balance-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             padding: 10px 20px;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: 600;
             font-size: 14px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.3);
         }
 
         .sms-controls {
@@ -192,30 +195,29 @@ check_page_access($required_roles);
         .sms-btn {
             padding: 12px 25px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .sms-btn.primary {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
         .sms-btn.secondary {
             background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
         .sms-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .sms-btn:disabled {
@@ -226,12 +228,12 @@ check_page_access($required_roles);
 
         /* Content Container */
         .content-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .content-header {
@@ -245,7 +247,7 @@ check_page_access($required_roles);
 
         .content-header h2 {
             font-size: 1.8rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
         }
 
@@ -258,7 +260,7 @@ check_page_access($required_roles);
         .action-btn {
             padding: 12px 20px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -266,23 +268,23 @@ check_page_access($required_roles);
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .action-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .action-btn.secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e9ecef;
+            background: white;
+            color: #2d5f3f;
+            border: 2px solid #4a8f5f;
         }
 
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         /* Sort Dropdown */
@@ -299,7 +301,7 @@ check_page_access($required_roles);
             min-width: 220px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
             z-index: 1000;
             margin-top: 5px;
         }
@@ -317,8 +319,12 @@ check_page_access($required_roles);
         }
 
         .dropdown-content a:hover {
-            background: #f8f9fa;
-            color: #667eea;
+            background: #f8fdf9;
+            color: #2d5f3f;
+        }
+
+        .dropdown-content a i {
+            color: #4a8f5f;
         }
 
         .dropdown-content.show {
@@ -340,9 +346,9 @@ check_page_access($required_roles);
 
         /* Table Styles */
         .appointment-table-container {
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             border: 1px solid #e9ecef;
         }
 
@@ -351,13 +357,13 @@ check_page_access($required_roles);
             grid-template-columns: 2fr 1.8fr 1.5fr 2fr 1.2fr;
             gap: 15px;
             padding: 20px 25px;
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
-            border-bottom: 2px solid #e9ecef;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-bottom: 2px solid #4a8f5f;
         }
 
         .header-cell {
             font-weight: 700;
-            color: #333;
+            color: white;
             font-size: 14px;
             display: flex;
             align-items: center;
@@ -365,7 +371,6 @@ check_page_access($required_roles);
         }
 
         .header-cell i {
-            color: #667eea;
             font-size: 16px;
         }
 
@@ -385,23 +390,33 @@ check_page_access($required_roles);
         }
 
         .table-row:hover {
-            background: #f8f9ff;
-            transform: translateX(5px);
+            background: #f8fdf9;
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.1);
         }
 
         .table-row:last-child {
             border-bottom: none;
         }
 
+        .table-row:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .table-row:nth-child(even):hover {
+            background: #f8fdf9;
+        }
+
         /* SMS Status Badges */
         .sms-status {
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 15px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             text-align: center;
             letter-spacing: 0.5px;
+            display: inline-block;
         }
 
         .status-pending {
@@ -420,26 +435,28 @@ check_page_access($required_roles);
         }
 
         .sms-action-btn {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             border: none;
             padding: 8px 15px;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(45, 95, 63, 0.2);
         }
 
         .sms-action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
         .sms-action-btn:disabled {
             background: #6c757d;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         /* Notification */
@@ -448,7 +465,7 @@ check_page_access($required_roles);
             top: 30px;
             right: 30px;
             padding: 15px 25px;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
             font-weight: 600;
             z-index: 1000;
@@ -516,6 +533,16 @@ check_page_access($required_roles);
                 text-align: center;
             }
 
+            nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
             .content-header {
                 flex-direction: column;
                 gap: 20px;
@@ -545,7 +572,7 @@ check_page_access($required_roles);
             }
 
             .header-cell,
-            .table-row > div {
+            .table-row>div {
                 padding: 5px 0;
             }
         }

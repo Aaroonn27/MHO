@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 ?>
 <!DOCTYPE html>
@@ -13,7 +13,7 @@ check_page_access($required_roles);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Bite Treatment Inventory - City Health Office of San Pablo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
+    <style>
         /* Reset and base styles */
         * {
             margin: 0;
@@ -23,13 +23,13 @@ check_page_access($required_roles);
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
         }
 
-        /* Header Styles - Integrated from appointment.php */
+        /* Header Styles */
         .main-header {
             position: relative;
             z-index: 100;
@@ -37,10 +37,10 @@ check_page_access($required_roles);
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
             margin-bottom: 0;
         }
 
@@ -54,13 +54,13 @@ check_page_access($required_roles);
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -78,7 +78,7 @@ check_page_access($required_roles);
 
         nav ul {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             list-style: none;
             align-items: center;
             margin: 0;
@@ -96,18 +96,17 @@ check_page_access($required_roles);
             text-decoration: none;
             color: white;
             padding: 12px 18px;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             font-weight: 500;
             position: relative;
         }
 
         nav ul li a:hover,
         nav ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(74, 143, 95, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
@@ -131,6 +130,10 @@ check_page_access($required_roles);
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title h1 {
@@ -143,7 +146,7 @@ check_page_access($required_roles);
 
         .page-title p {
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -157,27 +160,27 @@ check_page_access($required_roles);
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 25px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(45, 95, 63, 0.15);
         }
 
         .stat-number {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #667eea;
+            color: #2d5f3f;
             margin-bottom: 10px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .stat-label {
@@ -190,18 +193,18 @@ check_page_access($required_roles);
 
         /* Filters Section */
         .filters-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .filters-section h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
             margin-bottom: 20px;
             display: flex;
@@ -210,7 +213,7 @@ check_page_access($required_roles);
         }
 
         .filters-section h3 i {
-            color: #667eea;
+            color: #4a8f5f;
         }
 
         .filters-grid {
@@ -228,23 +231,23 @@ check_page_access($required_roles);
         .filter-group label {
             font-weight: 600;
             margin-bottom: 8px;
-            color: #333;
+            color: #2d5f3f;
             font-size: 14px;
         }
 
         .filter-input {
             padding: 12px 15px;
             border: 2px solid #e9ecef;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
             background: white;
         }
 
         .filter-input:focus {
-            border-color: #667eea;
+            border-color: #4a8f5f;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
         }
 
         .filter-actions {
@@ -254,11 +257,11 @@ check_page_access($required_roles);
         }
 
         .filter-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             border: none;
             padding: 12px 25px;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -266,11 +269,12 @@ check_page_access($required_roles);
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.2);
         }
 
         .filter-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.3);
         }
 
         .filter-button.secondary {
@@ -278,7 +282,7 @@ check_page_access($required_roles);
         }
 
         .filter-button.secondary:hover {
-            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
         /* Inventory Grid */
@@ -290,27 +294,36 @@ check_page_access($required_roles);
         }
 
         .inventory-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
+        .inventory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #2d5f3f 0%, #4a8f5f 100%);
+        }
+
         .inventory-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 30px rgba(45, 95, 63, 0.15);
         }
 
         .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             padding: 20px 25px;
-            border-radius: 15px;
+            border-radius: 12px;
             margin: -25px -25px 25px -25px;
             position: relative;
         }
@@ -333,7 +346,7 @@ check_page_access($required_roles);
         .batch-info {
             margin-top: 8px;
             font-size: 0.9rem;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         .batch-id {
@@ -350,7 +363,7 @@ check_page_access($required_roles);
 
         .stock-label {
             font-weight: 600;
-            color: #333;
+            color: #2d5f3f;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -358,10 +371,14 @@ check_page_access($required_roles);
             font-size: 14px;
         }
 
+        .stock-label i {
+            color: #4a8f5f;
+        }
+
         .stock-value {
             background: #f8f9fa;
             border: 2px solid #e9ecef;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 15px 20px;
             font-size: 1.1rem;
             font-weight: 600;
@@ -386,8 +403,15 @@ check_page_access($required_roles);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
         .expiry-info {
@@ -395,11 +419,11 @@ check_page_access($required_roles);
         }
 
         .expiry-date {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border: 2px solid #bae6fd;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #a5d6a7;
+            border-radius: 10px;
             padding: 15px 20px;
-            color: #0c4a6e;
+            color: #1b5e20;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -424,7 +448,7 @@ check_page_access($required_roles);
             gap: 10px;
             margin-top: 15px;
             padding: 12px 15px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 0.9rem;
             font-weight: 500;
         }
@@ -451,7 +475,7 @@ check_page_access($required_roles);
             flex: 1;
             padding: 12px 20px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -460,16 +484,17 @@ check_page_access($required_roles);
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .edit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
         }
 
         .edit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.3);
         }
 
         .use-btn {
@@ -479,7 +504,7 @@ check_page_access($required_roles);
 
         .use-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
         }
 
         /* Control Buttons */
@@ -493,7 +518,7 @@ check_page_access($required_roles);
         .main-button {
             padding: 15px 30px;
             border: none;
-            border-radius: 15px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
@@ -503,48 +528,48 @@ check_page_access($required_roles);
             display: flex;
             align-items: center;
             gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .add-button {
             background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
         }
 
         .add-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 184, 148, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.3);
         }
 
         .back-button {
             background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
         .back-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 80px 40px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .empty-state i {
             font-size: 5rem;
-            color: #ddd;
+            color: #4a8f5f;
             margin-bottom: 25px;
+            opacity: 0.5;
         }
 
         .empty-state h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #2d5f3f;
             margin-bottom: 10px;
         }
 
@@ -557,7 +582,7 @@ check_page_access($required_roles);
         .loading {
             text-align: center;
             padding: 60px;
-            color: white;
+            color: #2d5f3f;
             font-size: 1.1rem;
         }
 
@@ -565,11 +590,17 @@ check_page_access($required_roles);
             font-size: 2rem;
             margin-bottom: 15px;
             animation: spin 1s linear infinite;
+            color: #4a8f5f;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Modal Styles */
@@ -589,11 +620,12 @@ check_page_access($required_roles);
             background-color: white;
             margin: 8% auto;
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 15px;
             width: 450px;
             max-width: 95%;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
         }
 
         .modal-header {
@@ -607,7 +639,7 @@ check_page_access($required_roles);
 
         .modal-header h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #2d5f3f;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -615,7 +647,7 @@ check_page_access($required_roles);
         }
 
         .modal-header h3 i {
-            color: #667eea;
+            color: #4a8f5f;
         }
 
         .close {
@@ -627,7 +659,7 @@ check_page_access($required_roles);
         }
 
         .close:hover {
-            color: #333;
+            color: #2d5f3f;
         }
 
         .form-group {
@@ -638,7 +670,7 @@ check_page_access($required_roles);
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #2d5f3f;
         }
 
         .form-group input,
@@ -646,16 +678,16 @@ check_page_access($required_roles);
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e9ecef;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
         }
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #667eea;
+            border-color: #4a8f5f;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
         }
 
         .modal-buttons {
@@ -668,7 +700,7 @@ check_page_access($required_roles);
         .modal-btn {
             padding: 12px 25px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -676,26 +708,27 @@ check_page_access($required_roles);
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .modal-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
         }
 
         .modal-btn.primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.3);
         }
 
         .modal-btn.secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e9ecef;
+            background: white;
+            color: #2d5f3f;
+            border: 2px solid #4a8f5f;
         }
 
         .modal-btn.secondary:hover {
-            background: #e9ecef;
+            background: #f8fdf9;
         }
 
         /* Responsive Design */
@@ -718,12 +751,14 @@ check_page_access($required_roles);
             }
 
             .logo-container h1 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
                 text-align: center;
             }
 
             nav ul {
-                gap: 15px;
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             nav ul li a {
@@ -785,7 +820,7 @@ check_page_access($required_roles);
             }
 
             .logo-container h1 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
 
             main {
@@ -1017,8 +1052,7 @@ check_page_access($required_roles);
 
         // Show sample data for demonstration
         function showSampleData() {
-            const sampleData = [
-                {
+            const sampleData = [{
                     id: 1,
                     vaccine_name: 'Verorab',
                     vaccine_type: 'HDCV',
@@ -1060,7 +1094,7 @@ check_page_access($required_roles);
             ];
 
             displayInventoryItems(sampleData);
-            
+
             // Update statistics with sample data
             document.getElementById('total-batches').textContent = '3';
             document.getElementById('total-vials').textContent = '26';
