@@ -15,24 +15,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && isset($_POST['user_id'])) {
         $user_id = intval($_POST['user_id']);
         $action = $_POST['action'];
-        
+
         try {
             $conn = connect_db();
-            
+
             if (!$conn) {
                 throw new Exception("Database connection failed");
             }
-            
+
             if ($action === 'toggle_status') {
                 $new_status = $_POST['new_status'];
-                
+
                 // Prevent admin from deactivating themselves
                 if ($user_id == $_SESSION['user_id'] && $new_status === 'inactive') {
                     $error_message = 'You cannot deactivate your own account.';
                 } else {
                     $stmt = $conn->prepare("UPDATE users SET status = ? WHERE id = ?");
                     $stmt->bind_param("si", $new_status, $user_id);
-                    
+
                     if ($stmt->execute()) {
                         $success_message = 'User status updated successfully.';
                     } else {
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
                     $stmt->bind_param("i", $user_id);
-                    
+
                     if ($stmt->execute()) {
                         $success_message = 'User deleted successfully.';
                     } else {
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->close();
                 }
             }
-            
+
             $conn->close();
         } catch (Exception $e) {
             $error_message = 'Database error: ' . $e->getMessage();
@@ -70,13 +70,13 @@ try {
     $query = "SELECT id, username, role, full_name, email, status, created_at FROM users ORDER BY created_at DESC";
     $result = $conn->query($query);
     $users = [];
-    
+
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             $users[] = $row;
         }
     }
-    
+
     $conn->close();
 } catch (Exception $e) {
     $error_message = 'Error fetching users: ' . $e->getMessage();
@@ -105,7 +105,7 @@ $current_user = get_user_info();
         }
 
         body {
-            background: linear-gradient(135deg, #8c9be0ff 0%, #8260a5ff 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -113,13 +113,12 @@ $current_user = get_user_info();
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
             backdrop-filter: blur(20px);
             padding: 20px 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -144,13 +143,13 @@ $current_user = get_user_info();
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -170,11 +169,11 @@ $current_user = get_user_info();
             display: flex;
             align-items: center;
             gap: 15px;
-            color: #ffffffff;
+            color: white;
         }
 
         .user-info i {
-            color: white;
+            color: #a5d6a7;
         }
 
         /* Main Container */
@@ -187,6 +186,10 @@ $current_user = get_user_info();
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title {
@@ -198,7 +201,7 @@ $current_user = get_user_info();
         }
 
         .page-subtitle {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             font-size: 1.1rem;
         }
 
@@ -215,16 +218,21 @@ $current_user = get_user_info();
         .search-box {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
+            background: white;
+            border-radius: 10px;
             padding: 10px 15px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: #4a8f5f;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
         }
 
         .search-box i {
-            color: #667eea;
+            color: #4a8f5f;
             margin-right: 10px;
         }
 
@@ -243,11 +251,10 @@ $current_user = get_user_info();
 
         /* Management Card */
         .management-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
             overflow: hidden;
             position: relative;
         }
@@ -259,13 +266,13 @@ $current_user = get_user_info();
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background: linear-gradient(90deg, #2d5f3f, #4a8f5f, #2d5f3f);
         }
 
         /* Alert Messages */
         .alert {
             padding: 15px 20px;
-            border-radius: 12px;
+            border-radius: 10px;
             margin: 20px;
             margin-bottom: 0;
             font-weight: 500;
@@ -280,15 +287,17 @@ $current_user = get_user_info();
         }
 
         .alert-error {
-            background: rgba(255, 107, 107, 0.15);
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #dc3545;
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            border: 2px solid #fca5a5;
+            border-left: 4px solid #dc3545;
         }
 
         .alert-success {
-            background: rgba(40, 167, 69, 0.15);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            border: 2px solid #c3e6cb;
+            border-left: 4px solid #28a745;
         }
 
         @keyframes slideDown {
@@ -296,6 +305,7 @@ $current_user = get_user_info();
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -315,7 +325,7 @@ $current_user = get_user_info();
         }
 
         .users-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
             padding: 15px 12px;
             text-align: left;
@@ -327,7 +337,7 @@ $current_user = get_user_info();
 
         .users-table td {
             padding: 15px 12px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #f0f0f0;
             vertical-align: middle;
         }
 
@@ -336,13 +346,21 @@ $current_user = get_user_info();
         }
 
         .users-table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.1);
+            background: #f8fdf9;
+        }
+
+        .users-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .users-table tbody tr:nth-child(even):hover {
+            background: #f8fdf9;
         }
 
         /* Status Badge */
         .status-badge {
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 15px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
@@ -351,28 +369,28 @@ $current_user = get_user_info();
         }
 
         .status-badge.active {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .status-badge.inactive {
-            background: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
+            background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+            color: #721c24;
+            border: 1px solid #f1aeb5;
         }
 
         /* Role Badge */
         .role-badge {
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 15px;
             font-size: 12px;
             font-weight: 600;
             text-transform: capitalize;
             display: inline-block;
-            background: rgba(102, 126, 234, 0.15);
-            color: #667eea;
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            background: rgba(45, 95, 63, 0.1);
+            color: #2d5f3f;
+            border: 1px solid rgba(74, 143, 95, 0.3);
         }
 
         /* Action Buttons */
@@ -394,35 +412,38 @@ $current_user = get_user_info();
             align-items: center;
             gap: 5px;
             text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .btn-toggle {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-            border: 1px solid rgba(255, 193, 7, 0.3);
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+            border: 1px solid #fcd34d;
         }
 
         .btn-toggle:hover {
-            background: rgba(255, 193, 7, 0.25);
+            background: linear-gradient(135deg, #ffeaa7 0%, #fcd34d 100%);
             transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
         }
 
         .btn-delete {
-            background: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #c53030;
+            border: 1px solid #fca5a5;
         }
 
         .btn-delete:hover {
-            background: rgba(220, 53, 69, 0.25);
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
             transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
         }
 
         /* Buttons */
         .btn {
             padding: 15px 30px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -432,27 +453,27 @@ $current_user = get_user_info();
             gap: 8px;
             text-decoration: none;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.3);
         }
 
         .btn-secondary {
-            background: rgba(108, 117, 125, 0.1);
-            color: #6c757d;
-            border: 2px solid rgba(108, 117, 125, 0.2);
+            background: white;
+            color: #2d5f3f;
+            border: 2px solid #4a8f5f;
         }
 
         .btn-secondary:hover {
-            background: rgba(108, 117, 125, 0.2);
+            background: #f8fdf9;
             transform: translateY(-2px);
         }
 
@@ -467,14 +488,15 @@ $current_user = get_user_info();
             margin-bottom: 20px;
             padding: 10px 15px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.3);
         }
 
         .back-link:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #3d7f4f 0%, #2d5f3f 100%);
             transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.4);
         }
 
         /* Empty State */
@@ -486,13 +508,14 @@ $current_user = get_user_info();
 
         .empty-state i {
             font-size: 4rem;
-            color: #ddd;
+            color: #4a8f5f;
             margin-bottom: 20px;
+            opacity: 0.5;
         }
 
         .empty-state h3 {
             margin-bottom: 10px;
-            color: #333;
+            color: #2d5f3f;
         }
 
         /* Modal Styles */
@@ -514,9 +537,10 @@ $current_user = get_user_info();
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-top: 4px solid #2d5f3f;
             max-width: 400px;
             width: 90%;
             text-align: center;
@@ -524,7 +548,7 @@ $current_user = get_user_info();
 
         .modal-content h3 {
             margin-bottom: 15px;
-            color: #333;
+            color: #2d5f3f;
         }
 
         .modal-content p {
@@ -545,9 +569,17 @@ $current_user = get_user_info();
                 gap: 15px;
             }
 
+            .logo-container h1 {
+                font-size: 1.6rem;
+            }
+
             .container {
                 margin: 20px auto;
                 padding: 0 15px;
+            }
+
+            .page-header {
+                padding: 20px;
             }
 
             .page-title {
@@ -584,19 +616,38 @@ $current_user = get_user_info();
             .btn-small {
                 justify-content: center;
             }
+
+            .btn {
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
             .logo-container h1 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
             }
 
             .management-card {
-                border-radius: 15px;
+                border-radius: 12px;
             }
 
             .modal-content {
                 padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 5px;
+                font-size: 14px;
             }
         }
     </style>
@@ -704,7 +755,7 @@ $current_user = get_user_info();
                                         </span>
                                     </td>
                                     <td>
-                                        <?php 
+                                        <?php
                                         $created = new DateTime($user['created_at']);
                                         echo $created->format('M j, Y');
                                         ?>
@@ -712,13 +763,13 @@ $current_user = get_user_info();
                                     <td>
                                         <div class="action-buttons">
                                             <?php if ($user['id'] != $_SESSION['user_id']): ?>
-                                                <button class="btn-small btn-toggle" 
-                                                        onclick="toggleUserStatus(<?php echo $user['id']; ?>, '<?php echo $user['status']; ?>', '<?php echo htmlspecialchars($user['full_name']); ?>')">
+                                                <button class="btn-small btn-toggle"
+                                                    onclick="toggleUserStatus(<?php echo $user['id']; ?>, '<?php echo $user['status']; ?>', '<?php echo htmlspecialchars($user['full_name']); ?>')">
                                                     <i class="fas fa-toggle-<?php echo $user['status'] === 'active' ? 'off' : 'on'; ?>"></i>
                                                     <?php echo $user['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
                                                 </button>
-                                                <button class="btn-small btn-delete" 
-                                                        onclick="confirmDelete(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['full_name']); ?>')">
+                                                <button class="btn-small btn-delete"
+                                                    onclick="confirmDelete(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['full_name']); ?>')">
                                                     <i class="fas fa-trash"></i>
                                                     Delete
                                                 </button>
@@ -777,8 +828,8 @@ $current_user = get_user_info();
                 const fullName = cells[2].textContent.toLowerCase();
                 const role = cells[4].textContent.toLowerCase();
 
-                if (username.includes(searchTerm) || 
-                    fullName.includes(searchTerm) || 
+                if (username.includes(searchTerm) ||
+                    fullName.includes(searchTerm) ||
                     role.includes(searchTerm)) {
                     found = true;
                 }
@@ -795,30 +846,30 @@ $current_user = get_user_info();
         function toggleUserStatus(userId, currentStatus, userName) {
             const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
             const action = newStatus === 'active' ? 'activate' : 'deactivate';
-            
+
             document.getElementById('modalTitle').textContent = 'Confirm Status Change';
-            document.getElementById('modalMessage').textContent = 
+            document.getElementById('modalMessage').textContent =
                 `Are you sure you want to ${action} ${userName}?`;
-            
+
             document.getElementById('confirmButton').onclick = function() {
                 document.getElementById('statusUserId').value = userId;
                 document.getElementById('newStatus').value = newStatus;
                 document.getElementById('statusForm').submit();
             };
-            
+
             document.getElementById('confirmationModal').style.display = 'block';
         }
 
         function confirmDelete(userId, userName) {
             document.getElementById('modalTitle').textContent = 'Confirm Deletion';
-            document.getElementById('modalMessage').textContent = 
+            document.getElementById('modalMessage').textContent =
                 `Are you sure you want to permanently delete ${userName}? This action cannot be undone.`;
-            
+
             document.getElementById('confirmButton').onclick = function() {
                 document.getElementById('deleteUserId').value = userId;
                 document.getElementById('deleteForm').submit();
             };
-            
+
             document.getElementById('confirmationModal').style.display = 'block';
         }
 

@@ -117,7 +117,7 @@ $current_user = get_user_info();
         }
 
         body {
-            background: linear-gradient(135deg, #8c9be0ff 0%, #8260a5ff 100%);
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             min-height: 100vh;
             line-height: 1.6;
@@ -125,13 +125,12 @@ $current_user = get_user_info();
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
             backdrop-filter: blur(20px);
             padding: 20px 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -156,13 +155,13 @@ $current_user = get_user_info();
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -181,18 +180,18 @@ $current_user = get_user_info();
         .header-title {
             font-size: 24px;
             font-weight: 700;
-            color: #333;
+            color: #2d5f3f;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            color: #ffffffff;
+            color: white;
         }
 
         .user-info i {
-            color: white;
+            color: #a5d6a7;
         }
 
         /* Main Container */
@@ -205,6 +204,10 @@ $current_user = get_user_info();
         .page-header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(45, 95, 63, 0.3);
         }
 
         .page-title {
@@ -216,37 +219,26 @@ $current_user = get_user_info();
         }
 
         .page-subtitle {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             font-size: 1.1rem;
         }
 
         /* Form Card */
         .form-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            border-top: 4px solid #2d5f3f;
             position: relative;
             overflow: hidden;
-        }
-
-        .form-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-            border-radius: 20px 20px 0 0;
         }
 
         /* Alert Messages */
         .alert {
             padding: 15px 20px;
-            border-radius: 12px;
+            border-radius: 10px;
             margin-bottom: 25px;
             font-weight: 500;
             display: flex;
@@ -260,15 +252,17 @@ $current_user = get_user_info();
         }
 
         .alert-error {
-            background: rgba(255, 107, 107, 0.15);
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #dc3545;
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            border: 2px solid #fca5a5;
+            border-left: 4px solid #dc3545;
         }
 
         .alert-success {
-            background: rgba(40, 167, 69, 0.15);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            border: 2px solid #c3e6cb;
+            border-left: 4px solid #28a745;
         }
 
         @keyframes slideDown {
@@ -307,7 +301,7 @@ $current_user = get_user_info();
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #2d5f3f;
             font-size: 0.95rem;
         }
 
@@ -325,7 +319,7 @@ $current_user = get_user_info();
         .input-wrapper i {
             position: absolute;
             left: 15px;
-            color: #667eea;
+            color: #4a8f5f;
             font-size: 16px;
             z-index: 2;
         }
@@ -334,11 +328,10 @@ $current_user = get_user_info();
         .form-select {
             width: 100%;
             padding: 15px 15px 15px 45px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
             font-size: 16px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: white;
             transition: all 0.3s ease;
             color: #333;
         }
@@ -351,9 +344,9 @@ $current_user = get_user_info();
         .form-input:focus,
         .form-select:focus {
             outline: none;
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            border-color: #4a8f5f;
+            background: #fafffe;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
             transform: translateY(-2px);
         }
 
@@ -386,7 +379,7 @@ $current_user = get_user_info();
         }
 
         .strength-bar.active.strong {
-            background: #2ed573;
+            background: #2d5f3f;
         }
 
         .password-hint {
@@ -402,13 +395,13 @@ $current_user = get_user_info();
             justify-content: flex-end;
             margin-top: 30px;
             padding-top: 25px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 2px solid #f0f0f0;
         }
 
         .btn {
             padding: 15px 30px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -418,17 +411,17 @@ $current_user = get_user_info();
             gap: 8px;
             text-decoration: none;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(45, 95, 63, 0.3);
         }
 
         .btn-primary:disabled {
@@ -438,13 +431,13 @@ $current_user = get_user_info();
         }
 
         .btn-secondary {
-            background: rgba(108, 117, 125, 0.1);
-            color: #6c757d;
-            border: 2px solid rgba(108, 117, 125, 0.2);
+            background: white;
+            color: #2d5f3f;
+            border: 2px solid #4a8f5f;
         }
 
         .btn-secondary:hover {
-            background: rgba(108, 117, 125, 0.2);
+            background: #f8fdf9;
             transform: translateY(-2px);
         }
 
@@ -463,14 +456,15 @@ $current_user = get_user_info();
             margin-bottom: 20px;
             padding: 10px 15px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(45, 95, 63, 0.3);
         }
 
         .back-link:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #3d7f4f 0%, #2d5f3f 100%);
             transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.4);
         }
 
         /* Responsive Design */
@@ -480,9 +474,17 @@ $current_user = get_user_info();
                 gap: 15px;
             }
 
+            .logo-container h1 {
+                font-size: 1.6rem;
+            }
+
             .container {
                 margin: 20px auto;
                 padding: 0 15px;
+            }
+
+            .page-header {
+                padding: 20px;
             }
 
             .form-card {
@@ -505,9 +507,27 @@ $current_user = get_user_info();
             .btn {
                 justify-content: center;
             }
+
+            .user-info {
+                flex-direction: column;
+                gap: 5px;
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 480px) {
+            .logo-container h1 {
+                font-size: 1.4rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+            }
 
             .form-input,
             .form-select {

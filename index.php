@@ -47,9 +47,10 @@ require_once 'auth.php';
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            background: linear-gradient(135deg, #2d5f3f 0%, #1e4029 100%);
             color: white;
-            box-shadow: 0 4px 12px var(--shadow);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid #4a8f5f;
         }
 
         .logo-container {
@@ -62,12 +63,13 @@ require_once 'auth.php';
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.15);
+            background: white;
             margin-right: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .logo-img img {
@@ -77,19 +79,17 @@ require_once 'auth.php';
         }
 
         .logo-container h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         nav ul {
             display: flex;
-            gap: 10px;
+            gap: 20px;
             list-style: none;
             align-items: center;
-            margin: 0;
-            padding: 0;
         }
 
         nav ul li {
@@ -102,25 +102,27 @@ require_once 'auth.php';
             align-items: center;
             text-decoration: none;
             color: white;
-            padding: 10px 16px;
+            padding: 12px 18px;
             border-radius: 8px;
             transition: all 0.3s ease;
             font-weight: 500;
-            background: rgba(255, 255, 255, 0.1);
+            position: relative;
         }
 
-        nav ul li a:hover {
-            background: rgba(255, 255, 255, 0.2);
+        nav ul li a:hover,
+        nav ul li a.active {
+            background: rgba(74, 143, 95, 0.4);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         nav ul li a i {
-            font-size: 20px;
-            margin-bottom: 5px;
+            font-size: 22px;
+            margin-bottom: 6px;
         }
 
         nav ul li a span {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
         }
 
@@ -485,6 +487,7 @@ require_once 'auth.php';
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -665,9 +668,11 @@ require_once 'auth.php';
             0% {
                 box-shadow: 0 6px 20px var(--shadow-hover);
             }
+
             50% {
                 box-shadow: 0 6px 20px var(--shadow-hover), 0 0 0 0 rgba(58, 155, 111, 0.4);
             }
+
             100% {
                 box-shadow: 0 6px 20px var(--shadow-hover), 0 0 0 15px rgba(58, 155, 111, 0);
             }
@@ -678,9 +683,11 @@ require_once 'auth.php';
             .hero-stats {
                 gap: 35px;
             }
+
             .content-grid {
                 gap: 25px;
             }
+
             .announcements-grid {
                 grid-template-columns: 1fr;
             }
