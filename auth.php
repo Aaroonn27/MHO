@@ -178,7 +178,7 @@ function generate_navigation() {
     }
     
     // Dashboard and logout
-    // $nav_items[] = '<li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>';
+    $nav_items[] = '<li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>';
     $nav_items[] = '<li><a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>';
     
     return '<nav><ul>' . implode('', $nav_items) . '</ul></nav>';
