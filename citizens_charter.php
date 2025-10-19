@@ -1,198 +1,4 @@
-<script>
-        // JavaScript for dropdown functionality and search
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownItems = document.querySelectorAll('.dropdown-item');
-            const searchInput = document.getElementById('searchInput');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const resultsCount = document.getElementById('resultsCount');
-            const clearSearchBtn = document.getElementById('clearSearch');
-            const noResults = document.getElementById('noResults');
-            const servicesContainer = document.getElementById('servicesContainer');
-            const scrollTopBtn = document.getElementById('scrollTop');
-            const categoryCards = document.querySelectorAll('.category-card');
-
-            // Dropdown toggle functionality
-            dropdownItems.forEach(item => {
-                const header = item.querySelector('.dropdown-header');
-                header.addEventListener('click', function() {
-                    dropdownItems.forEach(otherItem => {
-                        if (otherItem !== item && otherItem.classList.contains('active')) {
-                            otherItem.classList.remove('active');
-                        }
-                    });
-                    item.classList.toggle('active');
-                });
-            });
-
-            // Search functionality
-            function performSearch() {
-                const searchTerm = searchInput.value.toLowerCase().trim();
-                const activeFilter = document.querySelector('.filter-btn.active').dataset.category;
-                let visibleCount = 0;
-
-                dropdownItems.forEach(item => {
-                    const itemText = item.textContent.toLowerCase();
-                    const itemCategory = item.dataset.category;
-                    const itemKeywords = item.dataset.keywords ? item.dataset.keywords.toLowerCase() : '';
-                    
-                    const matchesSearch = searchTerm === '' || 
-                                        itemText.includes(searchTerm) || 
-                                        itemKeywords.includes(searchTerm);
-                    const matchesFilter = activeFilter === 'all' || itemCategory === activeFilter;
-
-                    if (matchesSearch && matchesFilter) {
-                        item.style.display = 'block';
-                        visibleCount++;
-                        
-                        // Highlight search term
-                        if (searchTerm !== '') {
-                            highlightText(item, searchTerm);
-                        } else {
-                            removeHighlight(item);
-                        }
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-
-                // Update results count
-                resultsCount.textContent = visibleCount;
-                
-                // Show/hide no results message
-                if (visibleCount === 0) {
-                    noResults.style.display = 'block';
-                    servicesContainer.style.display = 'none';
-                } else {
-                    noResults.style.display = 'none';
-                    servicesContainer.style.display = 'block';
-                }
-
-                // Show/hide clear button
-                clearSearchBtn.style.display = searchTerm !== '' ? 'inline' : 'none';
-            }
-
-            // Highlight matching text
-            function highlightText(element, term) {
-                const header = element.querySelector('.dropdown-header span');
-                const originalText = header.getAttribute('data-original-text') || header.textContent;
-                
-                if (!header.hasAttribute('data-original-text')) {
-                    header.setAttribute('data-original-text', originalText);
-                }
-
-                const regex = new RegExp(`(${term})`, 'gi');
-                const highlightedText = originalText.replace(regex, '<span class="highlight">$1</span>');
-                header.innerHTML = highlightedText;
-            }
-
-            // Remove highlight
-            function removeHighlight(element) {
-                const header = element.querySelector('.dropdown-header span');
-                const originalText = header.getAttribute('data-original-text');
-                if (originalText) {
-                    header.textContent = originalText;
-                }
-            }
-
-            // Search input event listener
-            searchInput.addEventListener('input', performSearch);
-
-            // Filter button functionality
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    performSearch();
-                });
-            });
-
-            // Clear search
-            clearSearchBtn.addEventListener('click', function() {
-                searchInput.value = '';
-                performSearch();
-                searchInput.focus();
-            });
-
-            // Quick access category cards
-            categoryCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const scrollTarget = this.dataset.scroll;
-                    const targetElement = document.getElementById(scrollTarget);
-                    
-                    if (targetElement) {
-                        // Clear any search/filter first
-                        searchInput.value = '';
-                        filterButtons.forEach(btn => btn.classList.remove('active'));
-                        filterButtons[0].classList.add('active'); // Set to "All"
-                        performSearch();
-                        
-                        // Scroll to element
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        
-                        // Open the dropdown
-                        setTimeout(() => {
-                            if (!targetElement.classList.contains('active')) {
-                                targetElement.querySelector('.dropdown-header').click();
-                            }
-                            // Add a brief highlight effect
-                            targetElement.style.boxShadow = '0 0 20px rgba(58, 155, 111, 0.5)';
-                            setTimeout(() => {
-                                targetElement.style.boxShadow = '';
-                            }, 2000);
-                        }, 500);
-                    }
-                });
-            });
-
-            // Scroll to top button functionality
-            window.addEventListener('scroll', function() {
-                if (window.pageYOffset > 300) {
-                    scrollTopBtn.classList.add('show');
-                } else {
-                    scrollTopBtn.classList.remove('show');
-                }
-            });
-
-            scrollTopBtn.addEventListener('click', function() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                // Ctrl/Cmd + K to focus search
-                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                    e.preventDefault();
-                    searchInput.focus();
-                }
-                
-                // Escape to clear search
-                if (e.key === 'Escape' && searchInput.value !== '') {
-                    searchInput.value = '';
-                    performSearch();
-                }
-            });
-
-            // Add search placeholder animation
-            const placeholders = [
-                'Search for a service (e.g., "medical certificate")...',
-                'Try searching "burial", "COVID", "employment"...',
-                'Looking for vaccination certificates?',
-                'Need a death certificate?',
-                'Search by service name or keywords...'
-            ];
-            
-            let placeholderIndex = 0;
-            setInterval(() => {
-                if (document.activeElement !== searchInput) {
-                    placeholderIndex = (placeholderIndex + 1) % placeholders.length;
-                    searchInput.placeholder = placeholders[placeholderIndex];
-                }
-            }, 4000);
-        });
-    </script><?php
+<?php
 require_once 'auth.php';
 ?>
 <!DOCTYPE html>
@@ -204,7 +10,6 @@ require_once 'auth.php';
     <title>Citizen's Charter - City Health Office of San Pablo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
@@ -213,7 +18,6 @@ require_once 'auth.php';
         }
 
         :root {
-            /* San Pablo Green Color Palette */
             --primary-green: #1a5f3f;
             --primary-green-dark: #0f3d28;
             --primary-green-light: #2a7f5f;
@@ -233,7 +37,6 @@ require_once 'auth.php';
             line-height: 1.6;
         }
 
-        /* Header Styles */
         .main-header {
             position: relative;
             z-index: 100;
@@ -320,7 +123,6 @@ require_once 'auth.php';
             font-weight: 600;
         }
 
-        /* Page Header */
         .page-header {
             padding: 50px 40px;
             background: linear-gradient(135deg, var(--primary-green-light) 0%, var(--accent-green) 100%);
@@ -359,7 +161,6 @@ require_once 'auth.php';
             z-index: 2;
         }
 
-        /* Back Button */
         .back-button {
             display: inline-block;
             margin: 30px 40px 0;
@@ -383,7 +184,6 @@ require_once 'auth.php';
             margin-right: 8px;
         }
 
-        /* Main Content */
         main {
             padding: 50px 40px;
             max-width: 1400px;
@@ -429,7 +229,6 @@ require_once 'auth.php';
             font-weight: 700;
         }
 
-        /* Search and Filter Section */
         .search-filter-section {
             background: white;
             border-radius: 15px;
@@ -559,52 +358,12 @@ require_once 'auth.php';
             color: var(--gray-text);
         }
 
-        /* Quick Access Categories */
-        .quick-access {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .category-card {
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px var(--shadow);
-        }
-
-        .category-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px var(--shadow-hover);
-        }
-
-        .category-card i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .category-card h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .category-card p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-
-        /* Scroll to Top Button */
         .scroll-top {
             position: fixed;
             bottom: 100px;
             right: 30px;
-            width: 50px;
-            height: 50px;
+            width: 65px;
+            height: 65px;
             background: var(--primary-green);
             color: white;
             border-radius: 50%;
@@ -613,20 +372,24 @@ require_once 'auth.php';
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px var(--shadow);
+            box-shadow: 0 6px 20px var(--shadow-hover);
             z-index: 999;
+            border: 3px solid rgba(255, 255, 255, 0.3);
         }
 
         .scroll-top:hover {
             background: var(--accent-green);
-            transform: translateY(-3px);
+            transform: scale(1.1);
         }
 
         .scroll-top.show {
             display: flex;
         }
 
-        /* Highlight matched text */
+        .scroll-top i {
+            font-size: 26px;
+        }
+
         .highlight {
             background-color: #ffeb3b;
             padding: 2px 4px;
@@ -739,7 +502,6 @@ require_once 'auth.php';
             text-decoration: underline;
         }
 
-        /* Footer */
         .footer {
             background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green) 100%);
             color: white;
@@ -786,15 +548,11 @@ require_once 'auth.php';
             font-size: 0.9rem;
         }
 
-        /* Floating Chatbot Button */
         .chatbot-float {
             position: fixed;
             bottom: 30px;
             right: 30px;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 15px;
             cursor: pointer;
         }
 
@@ -836,7 +594,6 @@ require_once 'auth.php';
             }
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .main-header {
                 flex-direction: column;
@@ -924,7 +681,6 @@ require_once 'auth.php';
 </head>
 
 <body>
-    <!-- Header -->
     <header class="main-header">
         <div class="logo-container">
             <div class="logo-img">
@@ -937,26 +693,21 @@ require_once 'auth.php';
         </nav>
     </header>
 
-    <!-- Page Header -->
     <section class="page-header">
         <h1><i class="fas fa-file-alt"></i> Citizen's Charter</h1>
         <p>Complete list of health services available at the City Health Office of San Pablo</p>
     </section>
 
-    <!-- Back Button -->
     <a href="index.php" class="back-button">
         <i class="fas fa-arrow-left"></i>Back to Home
     </a>
 
-    <!-- Main Content -->
     <main>
-        <!-- Search and Filter Section -->
         <div class="search-filter-section">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search for a service (e.g., 'medical certificate', 'burial', 'COVID')...">
                 <i class="fas fa-search"></i>
             </div>
-
             <div class="filter-buttons">
                 <span class="filter-label"><i class="fas fa-filter"></i> Quick Filters:</span>
                 <button class="filter-btn active" data-category="all">All Services</button>
@@ -967,32 +718,7 @@ require_once 'auth.php';
             </div>
         </div>
 
-        <!-- Quick Access Categories -->
-        <div class="quick-access" style="display: none;">
-            <div class="category-card" data-scroll="medical-employment">
-                <i class="fas fa-briefcase"></i>
-                <h4>Employment</h4>
-                <p>Medical certificates for work</p>
-            </div>
-            <div class="category-card" data-scroll="covid-vaccination">
-                <i class="fas fa-syringe"></i>
-                <h4>Vaccination</h4>
-                <p>COVID-19 certificates</p>
-            </div>
-            <div class="category-card" data-scroll="death-certificate">
-                <i class="fas fa-certificate"></i>
-                <h4>Death Records</h4>
-                <p>Death certificates & permits</p>
-            </div>
-            <div class="category-card" data-scroll="health-workers">
-                <i class="fas fa-user-md"></i>
-                <h4>Workers</h4>
-                <p>Health certifications</p>
-            </div>
-        </div>
-
-        <!-- Results Info -->
-        <div class="results-info" id="resultsInfo">
+        <div class="results-info">
             <span class="results-count">Showing <strong id="resultsCount">25</strong> of 25 services</span>
             <button class="clear-search" id="clearSearch" style="display: none;">Clear Search</button>
         </div>
@@ -1005,7 +731,6 @@ require_once 'auth.php';
                 <h2>All Health Services (25 Services)</h2>
             </div>
 
-            <!-- 1. Sanitary Permit -->
             <div class="dropdown-item" data-category="certification" data-keywords="sanitary permit food establishment business restaurant">
                 <div class="dropdown-header">
                     <span>Issuance of Sanitary Permit for Food and Non-Food Establishments</span>
@@ -1022,12 +747,11 @@ require_once 'auth.php';
                         <li>For those applying for renewal of Sanitary Permit previously issued Mayor's Permit</li>
                         <li>Additional Requirements (Click "More Details" For Clarification)</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1DEMIrwVUJJ8uTaft7FUtTA9vyJjdkuFv/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 2. Health Certification for Workers -->
-            <div class="dropdown-item" data-category="certification" data-keywords="health certification workers business establishment employee" id="health-workers">
+            <div class="dropdown-item" data-category="certification" data-keywords="health certification workers business establishment employee">
                 <div class="dropdown-header">
                     <span>Issuance of Health Certification for Workers of Business Establishments</span>
                     <i class="fas fa-chevron-down"></i>
@@ -1038,17 +762,16 @@ require_once 'auth.php';
                     <strong>Who May Avail:</strong> Workers of food and non-food establishments<br>
                     <strong>Requirements:</strong>
                     <ol>
-                        <li>Valid Laboratory Exam Result (Click "More Details" For Clarification)</li>
+                        <li>Valid Laboratory Exam Result</li>
                         <li>1x1 ID Picture</li>
                         <li>Community Tax Certificate for the current Year</li>
                         <li>Identification Card</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1bzcWDB02_oAagntv52JUbiM8wipUbGpi/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 3. Medical Certificates for Employment -->
-            <div class="dropdown-item" data-category="medical" data-keywords="medical certificate employment job training loan scholarship school" id="medical-employment">
+            <div class="dropdown-item" data-category="medical" data-keywords="medical certificate employment job training loan scholarship school">
                 <div class="dropdown-header">
                     <span>Issuance of Medical Certificates for Employment, On-the-job-training, Loans, Scholarships, School Entrants</span>
                     <i class="fas fa-chevron-down"></i>
@@ -1060,20 +783,19 @@ require_once 'auth.php';
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Identification Card</li>
-                        <li>Valid Laboratory Exam Results (Click "More Details" For Clarification)</li>
+                        <li>Valid Laboratory Exam Results</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1uhFaIHCb0K7ewsj14dj1Rci1DTqsPKHh/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 4. Tricycle Driver Medical Certificate -->
             <div class="dropdown-item" data-category="medical" data-keywords="tricycle driver medical certificate franchise license">
                 <div class="dropdown-header">
                     <span>Issuance of Medical Certificate for Tricycle Drivers (Tricycle Franchise)</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> Local Ordinance No. 2011-01 (The 2011 Revised Comprehensive Traffic Code of the City of San Pablo, and Creating a Comprehensive and Integrated Traffic Management System/Traffic Assessment Plan in the City of San Pablo)<br>
+                    <strong>Pursuant to:</strong> Local Ordinance No. 2011-01<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> Tricycle Drivers<br>
                     <strong>Requirements:</strong>
@@ -1081,11 +803,10 @@ require_once 'auth.php';
                         <li>Driver's License</li>
                         <li>Unified Clearance</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/11Hb-Sz7ivHctu_TFhpitSPvH8cOfbVI9/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 5. Medical Certificate for Leave -->
             <div class="dropdown-item" data-category="medical" data-keywords="medical certificate leave absence sick leave government employee">
                 <div class="dropdown-header">
                     <span>Issuance of Medical Certificate for Leave of Absence</span>
@@ -1100,11 +821,10 @@ require_once 'auth.php';
                         <li>Consultation within the first three (3) days of illness</li>
                         <li>Laboratory Test (If Available)</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1ER8_ky-ooMjzNFNTmLxnoOxmfpjQvlGS/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 6. PWD Medical Certificates -->
             <div class="dropdown-item" data-category="medical" data-keywords="pwd persons with disabilities medical certificate disability">
                 <div class="dropdown-header">
                     <span>Issuance of Medical Certificates for Persons with Disabilities (PWDs)</span>
@@ -1117,55 +837,52 @@ require_once 'auth.php';
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Philippine Registry Form for Persons with Disabilities</li>
-                        <li>Certification from a Specialist if the disability is uncertain (e.g. Psychiatrist for Psychosocial Disability)</li>
+                        <li>Certification from a Specialist if the disability is uncertain</li>
                         <li>Proof of the disability if client is unable to report for physical examination and assessment</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/173ZpJwyo8AVjci1erlrxOwzfsJIOG9rS/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 7. Entertainers Health Certification -->
             <div class="dropdown-item" data-category="certification" data-keywords="entertainers health certification entertainment establishment">
                 <div class="dropdown-header">
                     <span>Issuance of Health Certification for Entertainers of Entertainment Establishments</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D. 856 Chapter XI, Section 57.b.1.) and Local Ordinance No. 2006-35 (Codified as of March 30, 2011), Section 7.e<br>
+                    <strong>Pursuant to:</strong> P.D. 856 Chapter XI, Section 57.b.1. and Local Ordinance No. 2006-35<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> Entertainers of Entertainment Establishments<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Barangay Clearance</li>
                         <li>Community Tax Certificate for the Current Year</li>
-                        <li>Valid laboratory exam results: (within 2 weeks) urinalysis, fecalysis, sputum exam and (within a year) chest x-ray</li>
+                        <li>Valid laboratory exam results</li>
                         <li>Two pieces 1 x 1 and two pieces 2 x 2 ID pictures</li>
                         <li>Dental Clearance (for new applicants only)</li>
                         <li>Authenticated Birth Certificate (for applicants whose age-range cannot be determined)</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1xT0zM5Ku01vrorgjBP6g1SHQM3IZFDYv/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 8. BJMP Detention Medical Certificate -->
             <div class="dropdown-item" data-category="medical" data-keywords="bjmp detention medical certificate police custody suspect arrested">
                 <div class="dropdown-header">
                     <span>Issuance of Medical Certificates for BJMP Detention</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> PNP Operational Procedures, March 2010, Section 10 (Medical Examination of Arrested Person/Suspect)<br>
+                    <strong>Pursuant to:</strong> PNP Operational Procedures, March 2010, Section 10<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> Suspects under PNP Custody<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>PNP request for Physical Examination</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1RsbhOD7SskDuzlvr-WRbmi9QxZ6risWT/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 9. Drug Counseling -->
             <div class="dropdown-item" data-category="certification" data-keywords="drug counseling screening dependent probationary rehabilitation">
                 <div class="dropdown-header">
                     <span>Online Counseling and Screening of Drug Dependents on Probationary Status</span>
@@ -1181,14 +898,13 @@ require_once 'auth.php';
                         <li>Confirmed schedule for online counseling and screening</li>
                         <li>Latest drug test result</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1DglLJ1caRj1nhy6bc3oD_LYvqR9S0ulY/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 10. Drug Referral -->
             <div class="dropdown-item" data-category="certification" data-keywords="drug referral rehabilitation cbdrp facility dependent">
                 <div class="dropdown-header">
-                    <span>Referral of Drug Dependents for Community Based Rehabilitation Program (CBDRP) or Drug Rehabilitation Facility</span>
+                    <span>Referral of Drug Dependents for Community Based Rehabilitation Program (CBDRP)</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
@@ -1200,18 +916,17 @@ require_once 'auth.php';
                         <li>Referral letter from Barangay Chairman or City Social Welfare and Development Officer (CSWDO) or Private Employer</li>
                         <li>Latest drug test result</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/15mkJ7B-7UjpTPnBzLbH2fwsF3k_3-iPz/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 11. Gender Certification -->
             <div class="dropdown-item" data-category="certification" data-keywords="gender certification physical examination civil registrar">
                 <div class="dropdown-header">
                     <span>Certification and Physical Examination for Gender</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> Philippine Statistics Authority Administrative Order No. 1, Series of 2012, Rules and Regulations Governing the Implementation of Republic Act. No. 10172<br>
+                    <strong>Pursuant to:</strong> Philippine Statistics Authority Administrative Order No. 1, Series of 2012<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
@@ -1221,50 +936,47 @@ require_once 'auth.php';
                         <li>Identification Card</li>
                         <li>Letter of Consent</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1mugU-aKCh6sr15SJjo0Vt1d7g1Jpnnhs/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 12. Physical Injuries Certification -->
             <div class="dropdown-item" data-category="certification" data-keywords="physical injuries certification examination vawc violence abuse">
                 <div class="dropdown-header">
                     <span>Certification and Physical Examination for Physical Injuries</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    As requested by Philippine National Police or Office of City Social Welfare and Development Officer and pursuant to Revised PNP Operational Procedures 2013 (Rule 33. Investigation of Violence Against Women and their Children (VAWC) and other Cases of Child Abuse)<br>
+                    As requested by Philippine National Police or Office of City Social Welfare and Development Officer<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>OSWD or PNP request for physical examination. Minors need to be accompanied by parent/guardian</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1A0TV6fVxVKKMjdsiDffmlANpATO7B9si/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 13. Sexual Abuse Certification -->
             <div class="dropdown-item" data-category="certification" data-keywords="sexual abuse certification examination victim vawc violence">
                 <div class="dropdown-header">
                     <span>Certification and Physical Examination for Sexual Abuse</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    As requested by Philippine National Police or Office of City Social Welfare and Development Officer and pursuant to Revised PNP Operational Procedures 2013 (Rule 33. Investigation of Violence Against Women and their Children (VAWC) and other Cases of Child Abuse)<br>
+                    As requested by Philippine National Police or Office of City Social Welfare and Development Officer<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> Alleged Sexual Abuse Victim<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>OSWD or PNP request for physical examination. Minors need to be accompanied by parent/guardian</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1ONcSUdCZahhqIcorv7yiiOP4KxPry0Nf/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 14. Burial Authorization (Indigent) -->
             <div class="dropdown-item" data-category="death" data-keywords="burial authorization permit indigent cemetery himlayang san pablena">
                 <div class="dropdown-header">
-                    <span>Issuance of Burial Authorization for Burial Permit (Indigent) In Himlayang San Pableña</span>
+                    <span>Issuance of Burial Authorization for Burial Permit (Indigent)</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
@@ -1273,40 +985,38 @@ require_once 'auth.php';
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
-                        <li>Applicant must have knowledge of personal data of deceased and information on internment such as funeral service, date and time</li>
-                        <li>Written request or Certification of Indigency for exemption from payment of digging fee due to indigency issued by the Barangay Chairman (residence of the deceased)</li>
+                        <li>Applicant must have knowledge of personal data of deceased and information on internment</li>
+                        <li>Written request or Certification of Indigency issued by the Barangay Chairman</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1iKhIASmB4972zpWrEuO-KJcJP41yngoD/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 15. Death Certificate (No Medical Attendance) -->
-            <div class="dropdown-item" data-category="death" data-keywords="death certificate without medical attendance died no doctor" id="death-certificate">
+            <div class="dropdown-item" data-category="death" data-keywords="death certificate without medical attendance died no doctor">
                 <div class="dropdown-header">
                     <span>Issuance of Death Certificate for Deaths without Medical Attendance</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D. 856, Chapter XXI. Disposal of Dead Persons, Section 4. Burial Requirements) and Medical Certification of Death, DOH Death Registration: Legal Mandates, Rules and Procedures<br>
+                    <strong>Pursuant to:</strong> P.D. 856, Chapter XXI. Disposal of Dead Persons, Section 4<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
-                        <li>Applicant, preferably a next-of-kin or close relative, must have knowledge of the personal data of the deceased as well as the circumstances leading to the death</li>
+                        <li>Applicant must have knowledge of the personal data of the deceased and circumstances leading to the death</li>
                         <li>Certification of Licensed Embalmer at the back of Death Certificate Form</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1Pg37lQ5ivGunPw0jb6bbhafNRMH6PuwT/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 16. Death Certificate (With Medical Attendance) -->
             <div class="dropdown-item" data-category="death" data-keywords="death certificate with medical attendance died doctor physician">
                 <div class="dropdown-header">
                     <span>Issuance of Death Certificate for Deaths with Medical Attendance</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D. 856, Chapter XXI. Disposal of Dead Persons, Section 4. Burial Requirements) and Medical Certification of Death, DOH Death Registration: Legal Mandates, Rules and Procedures<br>
+                    <strong>Pursuant to:</strong> P.D. 856, Chapter XXI. Disposal of Dead Persons, Section 4<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
@@ -1314,57 +1024,54 @@ require_once 'auth.php';
                         <li>An accomplished Death Certificate form duly signed by the attending physician</li>
                         <li>Certification of Licensed Embalmer at the back of Death Certificate Form</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/10bpi5HPVmCOPYQRr0QZ4-X_6CcXHoZ_u/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 17. Exhumation Permit -->
             <div class="dropdown-item" data-category="death" data-keywords="exhumation permit disinterment burial transfer remains">
                 <div class="dropdown-header">
                     <span>Issuance of Exhumation Permit</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D. 856, Chapter XXI. Disposal of Dead Persons, Section 5. Disinterment or Exhumation Requirements)<br>
+                    <strong>Pursuant to:</strong> P.D. 856, Chapter XXI, Section 5. Disinterment or Exhumation Requirements<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Burial Sketch if buried at City Cemetery</li>
-                        <li>Copy of Death Certificate Note: Period of burial should not be less than 3 years for non-communicable diseases cause of death, and not less than 5 years for communicable diseases cause of death</li>
+                        <li>Copy of Death Certificate (Period of burial: not less than 3 years for non-communicable diseases, 5 years for communicable diseases)</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/14x5FrEFV7oU2feDM1oPHXgkHxGN782_m/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 18. Postmortem Examination -->
             <div class="dropdown-item" data-category="death" data-keywords="postmortem medicolegal examination autopsy dissection remains">
                 <div class="dropdown-header">
                     <span>Postmortem Medicolegal Examination</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D. 856, Chapter XXI. Disposal of Dead Persons, Section 13. Autopsy and Dissection of Remains) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br>
+                    <strong>Pursuant to:</strong> P.D. 856, Chapter XXI, Section 13. Autopsy and Dissection of Remains<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>PNP request for postmortem examination</li>
-                        <li>Informant who have knowledge of the personal data of the deceased and of the alleged circumstances of death</li>
+                        <li>Informant who have knowledge of the personal data of the deceased</li>
                         <li>Death Certificate Form</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1j39QqC4uvEe2bCzXPrvRXALu7FYrIIRL/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 19. Research and Information -->
             <div class="dropdown-item" data-category="certification" data-keywords="research information securing request data records">
                 <div class="dropdown-header">
                     <span>Researches and Securing Information</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> Executive Order No. 02, s. 2016 (Operationalizing in the Executive Branch the People's Constitutional Right to Information and the State Policies to Full Public Disclosure and Transparency in the Public Service and Providing Guidelines Therefore)<br>
+                    <strong>Pursuant to:</strong> Executive Order No. 02, s. 2016<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
@@ -1372,11 +1079,10 @@ require_once 'auth.php';
                         <li>Written Letter of Request</li>
                         <li>Identification Card</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1KvJnhRsfxvbyhRn3bdE1eIvnTNkHuhK8/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 20. Complaint Management -->
             <div class="dropdown-item" data-category="certification" data-keywords="complaint management anti red tape feedback grievance">
                 <div class="dropdown-header">
                     <span>Complaint Management</span>
@@ -1390,56 +1096,53 @@ require_once 'auth.php';
                     <ol>
                         <li>Written letter of complaint with supporting documents if any</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1nMHSoYvkb1hLyDEYdlwTgyUz1-UBjGH2/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 21. COVID-19 Vaccination Certificate (National) -->
-            <div class="dropdown-item" data-category="covid" data-keywords="covid vaccination certificate national digital vaccine vaxcert" id="covid-vaccination">
+            <div class="dropdown-item" data-category="covid" data-keywords="covid vaccination certificate national digital vaccine vaxcert">
                 <div class="dropdown-header">
-                    <span>Issuance of COVID-19 Vaccination Certificate (National Digital Vaccination Certificate)</span>
+                    <span>Issuance of COVID-19 Vaccination Certificate (National Digital)</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525 (An Act Establishing the Coronavirus Disease 2019 (COVID-19) Vaccination Program Expediting the Vaccine Procurement and Administration Process, Providing Funds therefor, and for other purposes)<br>
-                    <strong>Office or Division:</strong> City Health Office-Health Information Center, Trece Martirez St., San Pablo City<br>
+                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525<br>
+                    <strong>Office or Division:</strong> City Health Office-Health Information Center<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Vaccination Card</li>
                         <li>Identification Card</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1joHWGTzhpAxp3B0KNiIV2bdWLNukdtBU/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 22. COVID-19 Vaccination Certificate (LGU) -->
             <div class="dropdown-item" data-category="covid" data-keywords="covid vaccination certificate lgu local vaccine">
                 <div class="dropdown-header">
                     <span>Issuance of LGU COVID-19 Vaccination Certificate</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525 (An Act Establishing the Coronavirus Disease 2019 (COVID-19) Vaccination Program Expediting the Vaccine Procurement and Administration Process, Providing Funds therefor, and for other purposes)<br>
-                    <strong>Office or Division:</strong> City Health Office-Health Information Center, Trece Martirez St., San Pablo City<br>
+                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525<br>
+                    <strong>Office or Division:</strong> City Health Office-Health Information Center<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Vaccination Card</li>
                         <li>Identification Card</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1rdFmMh8ujnYOJuVmwkajDCS5dDDLyM-v/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 23. Immunization Certificate -->
             <div class="dropdown-item" data-category="medical" data-keywords="immunization certificate vaccine children infants mandatory">
                 <div class="dropdown-header">
                     <span>Issuance of Immunization Certificate</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> Republic Act. No. 10152 (Mandatory Infants and Children Health Immunization Act of 2011) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br>
+                    <strong>Pursuant to:</strong> Republic Act. No. 10152 (Mandatory Infants and Children Health Immunization Act of 2011)<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
@@ -1448,50 +1151,47 @@ require_once 'auth.php';
                         <li>Identification Card</li>
                         <li>Medical Records Release Request Form</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1C_4oVZoF9gek4n32zddjqINAdrx_kOG0/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 24. Lost Vaccination Card Replacement -->
             <div class="dropdown-item" data-category="covid" data-keywords="lost vaccination card replacement covid vaccine missing">
                 <div class="dropdown-header">
                     <span>Replacement of Lost COVID-19 Vaccination Card</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525 (An Act Establishing the Coronavirus Disease 2019 (COVID-19) Vaccination Program Expediting the Vaccine Procurement and Administration Process, Providing Funds therefor, and for other purposes)<br>
-                    <strong>Office or Division:</strong> City Health Office-Health Information Center, Trece Martirez St., San Pablo City<br>
+                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525<br>
+                    <strong>Office or Division:</strong> City Health Office-Health Information Center<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Affidavit of Loss</li>
                         <li>Photocopy of Identification Card</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1Lic5EOVR3JkEhciNfWgLjP1pgpezLBur/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
-            <!-- 25. COVID Medical Clearance -->
             <div class="dropdown-item" data-category="covid" data-keywords="covid medical clearance positive recovered certificate">
                 <div class="dropdown-header">
                     <span>Issuance of Medical Clearance Certificate for COVID-19 Positive Clients</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-content">
-                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525 (An Act Establishing the Coronavirus Disease 2019 (COVID-19) Vaccination Program Expediting the Vaccine Procurement and Administration Process, Providing Funds Therefor, and for other purposes)<br>
+                    <strong>Pursuant to:</strong> DILG Department Memorandum No. 2021-095 based on R.A. 11525<br>
                     <strong>Office or Division:</strong> City Health Office<br>
                     <strong>Who May Avail:</strong> General Public<br>
                     <strong>Requirements:</strong>
                     <ol>
                         <li>Identification Card</li>
                     </ol>
-                    <a href="#">More Details</a>
+                    <a href="https://drive.google.com/file/d/1JUiTctZwFQQmlSXAxRN5RNlg5i4VjiZH/view?usp=sharing">More Details</a>
                 </div>
             </div>
 
         </div>
 
-        <!-- No Results Message (Hidden by default) -->
         <div class="no-results" id="noResults" style="display: none;">
             <i class="fas fa-search-minus"></i>
             <h3>No Services Found</h3>
@@ -1499,24 +1199,20 @@ require_once 'auth.php';
         </div>
     </main>
 
-    <!-- Scroll to Top Button -->
     <div class="scroll-top" id="scrollTop">
         <i class="fas fa-arrow-up"></i>
     </div>
 
-    <!-- Floating Chatbot Button -->
     <div class="chatbot-float" onclick="window.location.href='chatbot.php'">
         <div class="chatbot-button">
             <i class="fas fa-robot"></i>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <h2>About Us</h2>
             <p>The City Health Office of San Pablo is dedicated to providing quality healthcare services to the residents of San Pablo City. Our mission is to promote health, prevent disease, and protect the well-being of our community through accessible and responsive healthcare programs.</p>
-
             <div class="copyright">
                 <p>&copy; 2024 City Health Office of San Pablo. All rights reserved.</p>
             </div>
@@ -1524,25 +1220,145 @@ require_once 'auth.php';
     </footer>
 
     <script>
-        // JavaScript for dropdown functionality
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownItems = document.querySelectorAll('.dropdown-item');
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const resultsCount = document.getElementById('resultsCount');
+            const clearSearchBtn = document.getElementById('clearSearch');
+            const noResults = document.getElementById('noResults');
+            const servicesContainer = document.getElementById('servicesContainer');
+            const scrollTopBtn = document.getElementById('scrollTop');
 
             dropdownItems.forEach(item => {
                 const header = item.querySelector('.dropdown-header');
-
                 header.addEventListener('click', function() {
-                    // Close all other dropdowns
                     dropdownItems.forEach(otherItem => {
                         if (otherItem !== item && otherItem.classList.contains('active')) {
                             otherItem.classList.remove('active');
                         }
                     });
-
-                    // Toggle current dropdown
                     item.classList.toggle('active');
                 });
             });
+
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.category;
+                let visibleCount = 0;
+
+                dropdownItems.forEach(item => {
+                    const itemText = item.textContent.toLowerCase();
+                    const itemCategory = item.dataset.category;
+                    const itemKeywords = item.dataset.keywords ? item.dataset.keywords.toLowerCase() : '';
+
+                    const matchesSearch = searchTerm === '' || itemText.includes(searchTerm) || itemKeywords.includes(searchTerm);
+                    const matchesFilter = activeFilter === 'all' || itemCategory === activeFilter;
+
+                    if (matchesSearch && matchesFilter) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                        if (searchTerm !== '') {
+                            highlightText(item, searchTerm);
+                        } else {
+                            removeHighlight(item);
+                        }
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                resultsCount.textContent = visibleCount;
+
+                if (visibleCount === 0) {
+                    noResults.style.display = 'block';
+                    servicesContainer.style.display = 'none';
+                } else {
+                    noResults.style.display = 'none';
+                    servicesContainer.style.display = 'block';
+                }
+
+                clearSearchBtn.style.display = searchTerm !== '' ? 'inline' : 'none';
+            }
+
+            function highlightText(element, term) {
+                const header = element.querySelector('.dropdown-header span');
+                const originalText = header.getAttribute('data-original-text') || header.textContent;
+
+                if (!header.hasAttribute('data-original-text')) {
+                    header.setAttribute('data-original-text', originalText);
+                }
+
+                const regex = new RegExp(`(${term})`, 'gi');
+                const highlightedText = originalText.replace(regex, '<span class="highlight">$1</span>');
+                header.innerHTML = highlightedText;
+            }
+
+            function removeHighlight(element) {
+                const header = element.querySelector('.dropdown-header span');
+                const originalText = header.getAttribute('data-original-text');
+                if (originalText) {
+                    header.textContent = originalText;
+                }
+            }
+
+            searchInput.addEventListener('input', performSearch);
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    performSearch();
+                });
+            });
+
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                performSearch();
+                searchInput.focus();
+            });
+
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('show');
+                } else {
+                    scrollTopBtn.classList.remove('show');
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                if (e.key === 'Escape' && searchInput.value !== '') {
+                    searchInput.value = '';
+                    performSearch();
+                }
+            });
+
+            const placeholders = [
+                'Search for a service (e.g., "medical certificate")...',
+                'Try searching "burial", "COVID", "employment"...',
+                'Looking for vaccination certificates?',
+                'Need a death certificate?',
+                'Search by service name or keywords...'
+            ];
+
+            let placeholderIndex = 0;
+            setInterval(() => {
+                if (document.activeElement !== searchInput) {
+                    placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+                    searchInput.placeholder = placeholders[placeholderIndex];
+                }
+            }, 4000);
         });
     </script>
 </body>
