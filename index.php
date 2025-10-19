@@ -937,45 +937,68 @@ require_once 'auth.php';
             </div>
         </section>
 
+        <!-- Citizen's Charter Section -->
         <div class="section-title">
-            <h2>Our Services & Programs</h2>
-            <p>Comprehensive healthcare solutions tailored for our community's needs</p>
+            <h2>Citizen's Charter</h2>
+            <p>Comprehensive list of services available at the City Health Office of San Pablo</p>
         </div>
 
-        <div class="content-grid">
-            <!-- Services Column -->
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- Single Citizen's Charter Column -->
             <div class="content-column">
                 <div class="column-header">
                     <div class="column-icon">
-                        <i class="fas fa-stethoscope"></i>
+                        <i class="fas fa-file-alt"></i>
                     </div>
-                    <h3>Services</h3>
+                    <h3>Citizen's Charter - Health Services</h3>
                 </div>
 
-                <!-- Service Items -->
+                <!-- 1. Sanitary Permit -->
                 <div class="dropdown-item">
                     <div class="dropdown-header">
-                        <span>Health Certification for Workers</span>
+                        <span>Issuance of Sanitary Permit for Food and Non-Food Establishments</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-content">
-                        <strong>Pursuant to The Code on Sanitation of the Philippines</strong> (P.D. 856 Chapter III, Section 15) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br>
+                        <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D.856 Chapter III, Section 14a) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196, s. 2024)<br>
+                        <strong>Office or Division:</strong> City Health Office<br>
+                        <strong>Who May Avail:</strong> Owner, Manager, or Operator<br>
+                        <strong>Requirements:</strong>
+                        <ol>
+                            <li>A duly accomplished Unified Clearance Form</li>
+                            <li>Barangay Business Permit</li>
+                            <li>For those applying for renewal of Sanitary Permit previously issued Mayor's Permit</li>
+                            <li>Additional Requirements (Click "More Details" For Clarification)</li>
+                        </ol>
+                        <a href="https://drive.google.com/file/d/1DEMIrwVUJJ8uTaft7FUtTA9vyJjdkuFv/view?usp=sharing">More Details</a>
+                    </div>
+                </div>
+
+                <!-- 2. Health Certification for Workers -->
+                <div class="dropdown-item">
+                    <div class="dropdown-header">
+                        <span>Issuance of Health Certification for Workers of Business Establishments</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <strong>Pursuant to:</strong> The Code on Sanitation of the Philippines (P.D. 856 Chapter III, Section 15) and Revised Revenue Code of the City of San Pablo (Local Ordinance No. 196 s. 2024)<br>
                         <strong>Office or Division:</strong> City Health Office<br>
                         <strong>Who May Avail:</strong> Workers of food and non-food establishments<br>
                         <strong>Requirements:</strong>
                         <ol>
-                            <li><strong>Valid Laboratory Exam Result</strong> (Click "More Details" For Clarification)</li>
-                            <li><strong>1x1 ID Picture</strong></li>
-                            <li><strong>Community Tax Certificate for the current Year</strong></li>
-                            <li><strong>Identification Card</strong></li>
+                            <li>Valid Laboratory Exam Result (Click "More Details" For Clarification)</li>
+                            <li>1x1 ID Picture</li>
+                            <li>Community Tax Certificate for the current Year</li>
+                            <li>Identification Card</li>
                         </ol>
-                        <a href='https://drive.google.com/file/d/1bzcWDB02_oAagntv52JUbiM8wipUbGpi/view?usp=drive_link'>More Details</a>
+                        <a href="https://drive.google.com/file/d/1bzcWDB02_oAagntv52JUbiM8wipUbGpi/view?usp=sharing">More Details</a>
                     </div>
                 </div>
 
+                <!-- 3. Medical Certificates for Employment -->
                 <div class="dropdown-item">
                     <div class="dropdown-header">
-                        <span>Medical Certificates for Employment & Training</span>
+                        <span>Issuance of Medical Certificates for Employment, On-the-job-training, Loans, Scholarships, School Entrants</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-content">
@@ -984,34 +1007,36 @@ require_once 'auth.php';
                         <strong>Who May Avail:</strong> Applicants for employment, on-the-job-training, loans, scholarships, school entrant<br>
                         <strong>Requirements:</strong>
                         <ol>
-                            <li><strong>Identification Card</strong></li>
-                            <li><strong>Valid Laboratory Exam Results (Click "More Details" For Clarification)</strong></li>
+                            <li>Identification Card</li>
+                            <li>Valid Laboratory Exam Results (Click "More Details" For Clarification)</li>
                         </ol>
-                        <a href='https://drive.google.com/file/d/1uhFaIHCb0K7ewsj14dj1Rci1DTqsPKHh/view?usp=drive_link'>More Details</a>
+                        <a href="https://drive.google.com/file/d/1uhFaIHCb0K7ewsj14dj1Rci1DTqsPKHh/view?usp=sharing">More Details</a>
                     </div>
                 </div>
 
+                <!-- 4. Tricycle Driver Medical Certificate -->
                 <div class="dropdown-item">
                     <div class="dropdown-header">
-                        <span>Tricycle Driver Medical Certificates</span>
+                        <span>Issuance of Medical Certificate for Tricycle Drivers (Tricycle Franchise)</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-content">
-                        <strong>Pursuant to Local Ordinance No. 2011-01</strong> (The 2011 Revised Comprehensive Traffic Code of the City of San Pablo)<br>
+                        <strong>Pursuant to:</strong> Local Ordinance No. 2011-01 (The 2011 Revised Comprehensive Traffic Code of the City of San Pablo, and Creating a Comprehensive and Integrated Traffic Management System/Traffic Assessment Plan in the City of San Pablo)<br>
                         <strong>Office or Division:</strong> City Health Office<br>
                         <strong>Who May Avail:</strong> Tricycle Drivers<br>
                         <strong>Requirements:</strong>
                         <ol>
-                            <li><strong>Driver's License</strong></li>
-                            <li><strong>Unified Clearance</strong></li>
+                            <li>Driver's License</li>
+                            <li>Unified Clearance</li>
                         </ol>
-                        <a href='https://drive.google.com/file/d/11Hb-Sz7ivHctu_TFhpitSPvH8cOfbVI9/view?usp=drive_link'>More Details</a>
+                        <a href="https://drive.google.com/file/d/11Hb-Sz7ivHctu_TFhpitSPvH8cOfbVI9/view?usp=sharing">More Details</a>
                     </div>
                 </div>
 
+                <!-- 5. Medical Certificate for Leave -->
                 <div class="dropdown-item">
                     <div class="dropdown-header">
-                        <span>Medical Certificates for Leave of Absence</span>
+                        <span>Issuance of Medical Certificate for Leave of Absence</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-content">
@@ -1020,91 +1045,20 @@ require_once 'auth.php';
                         <strong>Who May Avail:</strong> Government Employees and General Public<br>
                         <strong>Requirements:</strong>
                         <ol>
-                            <li><strong>Consultation within the first three (3) days of illness</strong></li>
-                            <li><strong>Laboratory Test (If Available)</strong></li>
+                            <li>Consultation within the first three (3) days of illness</li>
+                            <li>Laboratory Test (If Available)</li>
                         </ol>
-                        <a href='https://drive.google.com/file/d/1ER8_ky-ooMjzNFNTmLxnoOxmfpjQvlGS/view?usp=drive_link'>More Details</a>
+                        <a href="https://drive.google.com/file/d/1ER8_ky-ooMjzNFNTmLxnoOxmfpjQvlGS/view?usp=sharing">More Details</a>
                     </div>
                 </div>
 
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span>PWD Medical Certificates</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <strong>Pursuant to National Council on Disability Affairs Administrative Order No. 001, s. 2008</strong><br>
-                        <strong>Office or Division:</strong> City Health Office<br>
-                        <strong>Who May Avail:</strong> Persons with Disabilities and/or their relatives<br>
-                        <strong>Requirements:</strong>
-                        <ol>
-                            <li><strong>Philippine Registry Form for Persons with Disabilities</strong></li>
-                            <li><strong>Certification from a Specialist if the disability is uncertain</strong></li>
-                            <li><strong>Proof of the disability if client is unable to report for physical examination</strong></li>
-                        </ol>
-                        <a href='https://drive.google.com/file/d/173ZpJwyo8AVjci1erlrxOwzfsJIOG9rS/view?usp=drive_link'>More Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Programs Column -->
-            <div class="content-column">
-                <div class="column-header">
-                    <div class="column-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <h3>Programs</h3>
+                <!-- See More Button -->
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--light-green-bg);">
+                    <a href="citizens_charter.php" style="display: inline-block; background: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-green-light) 100%); color: white; padding: 15px 40px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 4px 12px var(--shadow);">
+                        <i class="fas fa-list" style="margin-right: 10px;"></i>See All Services (25 Total)
+                    </a>
                 </div>
 
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span>Dengue Prevention Campaign</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <p>Our comprehensive dengue prevention program focuses on community education, mosquito control measures, and early detection. We conduct regular awareness seminars and provide resources for effective dengue prevention in households and communities.</p>
-                    </div>
-                </div>
-
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span>Nutrition Month Activities</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <p>Annual nutrition programs designed to promote healthy eating habits and address malnutrition in our community. Includes free nutritional assessments, cooking demonstrations, and distribution of educational materials about proper nutrition.</p>
-                    </div>
-                </div>
-
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span>Community Wellness Program</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <p>A holistic approach to community health featuring regular health screenings, fitness activities, mental health awareness sessions, and wellness workshops. Our goal is to promote overall well-being for all age groups.</p>
-                    </div>
-                </div>
-
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span>Health Screening Days</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <p>Monthly community health screening events offering free basic health checkups, blood pressure monitoring, diabetes screening, and health consultations. These events help in early detection and prevention of common health conditions.</p>
-                    </div>
-                </div>
-
-                <div class="dropdown-item">
-                    <div class="dropdown-header">
-                        <span>Senior Health Initiative</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-content">
-                        <p>Specialized healthcare program for senior citizens including regular health monitoring, medication assistance, health education sessions tailored for elderly needs, and coordination with families for comprehensive care.</p>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
