@@ -901,7 +901,7 @@ require_once 'auth.php';
                 // Connect to database
                 $conn = connect_db();
 
-                // Fetch announcements
+                // Fetch only the latest 6 announcements
                 $sql = "SELECT * FROM announcements WHERE status = 'active' ORDER BY created_at DESC LIMIT 6";
                 $result = $conn->query($sql);
 
@@ -932,7 +932,7 @@ require_once 'auth.php';
                         echo '</a>';
                     }
                 } else {
-                    echo '<div class="no-announcements">';
+                    echo '<div class="no-announcements" style="grid-column: 1 / -1;">';
                     echo '<i class="fas fa-bell-slash"></i>';
                     echo '<h3>No Announcements Yet</h3>';
                     echo '<p>Check back later for important updates and announcements from the City Health Office.</p>';
@@ -942,6 +942,14 @@ require_once 'auth.php';
                 // Close connection
                 $conn->close();
                 ?>
+            </div>
+
+            <!-- View All Announcements Button -->
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="all_announcements.php" style="display: inline-block; background: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-green-light) 100%); color: white; padding: 16px 40px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 4px 15px var(--shadow);">
+                    <i class="fas fa-th-list" style="margin-right: 10px;"></i>View All Announcements
+                </a>
+            </div>
         </section>
 
         <!-- Citizen's Charter Section -->
