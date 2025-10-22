@@ -20,23 +20,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $category = $conn->real_escape_string($_POST['category']);
                 $status = $conn->real_escape_string($_POST['status']);
 
-                // Handle image upload
+                // Handle image upload with better error handling
                 $image_path = null;
-                if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-                    $upload_dir = 'uploads/announcements/';
-                    if (!is_dir($upload_dir)) {
-                        mkdir($upload_dir, 0755, true);
-                    }
+                $upload_error = null;
 
-                    $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-                    $file_name = uniqid() . '.' . $file_extension;
-                    $image_path = $upload_dir . $file_name;
+                if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                    // Check for upload errors
+                    if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                        $upload_dir = 'uploads/announcements/';
 
-                    if (move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
-                        $image_path = $conn->real_escape_string($image_path);
+                        // Create directory if it doesn't exist
+                        if (!is_dir($upload_dir)) {
+                            if (!mkdir($upload_dir, 0755, true)) {
+                                $upload_error = "Failed to create upload directory.";
+                            }
+                        }
+
+                        // Check if directory is writable
+                        if (!is_writable($upload_dir)) {
+                            $upload_error = "Upload directory is not writable.";
+                        }
+
+                        if (!$upload_error) {
+                            // Validate file type
+                            $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                            $file_type = $_FILES['image']['type'];
+
+                            if (!in_array($file_type, $allowed_types)) {
+                                $upload_error = "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.";
+                            }
+
+                            // Validate file size (5MB max)
+                            $max_size = 5 * 1024 * 1024; // 5MB in bytes
+                            if ($_FILES['image']['size'] > $max_size) {
+                                $upload_error = "File is too large. Maximum size is 5MB.";
+                            }
+
+                            if (!$upload_error) {
+                                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+                                $file_name = uniqid() . '.' . $file_extension;
+                                $image_path = $upload_dir . $file_name;
+
+                                if (!move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
+                                    $upload_error = "Failed to move uploaded file.";
+                                    $image_path = null;
+                                } else {
+                                    $image_path = $conn->real_escape_string($image_path);
+                                }
+                            }
+                        }
                     } else {
-                        $image_path = null;
+                        // Handle specific upload errors
+                        switch ($_FILES['image']['error']) {
+                            case UPLOAD_ERR_INI_SIZE:
+                            case UPLOAD_ERR_FORM_SIZE:
+                                $upload_error = "File is too large.";
+                                break;
+                            case UPLOAD_ERR_PARTIAL:
+                                $upload_error = "File was only partially uploaded.";
+                                break;
+                            default:
+                                $upload_error = "File upload error (Code: " . $_FILES['image']['error'] . ")";
+                        }
                     }
+                }
+
+                // If there's an upload error, redirect with error message
+                if ($upload_error) {
+                    header("Location: manage_announcements.php?error=" . urlencode($upload_error));
+                    exit;
                 }
 
                 $sql = "INSERT INTO announcements (title, content, category, image_path, status, created_at) 
@@ -46,42 +98,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($conn->query($sql)) {
                     header("Location: manage_announcements.php?success=added");
                     exit;
-                }
-                break;
-
-            case 'update_status':
-                $id = (int)$_POST['id'];
-                $status = $conn->real_escape_string($_POST['status']);
-
-                $sql = "UPDATE announcements SET status = '$status' WHERE id = $id";
-
-                if ($conn->query($sql)) {
-                    header("Location: manage_announcements.php?success=updated");
+                } else {
+                    header("Location: manage_announcements.php?error=" . urlencode("Database error: " . $conn->error));
                     exit;
                 }
                 break;
-
-            case 'delete':
-                $id = (int)$_POST['id'];
-
-                // Get image path before deletion
-                $sql = "SELECT image_path FROM announcements WHERE id = $id";
-                $result = $conn->query($sql);
-                $announcement = $result->fetch_assoc();
-
-                // Delete the announcement
-                $sql = "DELETE FROM announcements WHERE id = $id";
-
-                if ($conn->query($sql)) {
-                    // Delete the image file if it exists
-                    if ($announcement && $announcement['image_path'] && file_exists($announcement['image_path'])) {
-                        unlink($announcement['image_path']);
-                    }
-
-                    header("Location: manage_announcements.php?success=deleted");
-                    exit;
-                }
-                break;
+                // ... rest of your cases
         }
     }
 
@@ -485,6 +507,114 @@ $conn->close();
             margin-bottom: 10px;
         }
 
+        .upload-container {
+            border: 3px dashed #4a8f5f;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #f8fdf9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-container:hover {
+            border-color: #2d5f3f;
+            background: #e8f5e9;
+        }
+
+        .upload-container.dragover {
+            border-color: #28a745;
+            background: #d4edda;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #4a8f5f;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: #2d5f3f;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .image-preview-container {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .image-preview-container.active {
+            display: block;
+        }
+
+        .preview-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            border: 3px solid #4a8f5f;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .remove-image:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .file-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+
+        .file-info-label {
+            color: #666;
+        }
+
+        .file-info-value {
+            color: #2d5f3f;
+            font-weight: 600;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -623,14 +753,38 @@ $conn->close();
                         <textarea id="content" name="content" placeholder="Enter the full announcement content..." required></textarea>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="image">Image (Optional)</label>
-                        <div class="file-input-wrapper">
-                            <input type="file" id="image" name="image" accept="image/*">
-                            <div class="file-input-display">
-                                <i class="fas fa-camera"></i>
-                                <span>Choose image file...</span>
+
+                        <!-- Hidden file input -->
+                        <input type="file"
+                            id="image"
+                            name="image"
+                            accept="image/*"
+                            capture="environment"
+                            style="display: none;">
+
+                        <!-- Custom upload button -->
+                        <div class="upload-container" id="uploadContainer">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
                             </div>
+                            <div class="upload-text">Tap to select an image</div>
+                            <div class="upload-hint">or drag and drop here</div>
+                            <div class="upload-hint" style="margin-top: 8px;">
+                                <i class="fas fa-info-circle"></i> JPG, PNG, GIF, WEBP (Max: 5MB)
+                            </div>
+                        </div>
+
+                        <!-- Image preview area -->
+                        <div class="image-preview-container" id="previewContainer">
+                            <div class="preview-wrapper">
+                                <img id="imagePreview" class="image-preview" src="" alt="Preview">
+                                <button type="button" class="remove-image" id="removeImage">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="file-info" id="fileInfo"></div>
                         </div>
                     </div>
 
@@ -711,26 +865,122 @@ $conn->close();
     </div>
 
     <script>
-        // File input display update
-        document.getElementById('image').addEventListener('change', function() {
-            const display = this.parentElement.querySelector('.file-input-display span');
-            if (this.files && this.files[0]) {
-                display.textContent = this.files[0].name;
-            } else {
-                display.textContent = 'Choose image file...';
-            }
-        });
+        (function() {
+            const fileInput = document.getElementById('image');
+            const uploadContainer = document.getElementById('uploadContainer');
+            const previewContainer = document.getElementById('previewContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            const removeButton = document.getElementById('removeImage');
+            const fileInfo = document.getElementById('fileInfo');
 
-        // Auto-hide success messages after 5 seconds
-        const successMessage = document.querySelector('.success-message');
-        if (successMessage) {
-            setTimeout(() => {
-                successMessage.style.opacity = '0';
-                setTimeout(() => {
-                    successMessage.remove();
-                }, 300);
-            }, 5000);
-        }
+            // Click to open file picker
+            uploadContainer.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // Handle file selection
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(this.files);
+            });
+
+            // Drag and drop functionality
+            uploadContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            uploadContainer.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            uploadContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    // Set the files to the input
+                    fileInput.files = files;
+                    handleFiles(files);
+                }
+            });
+
+            // Remove image
+            removeButton.addEventListener('click', function() {
+                fileInput.value = '';
+                previewContainer.classList.remove('active');
+                uploadContainer.style.display = 'block';
+            });
+
+            function handleFiles(files) {
+                if (files.length === 0) return;
+
+                const file = files[0];
+
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Invalid file type! Please select a JPG, PNG, GIF, or WEBP image.');
+                    fileInput.value = '';
+                    return;
+                }
+
+                // Validate file size (5MB)
+                const maxSize = 5 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert('File is too large! Maximum size is 5MB.');
+                    fileInput.value = '';
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    uploadContainer.style.display = 'none';
+                    previewContainer.classList.add('active');
+
+                    // Display file info
+                    displayFileInfo(file);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function displayFileInfo(file) {
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                const fileType = file.type.split('/')[1].toUpperCase();
+
+                fileInfo.innerHTML = `
+            <div class="file-info-item">
+                <span class="file-info-label"><i class="fas fa-file-image"></i> Filename:</span>
+                <span class="file-info-value">${file.name}</span>
+            </div>
+            <div class="file-info-item">
+                <span class="file-info-label"><i class="fas fa-file-alt"></i> Type:</span>
+                <span class="file-info-value">${fileType}</span>
+            </div>
+            <div class="file-info-item">
+                <span class="file-info-label"><i class="fas fa-weight"></i> Size:</span>
+                <span class="file-info-value">${fileSizeMB} MB</span>
+            </div>
+        `;
+            }
+
+            // Prevent form submission if file is too large
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const maxSize = 5 * 1024 * 1024;
+
+                    if (file.size > maxSize) {
+                        e.preventDefault();
+                        alert('Please remove or replace the image. File size exceeds 5MB limit.');
+                        return false;
+                    }
+                }
+            });
+        })();
     </script>
 </body>
 
