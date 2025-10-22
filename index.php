@@ -907,7 +907,7 @@ require_once 'auth.php';
 
                 if ($result && $result->num_rows > 0) {
                     while ($announcement = $result->fetch_assoc()) {
-                        echo '<div class="announcement-card">';
+                        echo '<a href="announcement_details.php?id=' . $announcement['id'] . '" class="announcement-card" style="text-decoration: none; color: inherit; display: block;">';
 
                         if ($announcement['image_path']) {
                             echo '<img src="' . htmlspecialchars($announcement['image_path']) . '" alt="Announcement Image" class="announcement-image">';
@@ -920,8 +920,16 @@ require_once 'auth.php';
                         echo '</div>';
                         echo '<h3 class="announcement-title">' . htmlspecialchars($announcement['title']) . '</h3>';
                         echo '<p class="announcement-text">' . htmlspecialchars(substr($announcement['content'], 0, 150)) . '...</p>';
+
+                        // Add "Read More" link
+                        echo '<div style="margin-top: 15px;">';
+                        echo '<span style="color: var(--accent-green); font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">';
+                        echo 'Read More <i class="fas fa-arrow-right"></i>';
+                        echo '</span>';
                         echo '</div>';
+
                         echo '</div>';
+                        echo '</a>';
                     }
                 } else {
                     echo '<div class="no-announcements">';
@@ -934,7 +942,6 @@ require_once 'auth.php';
                 // Close connection
                 $conn->close();
                 ?>
-            </div>
         </section>
 
         <!-- Citizen's Charter Section -->
