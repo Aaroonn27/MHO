@@ -8,49 +8,64 @@ function save_charge_slip() {
         $conn = connect_db();
         
         // Get form data and sanitize inputs
-        $services = $conn->real_escape_string($_POST['services']);
-        $fname = $conn->real_escape_string($_POST['fname']);
-        $mname = $conn->real_escape_string($_POST['mname'] ?? '');  // Make middle name optional
-        $lname = $conn->real_escape_string($_POST['lname']);
+        $fname = $conn->real_escape_string(trim($_POST['fname']));
+        $mname = $conn->real_escape_string(trim($_POST['mname'] ?? ''));
+        $lname = $conn->real_escape_string(trim($_POST['lname']));
+        $quantity = intval($_POST['quantity'] ?? 1);
         
-        // Calculate discount value
-        $discount = 0;
-        if (isset($_POST['discount'])) {
-            switch ($_POST['discount']) {
-                case 'senior':
-                    $discount = 20; // 20% discount for senior citizens
-                    break;
-                case 'pwd':
-                    $discount = 15; // 15% discount for PWD
-                    break;
-                case 'others':
-                    $discount = 10; // 10% discount for others
-                    break;
-                case 'none':
-                default:
-                    $discount = 0;
-            }
+        // Handle "Others" service option
+        if (isset($_POST['services']) && empty($_POST['services']) && !empty($_POST['others_input'])) {
+            // If "Others" is selected, get the custom service name
+            $services = $conn->real_escape_string(trim($_POST['others_input']));
+        } else {
+            $services = $conn->real_escape_string(trim($_POST['services']));
         }
         
+        // Validate required fields
+        if (empty($fname) || empty($lname) || empty($services)) {
+            $_SESSION['error_message'] = "Please fill in all required fields!";
+            $conn->close();
+            header("Location: charge_slip.php");
+            exit();
+        }
+        
+        // Get service price
+        $amount = get_service_price($services);
+        
+        // Calculate total
+        $total = $amount * $quantity;
+        
+        // Set discount to 0 (no longer used)
+        $discount = 0;
+        
         // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO chargeslip (services, fname, mname, lname, discount, timeanddate) VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("ssssi", $services, $fname, $mname, $lname, $discount);
+        $stmt = $conn->prepare("INSERT INTO chargeslip (services, fname, mname, lname, discount, quantity, amount, total, timeanddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+        
+        if (!$stmt) {
+            $_SESSION['error_message'] = "Database error: " . $conn->error;
+            $conn->close();
+            header("Location: charge_slip.php");
+            exit();
+        }
+        
+        $stmt->bind_param("ssssiidd", $services, $fname, $mname, $lname, $discount, $quantity, $amount, $total);
         
         // Execute the statement
         if ($stmt->execute()) {
             $last_id = $conn->insert_id;
+            $_SESSION['success_message'] = "Charge slip successfully created!";
+            $stmt->close();
+            $conn->close();
             // Redirect with success message and the ID for printing
-            header("Location: charge_slip.php?success=1&id=$last_id");
+            header("Location: charge_slip.php?id=$last_id");
             exit();
         } else {
-            // Redirect with error message
-            header("Location: charge_slip.php?error=1");
+            $_SESSION['error_message'] = "Error creating charge slip: " . $stmt->error;
+            $stmt->close();
+            $conn->close();
+            header("Location: charge_slip.php");
             exit();
         }
-        
-        // Close statement and connection
-        $stmt->close();
-        $conn->close();
     }
 }
 
@@ -60,7 +75,7 @@ function get_charge_slip_history() {
     
     // SQL query to fetch recent charge slips (limit to 10 most recent)
     $sql = "SELECT id, services, CONCAT(fname, ' ', mname, ' ', lname) AS full_name, 
-            discount, timeanddate FROM chargeslip ORDER BY timeanddate DESC LIMIT 10";
+            quantity, amount, total, timeanddate FROM chargeslip ORDER BY timeanddate DESC LIMIT 10";
     $result = $conn->query($sql);
     
     $history = array();
@@ -96,38 +111,20 @@ function get_charge_slip($id) {
     return $charge_slip;
 }
 
-// Function to get service price - this is new
+// Function to get service price
 function get_service_price($service) {
     // Define prices for each service
-    // You could expand this to pull from a database table
     $prices = [
-        'Health Certificate' => 100.00,
-        'Medical Certificate' => 150.00,
-        'Other Certificate' => 200.00
+        'Health Certificate for Workers' => 150.00,
+        'Medical Certificate for Employment' => 200.00,
+        'Tricycle Driver Medical Certificate' => 180.00,
+        'Medical Certificate for Leave' => 150.00,
+        'PWD Medical Certificate' => 100.00,
+        'Others' => 0.00 // Will be set by user input
     ];
     
     // Return the price or a default value if service not found
-    return isset($prices[$service]) ? $prices[$service] : 100.00;
+    return isset($prices[$service]) ? $prices[$service] : 0.00;
 }
 
-// Display success/error messages
-function display_status_messages() {
-    if (isset($_GET['success'])) {
-        echo '<div class="alert alert-success">Charge slip successfully created!</div>';
-    }
-    
-    if (isset($_GET['error'])) {
-        echo '<div class="alert alert-danger">Error creating charge slip!</div>';
-    }
-}
-
-// Get service options
-function get_service_options() {
-    // You could expand this to pull from a services table
-    return [
-        'Health Certificate',
-        'Medical Certificate',
-        'Other Certificate'
-    ];
-}
 ?>
