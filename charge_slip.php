@@ -10,6 +10,15 @@ include_once 'cslip_function.php';
 // Process form submission
 save_charge_slip();
 
+// Get logged-in user details from session (already set by auth.php)
+$current_user = null;
+if (isset($_SESSION['user_id']) && isset($_SESSION['full_name'])) {
+    $current_user = [
+        'full_name' => $_SESSION['full_name'],
+        'role' => $_SESSION['role'] ?? 'cho_employee'
+    ];
+}
+
 // Check if viewing a specific slip
 $viewing_slip = false;
 $current_slip = null;
@@ -241,6 +250,10 @@ $history = get_charge_slip_history();
             margin-top: 30px;
         }
 
+        .form-row-container {
+            display: contents;
+        }
+
         .form-section {
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             border-radius: 12px;
@@ -342,6 +355,35 @@ $history = get_charge_slip_history();
             box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
         }
 
+        /* Others input field */
+        .others-input {
+            display: none;
+            margin-top: 10px;
+            padding: 12px 16px;
+            border: 2px solid rgba(74, 143, 95, 0.2);
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            background: white;
+        }
+
+        .others-input.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Name Fields */
         .name-fields {
             display: flex;
@@ -377,58 +419,90 @@ $history = get_charge_slip_history();
             transform: translateY(-2px);
         }
 
-        /* Discount Options */
-        .discount-options {
+        /* Quantity Section */
+        .quantity-section {
+            grid-column: 1 / -1;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
-        .discount-option {
-            position: relative;
+        .quantity-section .form-section {
+            width: auto;
+            max-width: 500px;
         }
 
-        .discount-option label {
+        .quantity-section .section-header {
+            justify-content: center;
+        }
+
+        .quantity-section .field-group {
+            align-items: center;
+        }
+
+        .quantity-input {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .quantity-input button {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #2d5f3f;
             background: white;
+            color: #2d5f3f;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .discount-option label:hover {
-            background: #f8fdf9;
-            border-color: rgba(74, 143, 95, 0.3);
-            transform: translateX(5px);
-        }
-
-        .discount-option input[type="radio"] {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
-            accent-color: #2d5f3f;
-        }
-
-        .discount-option input[type="radio"]:checked+label {
-            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+        .quantity-input button:hover {
+            background: #2d5f3f;
             color: white;
-            border-color: #2d5f3f;
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(45, 95, 63, 0.3);
+            transform: scale(1.1);
+        }
+
+        .quantity-input input {
+            width: 100px;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid rgba(74, 143, 95, 0.2);
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .quantity-input input:focus {
+            outline: none;
+            border-color: #4a8f5f;
+            box-shadow: 0 0 0 3px rgba(74, 143, 95, 0.1);
+        }
+
+        .quantity-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d5f3f;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         /* Button Styles */
         .button-row {
-            display: flex;
-            justify-content: center;
+            display: flex !important;
+            justify-content: center !important;
             gap: 20px;
             margin-top: 40px;
             padding-top: 30px;
             border-top: 2px solid #f0f0f0;
+            width: 100%;
+        }
+
+        .charge-slip-form .button-row {
+            grid-column: 1 / -1;
         }
 
         .button {
@@ -670,83 +744,141 @@ $history = get_charge_slip_history();
         }
 
         /* Print Styles */
+        .print-page {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px;
+            width: 100%;
+        }
+
         .printed-charge-slip {
             background: white;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
+            padding: 12px;
+            width: 100%;
             font-family: Arial, sans-serif;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
+            border: 2px solid #2d5f3f;
+            border-radius: 6px;
+            font-size: 10px;
+            box-sizing: border-box;
         }
 
         .printed-header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #2d5f3f;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #2d5f3f;
+        }
+
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
         .printed-header img {
-            height: 80px;
-            margin: 0 15px;
+            height: 32px;
+            margin: 0 5px;
+        }
+
+        .header-text {
+            text-align: center;
+            margin: 0 8px;
         }
 
         .printed-header h3 {
-            margin: 8px 0;
-            font-size: 16px;
+            margin: 1px 0;
+            font-size: 8px;
             color: #333;
+            line-height: 1.2;
         }
 
         .printed-header h2 {
-            margin: 20px 0;
-            font-size: 28px;
+            margin: 6px 0 3px 0;
+            font-size: 13px;
             font-weight: bold;
             color: #2d5f3f;
         }
 
         .printed-form {
             background: #f8fdf9;
-            padding: 25px;
-            border-radius: 10px;
-            border: 2px solid #2d5f3f;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #2d5f3f;
         }
 
         .printed-form-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 16px;
+            margin-bottom: 6px;
+            font-size: 8px;
+            gap: 5px;
+        }
+
+        .printed-form-row>div {
+            flex: 1;
         }
 
         .printed-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
+            margin-top: 6px;
         }
 
         .printed-table th,
         .printed-table td {
-            border: 2px solid #2d5f3f;
-            padding: 12px 15px;
+            border: 1px solid #2d5f3f;
+            padding: 4px 5px;
             text-align: center;
-            font-size: 16px;
+            font-size: 8px;
         }
 
         .printed-table th {
-            background: linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%);
+            background: #2d5f3f;
             color: white;
             font-weight: bold;
         }
 
         .total-row {
             text-align: right;
-            padding: 15px;
+            padding: 4px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 9px;
             background: #e8f5e9;
+        }
+
+        /* Signature Section */
+        .signature-section {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 8px;
+        }
+
+        .signature-box {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-bottom: 2px;
+            padding-top: 15px;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            font-size: 8px;
+            color: #000;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .signature-title {
+            font-size: 7px;
+            color: #000;
+            margin-top: 1px;
         }
 
         /* Print Media Query */
@@ -758,8 +890,14 @@ $history = get_charge_slip_history();
             nav,
             .page-title-section,
             .logo-container,
-            .button-row {
+            .button-row,
+            #successMessage,
+            #errorMessage {
                 display: none !important;
+            }
+
+            * {
+                box-sizing: border-box;
             }
 
             body {
@@ -772,6 +910,7 @@ $history = get_charge_slip_history();
             .main-content {
                 padding: 0 !important;
                 margin: 0 !important;
+                max-width: 100% !important;
             }
 
             .charge-slip-container {
@@ -781,25 +920,59 @@ $history = get_charge_slip_history();
                 border-radius: 0 !important;
                 padding: 0 !important;
                 margin: 0 !important;
-            }
-
-            .printed-charge-slip {
-                background: white !important;
-                box-shadow: none !important;
-                padding: 20px !important;
-                margin: 0 !important;
+                max-width: 100% !important;
             }
 
             .print-section {
                 padding: 0 !important;
                 margin: 0 !important;
+                width: 100% !important;
+            }
+
+            .print-page {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                grid-auto-rows: auto !important;
+                gap: 10px !important;
+                padding: 8px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .printed-charge-slip {
+                background: white !important;
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                padding: 10px !important;
+                margin: 0 !important;
+                page-break-inside: avoid !important;
+                width: 100% !important;
+            }
+
+            .printed-header img {
+                height: 30px !important;
             }
 
             .printed-table th {
                 background: #2d5f3f !important;
                 color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .total-row {
+                background: #e8f5e9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .signature-section {
+                page-break-inside: avoid !important;
+            }
+
+            @page {
+                size: letter;
+                margin: 0.3in;
             }
         }
 
@@ -890,6 +1063,10 @@ $history = get_charge_slip_history();
             .history-table td {
                 padding: 10px;
             }
+
+            .signature-section {
+                padding-right: 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -946,51 +1123,75 @@ $history = get_charge_slip_history();
             <?php if (isset($viewing_slip) && $viewing_slip): ?>
                 <!-- Display the charge slip for viewing/printing -->
                 <div class="print-section">
-                    <div class="printed-charge-slip">
-                        <div class="printed-header">
-                            <div style="display: flex; justify-content: center; align-items: center;">
-                                <img src="/MHO/media/sanpablologo.png" alt="San Pablo City Logo">
-                                <div style="text-align: center; margin: 0 15px;">
-                                    <h3>Republic of the Philippines</h3>
-                                    <h3>OFFICE OF THE CITY HEALTH OFFICER</h3>
-                                    <h3>San Pablo City</h3>
-                                </div>
-                                <img src="/MHO/media/chologo.png" alt="CHO Logo">
-                            </div>
-                            <h2>CHARGE SLIP</h2>
-                        </div>
+                    <div class="print-page">
+                        <?php
+                        // Generate charge slips based on quantity (max 6 per page)
+                        $quantity = isset($current_slip['quantity']) ? (int)$current_slip['quantity'] : 1;
+                        $slips_to_print = min($quantity, 6); // Maximum 6 per page (3x2 grid)
 
-                        <div class="printed-form">
-                            <div class="printed-form-row">
-                                <div>
-                                    <strong>Name:</strong> <?php echo isset($current_slip) ? htmlspecialchars($current_slip['fname'] . ' ' . $current_slip['mname'] . ' ' . $current_slip['lname']) : 'John Doe Sample'; ?>
+                        // Always print at least 1
+                        $slips_to_print = max($slips_to_print, 1);
+
+                        for ($i = 0; $i < $slips_to_print; $i++):
+                        ?>
+                            <div class="printed-charge-slip">
+                                <div class="printed-header">
+                                    <div class="logo-row">
+                                        <img src="/MHO/media/sanpablologo.png" alt="San Pablo City Logo">
+                                        <div class="header-text">
+                                            <h3>Republic of the Philippines</h3>
+                                            <h3>OFFICE OF THE CITY HEALTH OFFICER</h3>
+                                            <h3>San Pablo City</h3>
+                                        </div>
+                                        <img src="/MHO/media/chologo.png" alt="CHO Logo">
+                                    </div>
+                                    <h2>CHARGE SLIP</h2>
                                 </div>
-                                <div>
-                                    <strong>Date/Time:</strong> <?php echo isset($current_slip) ? $current_slip['timeanddate'] : date('Y-m-d H:i:s'); ?>
+
+                                <div class="printed-form">
+                                    <div class="printed-form-row">
+                                        <div>
+                                            <strong>Name:</strong> <?php echo htmlspecialchars($current_slip['fname'] . ' ' . $current_slip['mname'] . ' ' . $current_slip['lname']); ?>
+                                        </div>
+                                        <div>
+                                            <strong>Date/Time:</strong> <?php echo $current_slip['timeanddate']; ?>
+                                        </div>
+                                    </div>
+
+                                    <table class="printed-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 60%;">SERVICES</th>
+                                                <th style="width: 20%;">QUANTITY</th>
+                                                <th style="width: 20%;">AMOUNT</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($current_slip['services']); ?></td>
+                                                <td>1</td>
+                                                <td>₱<?php echo number_format($current_slip['amount'], 2); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="total-row">Total:</td>
+                                                <td>₱<?php echo number_format($current_slip['amount'], 2); ?></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Signature Section -->
+                                <div class="signature-section">
+                                    <div class="signature-box">
+                                        <div class="signature-line"></div>
+                                        <div class="signature-name">
+                                            <?php echo $current_user ? htmlspecialchars($current_user['full_name']) : 'CHO Employee'; ?>
+                                        </div>
+                                        <div class="signature-title">CHO Employee</div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <table class="printed-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 60%;">SERVICES</th>
-                                        <th style="width: 20%;">QUANTITY</th>
-                                        <th style="width: 20%;">AMOUNT</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><?php echo isset($current_slip) ? htmlspecialchars($current_slip['services']) : 'Health Certificate'; ?></td>
-                                        <td>1</td>
-                                        <td>₱150.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="total-row">Total:</td>
-                                        <td>₱150.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <?php endfor; ?>
                     </div>
 
                     <div class="button-row no-print">
@@ -1004,98 +1205,96 @@ $history = get_charge_slip_history();
                 </div>
             <?php else: ?>
                 <!-- Form for creating a new charge slip -->
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="charge-slip-form">
-                    <!-- Services Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-stethoscope"></i>
-                            </div>
-                            <h3>SERVICES</h3>
-                        </div>
-                        <div class="services-list">
-                            <div class="service-item">
-                                <input type="radio" id="health_cert" name="services" value="Health Certificate for Workers" required>
-                                <label for="health_cert">Health Certificate for Workers</label>
-                            </div>
-                            <div class="service-item">
-                                <input type="radio" id="medical_cert_emp" name="services" value="Medical Certificate for Employment">
-                                <label for="medical_cert_emp">Medical Certificate for Employment</label>
-                            </div>
-                            <div class="service-item">
-                                <input type="radio" id="tricycle_cert" name="services" value="Tricycle Driver Medical Certificate">
-                                <label for="tricycle_cert">Tricycle Driver Medical Certificate</label>
-                            </div>
-                            <div class="service-item">
-                                <input type="radio" id="medical_cert_leave" name="services" value="Medical Certificate for Leave">
-                                <label for="medical_cert_leave">Medical Certificate for Leave</label>
-                            </div>
-                            <div class="service-item">
-                                <input type="radio" id="pwd_cert" name="services" value="PWD Medical Certificate">
-                                <label for="pwd_cert">PWD Medical Certificate</label>
-                            </div>
-                        </div>
-                    </div>
+                <form method="POST" action="charge_slip.php" id="charge-slip-form">
+                    <input type="hidden" name="generate" value="1">
 
-                    <!-- Name Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-user"></i>
+                    <div class="charge-slip-form">
+                        <!-- Services Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+                                <h3>SERVICES</h3>
                             </div>
-                            <h3>PATIENT INFORMATION</h3>
+                            <div class="services-list">
+                                <div class="service-item">
+                                    <input type="radio" id="health_cert" name="services" value="Health Certificate for Workers" required>
+                                    <label for="health_cert">Health Certificate for Workers</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="radio" id="medical_cert_emp" name="services" value="Medical Certificate for Employment">
+                                    <label for="medical_cert_emp">Medical Certificate for Employment</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="radio" id="tricycle_cert" name="services" value="Tricycle Driver Medical Certificate">
+                                    <label for="tricycle_cert">Tricycle Driver Medical Certificate</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="radio" id="medical_cert_leave" name="services" value="Medical Certificate for Leave">
+                                    <label for="medical_cert_leave">Medical Certificate for Leave</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="radio" id="pwd_cert" name="services" value="PWD Medical Certificate">
+                                    <label for="pwd_cert">PWD Medical Certificate</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="radio" id="others" name="services" value="">
+                                    <label for="others">Others (Please Specify)</label>
+                                    <input type="text" id="others_input" name="others_input" class="others-input" placeholder="Specify service...">
+                                </div>
+                            </div>
                         </div>
-                        <div class="name-fields">
-                            <div class="field-group">
-                                <label for="fname">First Name *</label>
-                                <input type="text" id="fname" name="fname" required placeholder="Enter first name">
-                            </div>
-                            <div class="field-group">
-                                <label for="mname">Middle Name</label>
-                                <input type="text" id="mname" name="mname" placeholder="Enter middle name">
-                            </div>
-                            <div class="field-group">
-                                <label for="lname">Last Name *</label>
-                                <input type="text" id="lname" name="lname" required placeholder="Enter last name">
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Discount Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-percent"></i>
+                        <!-- Name Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h3>PATIENT INFORMATION</h3>
                             </div>
-                            <h3>DISCOUNTS</h3>
-                        </div>
-                        <div class="discount-options">
-                            <div class="discount-option">
-                                <input type="radio" id="senior" name="discount" value="senior">
-                                <label for="senior">Senior Citizen (20% off)</label>
-                            </div>
-                            <div class="discount-option">
-                                <input type="radio" id="pwd" name="discount" value="pwd">
-                                <label for="pwd">PWD (15% off)</label>
-                            </div>
-                            <div class="discount-option">
-                                <input type="radio" id="others" name="discount" value="others">
-                                <label for="others">Others (10% off)</label>
-                            </div>
-                            <div class="discount-option">
-                                <input type="radio" id="none" name="discount" value="none" checked>
-                                <label for="none">No Discount</label>
+                            <div class="name-fields">
+                                <div class="field-group">
+                                    <label for="fname">First Name *</label>
+                                    <input type="text" id="fname" name="fname" required placeholder="Enter first name">
+                                </div>
+                                <div class="field-group">
+                                    <label for="mname">Middle Name</label>
+                                    <input type="text" id="mname" name="mname" placeholder="Enter middle name">
+                                </div>
+                                <div class="field-group">
+                                    <label for="lname">Last Name *</label>
+                                    <input type="text" id="lname" name="lname" required placeholder="Enter last name">
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                        <!-- Quantity Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                                <h3>QUANTITY</h3>
+                            </div>
+                            <div class="field-group">
+                                <label for="quantity">Number of Items</label>
+                                <div class="quantity-input">
+                                    <button type="button" onclick="decrementQuantity()">-</button>
+                                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="100" required>
+                                    <button type="button" onclick="incrementQuantity()">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="button-row no-print">
+                            <button type="submit" class="button generate-btn">
+                                <i class="fas fa-file-plus"></i> Generate Charge Slip
+                            </button>
+                        </div>
                 </form>
-
-                <!-- Action Buttons -->
-                <div class="button-row no-print">
-                    <button type="submit" name="generate" class="button generate-btn" form="charge-slip-form">
-                        <i class="fas fa-file-plus"></i> Generate Charge Slip
-                    </button>
-                </div>
 
                 <!-- History Button -->
                 <button id="historyBtn" class="history-btn" onclick="openHistoryModal()">
@@ -1112,10 +1311,11 @@ $history = get_charge_slip_history();
                             <table class="history-table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <!-- <th>ID</th> -->
                                         <th>Patient Name</th>
                                         <th>Service</th>
-                                        <th>Discount</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
                                         <th>Date Created</th>
                                         <th>Actions</th>
                                     </tr>
@@ -1123,10 +1323,11 @@ $history = get_charge_slip_history();
                                 <tbody>
                                     <?php foreach ($history as $slip): ?>
                                         <tr>
-                                            <td><?php echo $slip['id']; ?></td>
+                                            <!-- <td><?php echo $slip['id']; ?></td> -->
                                             <td><?php echo htmlspecialchars($slip['full_name']); ?></td>
                                             <td><?php echo htmlspecialchars($slip['services']); ?></td>
-                                            <td><?php echo $slip['discount']; ?>%</td>
+                                            <td><?php echo $slip['quantity']; ?></td>
+                                            <td>₱<?php echo number_format($slip['total'], 2); ?></td>
                                             <td><?php echo $slip['timeanddate']; ?></td>
                                             <td>
                                                 <a href="charge_slip.php?id=<?php echo $slip['id']; ?>">
@@ -1166,23 +1367,61 @@ $history = get_charge_slip_history();
     <?php endif; ?>
 
     <script>
-        // Add form ID to the form element
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('.charge-slip-form');
-            if (form) {
-                form.id = 'charge-slip-form';
+        // Quantity controls
+        function incrementQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value) || 1;
+            if (currentValue < 6) {
+                input.value = currentValue + 1;
             }
+        }
+
+        function decrementQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value) || 1;
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+
+        // Handle "Others" service option
+        document.addEventListener('DOMContentLoaded', function() {
+            const othersRadio = document.getElementById('others');
+            const othersInput = document.getElementById('others_input');
+            const serviceRadios = document.querySelectorAll('input[name="services"]');
+
+            othersRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    othersInput.classList.add('show');
+                    othersInput.required = true;
+                    othersInput.focus();
+                }
+            });
+
+            serviceRadios.forEach(radio => {
+                if (radio.id !== 'others') {
+                    radio.addEventListener('change', function() {
+                        othersInput.classList.remove('show');
+                        othersInput.required = false;
+                        othersInput.value = '';
+                    });
+                }
+            });
+
+            // Update the value of "others" radio when input changes
+            othersInput.addEventListener('input', function() {
+                if (othersRadio.checked) {
+                    othersRadio.value = this.value;
+                }
+            });
 
             // Enhanced radio button interactions
-            const serviceRadios = document.querySelectorAll('input[name="services"]');
-            const discountRadios = document.querySelectorAll('input[name="discount"]');
-
             serviceRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     // Remove active class from all service labels
                     serviceRadios.forEach(r => {
                         const label = r.nextElementSibling;
-                        if (label) {
+                        if (label && label.tagName === 'LABEL') {
                             label.style.background = 'white';
                             label.style.color = '#333';
                             label.style.transform = 'translateX(0)';
@@ -1192,32 +1431,8 @@ $history = get_charge_slip_history();
                     // Add active class to selected service
                     if (this.checked) {
                         const label = this.nextElementSibling;
-                        if (label) {
-                            label.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                            label.style.color = 'white';
-                            label.style.transform = 'translateX(5px)';
-                        }
-                    }
-                });
-            });
-
-            discountRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    // Remove active class from all discount labels
-                    discountRadios.forEach(r => {
-                        const label = r.nextElementSibling;
-                        if (label) {
-                            label.style.background = 'white';
-                            label.style.color = '#333';
-                            label.style.transform = 'translateX(0)';
-                        }
-                    });
-
-                    // Add active class to selected discount
-                    if (this.checked) {
-                        const label = this.nextElementSibling;
-                        if (label) {
-                            label.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                        if (label && label.tagName === 'LABEL') {
+                            label.style.background = 'linear-gradient(135deg, #2d5f3f 0%, #3d7f4f 100%)';
                             label.style.color = 'white';
                             label.style.transform = 'translateX(5px)';
                         }
@@ -1274,10 +1489,20 @@ $history = get_charge_slip_history();
             const fname = document.getElementById('fname').value.trim();
             const lname = document.getElementById('lname').value.trim();
             const service = document.querySelector('input[name="services"]:checked');
+            const othersRadio = document.getElementById('others');
+            const othersInput = document.getElementById('others_input');
 
             if (!fname || !lname || !service) {
                 e.preventDefault();
                 alert('Please fill in all required fields and select a service.');
+                return false;
+            }
+
+            // Validate "Others" input if selected
+            if (othersRadio.checked && !othersInput.value.trim()) {
+                e.preventDefault();
+                alert('Please specify the service in the "Others" field.');
+                othersInput.focus();
                 return false;
             }
 
