@@ -1045,62 +1045,60 @@ check_page_access($required_roles);
                 })
                 .catch(error => {
                     console.error('Error loading inventory:', error);
-                    // Show sample data if backend is not available
-                    showSampleData();
                 });
         }
 
-        // Show sample data for demonstration
-        function showSampleData() {
-            const sampleData = [{
-                    id: 1,
-                    vaccine_name: 'Verorab',
-                    vaccine_type: 'HDCV',
-                    batch_id: 'VRB2024001',
-                    current_quantity: 15,
-                    used_quantity: 5,
-                    original_quantity: 20,
-                    expiry_date: '2024-12-31',
-                    days_until_expiry: 120,
-                    stock_level: 'normal',
-                    expiry_status: 'good'
-                },
-                {
-                    id: 2,
-                    vaccine_name: 'HyperRAB',
-                    vaccine_type: 'HRIG',
-                    batch_id: 'HRB2024002',
-                    current_quantity: 3,
-                    used_quantity: 7,
-                    original_quantity: 10,
-                    expiry_date: '2024-10-15',
-                    days_until_expiry: 45,
-                    stock_level: 'critical',
-                    expiry_status: 'near_expiry'
-                },
-                {
-                    id: 3,
-                    vaccine_name: 'Rabipur',
-                    vaccine_type: 'PCECV',
-                    batch_id: 'RPR2024003',
-                    current_quantity: 8,
-                    used_quantity: 12,
-                    original_quantity: 20,
-                    expiry_date: '2025-03-20',
-                    days_until_expiry: 180,
-                    stock_level: 'low',
-                    expiry_status: 'good'
-                }
-            ];
+        // // Show sample data for demonstration
+        // function showSampleData() {
+        //     const sampleData = [{
+        //             id: 1,
+        //             vaccine_name: 'Verorab',
+        //             vaccine_type: 'HDCV',
+        //             batch_id: 'VRB2024001',
+        //             current_quantity: 15,
+        //             used_quantity: 5,
+        //             original_quantity: 20,
+        //             expiry_date: '2024-12-31',
+        //             days_until_expiry: 120,
+        //             stock_level: 'normal',
+        //             expiry_status: 'good'
+        //         },
+        //         {
+        //             id: 2,
+        //             vaccine_name: 'HyperRAB',
+        //             vaccine_type: 'HRIG',
+        //             batch_id: 'HRB2024002',
+        //             current_quantity: 3,
+        //             used_quantity: 7,
+        //             original_quantity: 10,
+        //             expiry_date: '2024-10-15',
+        //             days_until_expiry: 45,
+        //             stock_level: 'critical',
+        //             expiry_status: 'near_expiry'
+        //         },
+        //         {
+        //             id: 3,
+        //             vaccine_name: 'Rabipur',
+        //             vaccine_type: 'PCECV',
+        //             batch_id: 'RPR2024003',
+        //             current_quantity: 8,
+        //             used_quantity: 12,
+        //             original_quantity: 20,
+        //             expiry_date: '2025-03-20',
+        //             days_until_expiry: 180,
+        //             stock_level: 'low',
+        //             expiry_status: 'good'
+        //         }
+        //     ];
 
-            displayInventoryItems(sampleData);
+        //     displayInventoryItems(sampleData);
 
-            // Update statistics with sample data
-            document.getElementById('total-batches').textContent = '3';
-            document.getElementById('total-vials').textContent = '26';
-            document.getElementById('expiring-soon').textContent = '1';
-            document.getElementById('low-stock').textContent = '2';
-        }
+        //     // Update statistics with sample data
+        //     document.getElementById('total-batches').textContent = '3';
+        //     document.getElementById('total-vials').textContent = '26';
+        //     document.getElementById('expiring-soon').textContent = '1';
+        //     document.getElementById('low-stock').textContent = '2';
+        // }
 
         // Display inventory items
         function displayInventoryItems(items) {
