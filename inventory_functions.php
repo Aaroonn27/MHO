@@ -1,23 +1,10 @@
 <?php
 
-function get_db_connection() {
-    $host = 'localhost';
-    $username = 'root';
-    $password = '';
-    $database = 'mhodb'; 
-
-    $conn = new mysqli($host, $username, $password, $database);
-    
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    
-    return $conn;
-}
+include_once 'db_conn.php';
 
 // Get inventory statistics
 function get_inventory_stats() {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $stats = [];
     
@@ -43,7 +30,7 @@ function get_inventory_stats() {
 
 // Get all inventory items with expiration warnings
 function get_inventory_items($filters = []) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $query = "SELECT *, 
               DATEDIFF(expiry_date, CURDATE()) as days_until_expiry,
@@ -121,7 +108,7 @@ function get_inventory_items($filters = []) {
 
 // Get single inventory item by ID
 function get_inventory_item($id) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $stmt = $conn->prepare("SELECT *, DATEDIFF(expiry_date, CURDATE()) as days_until_expiry FROM animal_bite_inventory WHERE id = ?");
     $stmt->bind_param("i", $id);
@@ -138,7 +125,7 @@ function get_inventory_item($id) {
 
 // Use vial(s) from a batch
 function use_vial($batch_id, $quantity = 1, $used_by, $patient_id = null, $purpose = null, $notes = null) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     try {
         $conn->begin_transaction();
@@ -178,7 +165,7 @@ function use_vial($batch_id, $quantity = 1, $used_by, $patient_id = null, $purpo
 
 // Add new batch
 function add_inventory_batch($data) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $stmt = $conn->prepare("INSERT INTO animal_bite_inventory 
         (vaccine_name, vaccine_type, batch_id, manufacturer, original_quantity, current_quantity, 
@@ -210,7 +197,7 @@ function add_inventory_batch($data) {
 
 // Update inventory batch
 function update_inventory_batch($id, $data) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $stmt = $conn->prepare("UPDATE animal_bite_inventory SET 
         vaccine_name = ?, vaccine_type = ?, batch_id = ?, manufacturer = ?, 
@@ -242,7 +229,7 @@ function update_inventory_batch($id, $data) {
 
 // Delete inventory batch
 function delete_inventory_batch($id) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $stmt = $conn->prepare("UPDATE animal_bite_inventory SET status = 'depleted' WHERE id = ?");
     $stmt->bind_param("i", $id);
@@ -256,7 +243,7 @@ function delete_inventory_batch($id) {
 
 // Get usage history for a batch
 function get_batch_usage_history($batch_id) {
-    $conn = get_db_connection();
+    $conn = connect_db();
     
     $stmt = $conn->prepare("SELECT * FROM vial_usage WHERE batch_id = ? ORDER BY usage_date DESC");
     $stmt->bind_param("s", $batch_id);
