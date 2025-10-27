@@ -731,6 +731,58 @@ check_page_access($required_roles);
             background: #f8fdf9;
         }
 
+        .session-notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease, slideOut 0.3s ease 4.7s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .session-notification.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .session-notification.error {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .session-notification i {
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             main {
@@ -853,6 +905,26 @@ check_page_access($required_roles);
         </div>
         <?php echo generate_navigation(); ?>
     </header>
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div id="session-notification" class="session-notification success">
+            <i class="fas fa-check-circle"></i>
+            <?php
+            echo htmlspecialchars($_SESSION['success_message']);
+            unset($_SESSION['success_message']);
+            ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div id="session-notification" class="session-notification error">
+            <i class="fas fa-exclamation-circle"></i>
+            <?php
+            echo htmlspecialchars($_SESSION['error_message']);
+            unset($_SESSION['error_message']);
+            ?>
+        </div>
+    <?php endif; ?>
 
     <main>
         <!-- Page Header -->
@@ -1378,6 +1450,16 @@ check_page_access($required_roles);
             if (e.key === 'Enter') {
                 e.preventDefault();
                 applyFilters();
+            }
+        });
+
+        // Auto-hide session notification
+        document.addEventListener('DOMContentLoaded', function() {
+            const notification = document.getElementById('session-notification');
+            if (notification) {
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
             }
         });
     </script>
