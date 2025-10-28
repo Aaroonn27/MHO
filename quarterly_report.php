@@ -642,7 +642,7 @@ if (isset($_GET['export']) && $_GET['export'] == 'excel') {
         <div class="chart-container">
             <div class="button-group">
                 <a href="analytics_dashboard.php?year=<?php echo $selected_year; ?>" class="show-graph-btn">
-                    <i class="fas fa-chart-line"></i> View Analytics Dashboard
+                    <i class="fas fa-chart-line"></i> View Analytics
                 </a>
                 <button class="show-graph-btn" onclick="window.print()">
                     <i class="fas fa-print"></i> Print Report
