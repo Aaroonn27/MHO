@@ -169,7 +169,7 @@ function generate_navigation() {
     }
     
     if (can_access_patient_records()) {
-        $nav_items[] = '<li><a href="rabies_registry.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>';
+        $nav_items[] = '<li><a href="patient_records.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>';
     }
     
     // Admin-only items
@@ -231,7 +231,7 @@ function get_accessible_pages() {
     if (can_access_patient_records()) {
         $pages[] = [
             'title' => 'Patient Records',
-            'url' => 'rabies_registry.php',
+            'url' => 'patient_records.php',
             'icon' => 'fas fa-user-md',
             'description' => 'View and manage patient records'
         ];

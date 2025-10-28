@@ -13,7 +13,7 @@
             <li><a href="appointment.php"><i class="far fa-calendar-alt"></i><span>Appointment</span></a></li>
             <li><a href="charge_slip.php"><i class="fas fa-file-invoice"></i><span>Charge Slip</span></a></li>
             <li><a href="inventory.php"><i class="fas fa-box"></i><span>Inventory</span></a></li>
-            <li><a href="rabies_registry.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>
+            <li><a href="patient_records.php"><i class="fas fa-user-md"></i><span>Patient Record</span></a></li>
         </ul>
     </nav>
 </header>

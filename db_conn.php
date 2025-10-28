@@ -169,10 +169,10 @@ function save_rabies_patient() {
             $vaccine_day7, $vaccine_day14, $vaccine_day2830, $abc_name, $outcome, $animal_status, $remarks);
         
         if ($stmt->execute()) {
-            header("Location: rabies_registry.php?success=1");
+            header("Location: patient_records.php?success=1");
             exit();
         } else {
-            header("Location: rabies_registry.php?error=1&msg=" . urlencode($stmt->error));
+            header("Location: patient_records.php?error=1&msg=" . urlencode($stmt->error));
             exit();
         }
         
@@ -245,10 +245,10 @@ function update_rabies_patient() {
             $vaccine_day7, $vaccine_day14, $vaccine_day2830, $abc_name, $outcome, $animal_status, $remarks, $new_id);
         
         if ($stmt->execute()) {
-            header("Location: rabies_registry.php?updated=1");
+            header("Location: patient_records.php?updated=1");
             exit();
         } else {
-            header("Location: rabies_registry.php?error=2&msg=" . urlencode($stmt->error));
+            header("Location: patient_records.php?error=2&msg=" . urlencode($stmt->error));
             exit();
         }
         
@@ -265,10 +265,10 @@ function delete_patient($id) {
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
-        header("Location: rabies_registry.php?deleted=1");
+        header("Location: patient_records.php?deleted=1");
         exit();
     } else {
-        header("Location: rabies_registry.php?error=3&msg=" . urlencode($stmt->error));
+        header("Location: patient_records.php?error=3&msg=" . urlencode($stmt->error));
         exit();
     }
     

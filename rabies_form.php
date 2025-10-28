@@ -370,7 +370,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="btn-section">
-                <a href="rabies_registry.php" class="btn btn-secondary">Back</a>
+                <a href="patient_records.php" class="btn btn-secondary">Back</a>
                 <div>
                     <button type="reset" class="btn btn-warning">Reset</button>
                     <button type="submit" class="btn btn-primary"><?php echo $is_edit ? 'Update' : 'Add'; ?> Patient</button>
