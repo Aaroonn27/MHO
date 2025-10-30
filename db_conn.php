@@ -940,6 +940,37 @@ function fetch_appointments_with_sms() {
         return $appointment;
     }
 
+function getUpcomingAppointments($start_datetime, $end_datetime, $sms_status = 'pending')
+{
+    $conn = connect_db();
+
+    // Check if SMS columns exist
+    $check_columns = $conn->query("SHOW COLUMNS FROM appointments LIKE 'sms_status'");
+
+    if ($check_columns->num_rows > 0) {
+        // SMS columns exist
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE appointment_date BETWEEN ? AND ? AND sms_status = ? ORDER BY appointment_date ASC");
+        $stmt->bind_param("sss", $start_datetime, $end_datetime, $sms_status);
+    } else {
+        // SMS columns don't exist, get all appointments in the date range
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE appointment_date BETWEEN ? AND ? ORDER BY appointment_date ASC");
+        $stmt->bind_param("ss", $start_datetime, $end_datetime);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $appointments = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $appointments[] = $row;
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    return $appointments;
+}
+
     function get_all_users() {
     try {
         $conn = connect_db();

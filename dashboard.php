@@ -8,6 +8,7 @@ require_login();
 // Get user info and accessible pages
 $user = get_user_info();
 $accessible_pages = get_accessible_pages();
+include_once 'check_and_send_sms.php';
 ?>
 
 <!DOCTYPE html>

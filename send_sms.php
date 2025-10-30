@@ -1,5 +1,5 @@
 <?php
-// Cleaned send_sms.php - Remove duplicate functions since they exist in db_conn.php
+// send_sms.php - Handles SMS sending requests
 include 'sms_service.php';
 include 'db_conn.php';
 
@@ -8,8 +8,6 @@ header('Content-Type: application/json');
 // Enable error reporting for debugging (remove in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-$conn = connect_db();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -24,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
             
-            // Fetch appointment details from database using existing function
+            // Fetch appointment details from database
             $appointment = getAppointmentById($appointment_id);
             
             if (!$appointment) {
@@ -37,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $date = $datetime->format('Y-m-d');
             $time = $datetime->format('H:i:s');
             
-            $result = $sms->sendAppointmentReminder(
+            // Send SMS using the single confirmation function
+            $result = $sms->sendAppointmentConfirmation(
                 $appointment['name'],
                 $appointment['contact'],
                 $appointment['program'],
@@ -46,13 +45,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             
             if ($result['success']) {
-                // Update database to mark SMS as sent using existing function
+                // Update database to mark SMS as sent
                 updateSMSStatus($appointment_id, 'sent');
                 echo json_encode([
                     'success' => true, 
-                    'message' => 'SMS reminder sent successfully to ' . $appointment['name']
+                    'message' => 'SMS sent successfully to ' . $appointment['name']
                 ]);
             } else {
+                // Update status to failed
+                updateSMSStatus($appointment_id, 'failed');
                 echo json_encode([
                     'success' => false, 
                     'message' => 'Failed to send SMS: ' . $result['message']
@@ -61,9 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
             
         case 'send_all':
-            // Get all appointments for tomorrow that haven't been sent SMS
-            $tomorrow = date('Y-m-d', strtotime('+1 day'));
-            $appointments = getAppointmentsForDate($tomorrow, 'pending');
+            // Get all upcoming appointments in the next 24 hours that haven't been sent SMS
+            $now = new DateTime();
+            $next_24h = new DateTime();
+            $next_24h->modify('+24 hours');
+            
+            $appointments = getUpcomingAppointments($now->format('Y-m-d H:i:s'), $next_24h->format('Y-m-d H:i:s'), 'pending');
             
             $sent_count = 0;
             $failed_count = 0;
@@ -72,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($total_appointments === 0) {
                 echo json_encode([
                     'success' => true,
-                    'message' => 'No appointments found for tomorrow'
+                    'message' => 'No pending appointments found for the next 24 hours'
                 ]);
                 break;
             }
@@ -82,7 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $date = $datetime->format('Y-m-d');
                 $time = $datetime->format('H:i:s');
                 
-                $result = $sms->sendAppointmentReminder(
+                // Send SMS using the single confirmation function
+                $result = $sms->sendAppointmentConfirmation(
                     $appointment['name'],
                     $appointment['contact'],
                     $appointment['program'],
@@ -105,12 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($sent_count > 0) {
                 echo json_encode([
                     'success' => true,
-                    'message' => "SMS reminders sent: $sent_count successful" . ($failed_count > 0 ? ", $failed_count failed" : "") . " out of $total_appointments appointments"
+                    'message' => "SMS sent: $sent_count successful" . ($failed_count > 0 ? ", $failed_count failed" : "") . " out of $total_appointments appointments"
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => "Failed to send SMS reminders. All $failed_count attempts failed."
+                    'message' => "Failed to send SMS. All $failed_count attempts failed."
                 ]);
             }
             break;
@@ -156,7 +161,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
-
-// Note: Helper functions are now removed from here since they exist in db_conn.php
-// If the functions don't exist in db_conn.php, you'll need to add them there or check the function names
 ?>

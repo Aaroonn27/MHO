@@ -5,22 +5,8 @@ require_once 'auth.php';
 $required_roles = ['admin', 'abtc_employee']; 
 check_page_access($required_roles);
 
-// Include SMS service
-include 'sms_service.php';
-
-// Database connection parameters
-$servername = "localhost";
-$username = "";  
-$password = "";  
-$dbname = "mhodb";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Include database connection
+include 'db_conn.php';
 
 // Initialize variables with default empty values
 $program = $name = $address = $contact = $appointment_date = "";
@@ -63,49 +49,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($appointment_datetime <= $current_datetime) {
             $error_message = "Appointment date must be in the future";
         } else {
-            // Prepare SQL statement to prevent SQL injection (with SMS columns)
+            $conn = connect_db();
+            
+            // Prepare SQL statement - SMS status set to 'pending' by default
             $stmt = $conn->prepare("INSERT INTO appointments (program, name, address, contact, appointment_date, sms_status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', NOW())");
             $stmt->bind_param("sssss", $program, $name, $address, $contact, $appointment_date);
             
             // Execute the statement
             if ($stmt->execute()) {
                 $appointment_id = $conn->insert_id;
+                $stmt->close();
+                $conn->close();
                 
-                // Send SMS confirmation
-                $sms = new SMSService();
-                $datetime = new DateTime($appointment_date);
-                $date = $datetime->format('Y-m-d');
-                $time = $datetime->format('H:i:s');
-                
-                $sms_result = $sms->sendAppointmentConfirmation($name, $contact, $program, $date, $time);
-                
-                if ($sms_result['success']) {
-                    // Update SMS status to 'sent'
-                    $update_stmt = $conn->prepare("UPDATE appointments SET sms_status = 'sent', sms_sent_at = NOW() WHERE id = ?");
-                    $update_stmt->bind_param("i", $appointment_id);
-                    $update_stmt->execute();
-                    $update_stmt->close();
-                    
-                    // Redirect to create_appoint page with success message
-                    header("Location: create_appoint.php?status=success&message=Appointment created successfully! SMS confirmation sent to " . $original_contact);
-                    exit();
-                } else {
-                    // Update SMS status to 'failed'
-                    $update_stmt = $conn->prepare("UPDATE appointments SET sms_status = 'failed' WHERE id = ?");
-                    $update_stmt->bind_param("i", $appointment_id);
-                    $update_stmt->execute();
-                    $update_stmt->close();
-                    
-                    // Still redirect with success but mention SMS issue
-                    header("Location: create_appoint.php?status=warning&message=Appointment created successfully but SMS failed to send. You can resend SMS from the appointment list.");
-                    exit();
-                }
+                // Redirect with success message - NO SMS SENT HERE
+                header("Location: create_appoint.php?status=success&message=Appointment created successfully! SMS will be sent automatically before the appointment date.");
+                exit();
             } else {
                 $error_message = "Database Error: " . $stmt->error;
+                $stmt->close();
+                $conn->close();
             }
-            
-            // Close statement
-            $stmt->close();
         }
     }
 }
