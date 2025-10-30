@@ -493,7 +493,7 @@ $conn->close();
                 <div class="share-section">
                     <span class="share-label">View this announcement on:</span>
                     <div class="share-buttons">
-                        <a href="#" class="share-button share-facebook" title="Share on Facebook">
+                        <a href="#" class="share-button share-facebook" title="Open on Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         <!-- <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); ?>&text=<?php echo urlencode($announcement['title']); ?>" target="_blank" class="share-button share-twitter" title="Share on Twitter">
