@@ -5,7 +5,6 @@ require_once 'auth.php';
 $required_roles = ['admin', 'abtc_employee', 'cho_employee'];
 check_page_access($required_roles);
 
-// Include database connection
 require_once 'db_conn.php';
 
 // Handle form submissions
@@ -20,57 +19,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $category = $conn->real_escape_string($_POST['category']);
                 $status = $conn->real_escape_string($_POST['status']);
 
-                // Handle image upload with better error handling
-                $image_path = null;
+                // Handle image upload - store in database as BLOB
+                $image_data = null;
+                $image_type = null;
                 $upload_error = null;
 
                 if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
-                    // Check for upload errors
                     if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                        $upload_dir = 'uploads/announcements/';
+                        // Validate file type
+                        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                        $file_type = $_FILES['image']['type'];
 
-                        // Create directory if it doesn't exist
-                        if (!is_dir($upload_dir)) {
-                            if (!mkdir($upload_dir, 0755, true)) {
-                                $upload_error = "Failed to create upload directory.";
-                            }
+                        if (!in_array($file_type, $allowed_types)) {
+                            $upload_error = "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.";
                         }
 
-                        // Check if directory is writable
-                        if (!is_writable($upload_dir)) {
-                            $upload_error = "Upload directory is not writable.";
+                        // Validate file size (5MB max)
+                        $max_size = 5 * 1024 * 1024;
+                        if ($_FILES['image']['size'] > $max_size) {
+                            $upload_error = "File is too large. Maximum size is 5MB.";
                         }
 
                         if (!$upload_error) {
-                            // Validate file type
-                            $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                            $file_type = $_FILES['image']['type'];
-
-                            if (!in_array($file_type, $allowed_types)) {
-                                $upload_error = "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.";
-                            }
-
-                            // Validate file size (5MB max)
-                            $max_size = 5 * 1024 * 1024; // 5MB in bytes
-                            if ($_FILES['image']['size'] > $max_size) {
-                                $upload_error = "File is too large. Maximum size is 5MB.";
-                            }
-
-                            if (!$upload_error) {
-                                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-                                $file_name = uniqid() . '.' . $file_extension;
-                                $image_path = $upload_dir . $file_name;
-
-                                if (!move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
-                                    $upload_error = "Failed to move uploaded file.";
-                                    $image_path = null;
-                                } else {
-                                    $image_path = $conn->real_escape_string($image_path);
-                                }
-                            }
+                            // Read the file content
+                            $image_data = file_get_contents($_FILES['image']['tmp_name']);
+                            $image_type = $file_type;
                         }
                     } else {
-                        // Handle specific upload errors
                         switch ($_FILES['image']['error']) {
                             case UPLOAD_ERR_INI_SIZE:
                             case UPLOAD_ERR_FORM_SIZE:
@@ -85,25 +60,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                // If there's an upload error, redirect with error message
                 if ($upload_error) {
+                    $conn->close();
                     header("Location: manage_announcements.php?error=" . urlencode($upload_error));
                     exit;
                 }
 
-                $sql = "INSERT INTO announcements (title, content, category, image_path, status, created_at) 
-                        VALUES ('$title', '$content', '$category', " .
-                    ($image_path ? "'$image_path'" : "NULL") . ", '$status', NOW())";
+                // Prepare statement with BLOB data
+                $sql = "INSERT INTO announcements (title, content, category, image_data, image_type, status, created_at) 
+                        VALUES (?, ?, ?, ?, ?, ?, NOW())";
+                
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssbss", $title, $content, $category, $image_data, $image_type, $status);
+                
+                // Send binary data
+                $stmt->send_long_data(3, $image_data);
 
-                if ($conn->query($sql)) {
+                if ($stmt->execute()) {
+                    $stmt->close();
+                    $conn->close();
                     header("Location: manage_announcements.php?success=added");
                     exit;
                 } else {
+                    $stmt->close();
+                    $conn->close();
                     header("Location: manage_announcements.php?error=" . urlencode("Database error: " . $conn->error));
                     exit;
                 }
                 break;
-                // ... rest of your cases
+
+            case 'update_status':
+                $id = intval($_POST['id']);
+                $status = $conn->real_escape_string($_POST['status']);
+                
+                $sql = "UPDATE announcements SET status = ? WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $status, $id);
+                
+                if ($stmt->execute()) {
+                    $stmt->close();
+                    $conn->close();
+                    header("Location: manage_announcements.php?success=updated");
+                    exit;
+                } else {
+                    $stmt->close();
+                    $conn->close();
+                    header("Location: manage_announcements.php?error=" . urlencode("Failed to update status"));
+                    exit;
+                }
+                break;
+
+            case 'delete':
+                $id = intval($_POST['id']);
+                
+                $sql = "DELETE FROM announcements WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                
+                if ($stmt->execute()) {
+                    $stmt->close();
+                    $conn->close();
+                    header("Location: manage_announcements.php?success=deleted");
+                    exit;
+                } else {
+                    $stmt->close();
+                    $conn->close();
+                    header("Location: manage_announcements.php?error=" . urlencode("Failed to delete announcement"));
+                    exit;
+                }
+                break;
         }
     }
 
@@ -126,7 +151,6 @@ $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -264,39 +288,6 @@ $conn->close();
             min-height: 120px;
         }
 
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            opacity: 0;
-            position: absolute;
-            z-index: -1;
-        }
-
-        .file-input-display {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border: 2px dashed #e9ecef;
-            border-radius: 8px;
-            background: #f8fdf9;
-            transition: all 0.3s ease;
-        }
-
-        .file-input-wrapper:hover .file-input-display {
-            border-color: #4a8f5f;
-            background: #e8f5e9;
-        }
-
-        .file-input-display i {
-            margin-right: 10px;
-            color: #4a8f5f;
-        }
-
         .submit-btn {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
@@ -371,6 +362,7 @@ $conn->close();
             gap: 15px;
             font-size: 14px;
             color: #666;
+            flex-wrap: wrap;
         }
 
         .announcement-meta span {
@@ -406,6 +398,7 @@ $conn->close();
         .announcement-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -423,18 +416,13 @@ $conn->close();
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .action-btn.edit {
-            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
-            color: #212529;
+        .action-btn.toggle {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+            color: white;
         }
 
         .action-btn.delete {
             background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-        }
-
-        .action-btn.toggle {
-            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
             color: white;
         }
 
@@ -458,19 +446,29 @@ $conn->close();
             border: 2px solid #e9ecef;
         }
 
-        .success-message {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #155724;
+        .success-message, .error-message {
             padding: 15px 20px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 2px solid #c3e6cb;
-            border-left: 4px solid #28a745;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             animation: slideIn 0.3s ease;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 2px solid #c3e6cb;
+            border-left: 4px solid #28a745;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+            color: #721c24;
+            border: 2px solid #f1aeb5;
+            border-left: 4px solid #dc3545;
         }
 
         @keyframes slideIn {
@@ -478,7 +476,6 @@ $conn->close();
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -487,6 +484,10 @@ $conn->close();
 
         .success-message i {
             color: #28a745;
+        }
+
+        .error-message i {
+            color: #dc3545;
         }
 
         .no-announcements {
@@ -615,7 +616,6 @@ $conn->close();
             font-weight: 600;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             body {
                 padding: 15px;
@@ -654,13 +654,12 @@ $conn->close();
 
             .announcement-actions {
                 justify-content: center;
-                flex-wrap: wrap;
                 width: 100%;
             }
 
             .action-btn {
                 flex: 1;
-                min-width: 120px;
+                min-width: 110px;
                 justify-content: center;
             }
 
@@ -696,7 +695,6 @@ $conn->close();
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="header">
@@ -722,6 +720,13 @@ $conn->close();
                         break;
                 }
                 ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['error'])): ?>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <?php echo htmlspecialchars($_GET['error']); ?>
             </div>
         <?php endif; ?>
 
@@ -755,16 +760,8 @@ $conn->close();
 
                     <div class="form-group full-width">
                         <label for="image">Image (Optional)</label>
-
-                        <!-- Hidden file input -->
-                        <input type="file"
-                            id="image"
-                            name="image"
-                            accept="image/*"
-                            capture="environment"
-                            style="display: none;">
-
-                        <!-- Custom upload button -->
+                        <input type="file" id="image" name="image" accept="image/*" style="display: none;">
+                        
                         <div class="upload-container" id="uploadContainer">
                             <div class="upload-icon">
                                 <i class="fas fa-cloud-upload-alt"></i>
@@ -776,7 +773,6 @@ $conn->close();
                             </div>
                         </div>
 
-                        <!-- Image preview area -->
                         <div class="image-preview-container" id="previewContainer">
                             <div class="preview-wrapper">
                                 <img id="imagePreview" class="image-preview" src="" alt="Preview">
@@ -811,9 +807,9 @@ $conn->close();
                     <div class="announcement-item">
                         <div class="announcement-header">
                             <div style="display: flex; align-items: flex-start;">
-                                <?php if ($announcement['image_path'] && file_exists($announcement['image_path'])): ?>
-                                    <img src="<?php echo htmlspecialchars($announcement['image_path']); ?>"
-                                        alt="Announcement Image" class="announcement-image">
+                                <?php if (!empty($announcement['image_data'])): ?>
+                                    <img src="data:<?php echo htmlspecialchars($announcement['image_type']); ?>;base64,<?php echo base64_encode($announcement['image_data']); ?>" 
+                                         alt="Announcement Image" class="announcement-image">
                                 <?php endif; ?>
 
                                 <div class="announcement-info">
@@ -873,17 +869,14 @@ $conn->close();
             const removeButton = document.getElementById('removeImage');
             const fileInfo = document.getElementById('fileInfo');
 
-            // Click to open file picker
             uploadContainer.addEventListener('click', function() {
                 fileInput.click();
             });
 
-            // Handle file selection
             fileInput.addEventListener('change', function(e) {
                 handleFiles(this.files);
             });
 
-            // Drag and drop functionality
             uploadContainer.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 this.classList.add('dragover');
@@ -897,16 +890,13 @@ $conn->close();
             uploadContainer.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.classList.remove('dragover');
-
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
-                    // Set the files to the input
                     fileInput.files = files;
                     handleFiles(files);
                 }
             });
 
-            // Remove image
             removeButton.addEventListener('click', function() {
                 fileInput.value = '';
                 previewContainer.classList.remove('active');
@@ -917,16 +907,14 @@ $conn->close();
                 if (files.length === 0) return;
 
                 const file = files[0];
-
-                // Validate file type
                 const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                
                 if (!validTypes.includes(file.type)) {
                     alert('Invalid file type! Please select a JPG, PNG, GIF, or WEBP image.');
                     fileInput.value = '';
                     return;
                 }
 
-                // Validate file size (5MB)
                 const maxSize = 5 * 1024 * 1024;
                 if (file.size > maxSize) {
                     alert('File is too large! Maximum size is 5MB.');
@@ -934,14 +922,11 @@ $conn->close();
                     return;
                 }
 
-                // Show preview
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                     uploadContainer.style.display = 'none';
                     previewContainer.classList.add('active');
-
-                    // Display file info
                     displayFileInfo(file);
                 };
                 reader.readAsDataURL(file);
@@ -952,27 +937,25 @@ $conn->close();
                 const fileType = file.type.split('/')[1].toUpperCase();
 
                 fileInfo.innerHTML = `
-            <div class="file-info-item">
-                <span class="file-info-label"><i class="fas fa-file-image"></i> Filename:</span>
-                <span class="file-info-value">${file.name}</span>
-            </div>
-            <div class="file-info-item">
-                <span class="file-info-label"><i class="fas fa-file-alt"></i> Type:</span>
-                <span class="file-info-value">${fileType}</span>
-            </div>
-            <div class="file-info-item">
-                <span class="file-info-label"><i class="fas fa-weight"></i> Size:</span>
-                <span class="file-info-value">${fileSizeMB} MB</span>
-            </div>
-        `;
+                    <div class="file-info-item">
+                        <span class="file-info-label"><i class="fas fa-file-image"></i> Filename:</span>
+                        <span class="file-info-value">${file.name}</span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label"><i class="fas fa-file-alt"></i> Type:</span>
+                        <span class="file-info-value">${fileType}</span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label"><i class="fas fa-weight"></i> Size:</span>
+                        <span class="file-info-value">${fileSizeMB} MB</span>
+                    </div>
+                `;
             }
 
-            // Prevent form submission if file is too large
             document.querySelector('form').addEventListener('submit', function(e) {
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const maxSize = 5 * 1024 * 1024;
-
                     if (file.size > maxSize) {
                         e.preventDefault();
                         alert('Please remove or replace the image. File size exceeds 5MB limit.');
@@ -983,5 +966,4 @@ $conn->close();
         })();
     </script>
 </body>
-
 </html>

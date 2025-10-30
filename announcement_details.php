@@ -1,6 +1,7 @@
 <?php
 require_once 'auth.php';
 require_once 'db_conn.php';
+require_once 'image_helper.php';
 
 // Get announcement ID from URL
 $announcement_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -473,9 +474,12 @@ $conn->close();
                 <h1 class="announcement-title"><?php echo htmlspecialchars($announcement['title']); ?></h1>
             </div>
 
-            <?php if ($announcement['image_path']): ?>
+            <?php
+            if (has_announcement_image($announcement)): ?>
                 <div class="announcement-image-container">
-                    <img src="<?php echo htmlspecialchars($announcement['image_path']); ?>" alt="<?php echo htmlspecialchars($announcement['title']); ?>" class="announcement-image">
+                    <img src="<?php echo get_image_data_url($announcement['image_data'], $announcement['image_type']); ?>"
+                        alt="<?php echo htmlspecialchars($announcement['title']); ?>"
+                        class="announcement-image">
                 </div>
             <?php endif; ?>
 

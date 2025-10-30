@@ -1,6 +1,7 @@
 <?php
 require_once 'auth.php';
 require_once 'db_conn.php';
+require_once 'image_helper.php';
 
 // Pagination settings
 $announcements_per_page = 12;
@@ -669,8 +670,8 @@ while ($cat = $categories_result->fetch_assoc()) {
                 while ($announcement = $result->fetch_assoc()) {
                     echo '<a href="announcement_details.php?id=' . $announcement['id'] . '" class="announcement-card">';
 
-                    if ($announcement['image_path']) {
-                        echo '<img src="' . htmlspecialchars($announcement['image_path']) . '" alt="Announcement Image" class="announcement-image">';
+                    if (has_announcement_image($announcement)) {
+                        echo '<img src="' . get_image_data_url($announcement['image_data'], $announcement['image_type']) . '" alt="Announcement Image" class="announcement-image">';
                     }
 
                     echo '<div class="announcement-content">';

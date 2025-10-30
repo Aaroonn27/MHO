@@ -1,5 +1,6 @@
 <?php
 require_once 'auth.php';
+require_once 'image_helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -888,9 +889,9 @@ require_once 'auth.php';
                     <i class="fas fa-bullhorn"></i>
                     <h2>Latest Announcements</h2>
                 </div>
-                <a href="manage_announcements.php" class="admin-link">
+                <!-- <a href="manage_announcements.php" class="admin-link">
                     <i class="fas fa-plus"></i>Manage Announcements
-                </a>
+                </a> -->
             </div>
 
             <div class="announcements-grid">
@@ -909,8 +910,8 @@ require_once 'auth.php';
                     while ($announcement = $result->fetch_assoc()) {
                         echo '<a href="announcement_details.php?id=' . $announcement['id'] . '" class="announcement-card" style="text-decoration: none; color: inherit; display: block;">';
 
-                        if ($announcement['image_path']) {
-                            echo '<img src="' . htmlspecialchars($announcement['image_path']) . '" alt="Announcement Image" class="announcement-image">';
+                        if (has_announcement_image($announcement)) {
+                            echo '<img src="' . get_image_data_url($announcement['image_data'], $announcement['image_type']) . '" alt="Announcement Image" class="announcement-image">';
                         }
 
                         echo '<div class="announcement-content">';
