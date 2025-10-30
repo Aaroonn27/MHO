@@ -1095,7 +1095,6 @@ require_once 'image_helper.php';
 
             <div class="footer-links">
                 <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
-                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
                 <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
                 <a href="#" title="Phone"><i class="fas fa-phone"></i></a>
             </div>
