@@ -546,7 +546,7 @@ check_page_access($required_roles);
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    <i class="fas fa-calendar-plus"></i> Create Appointment & Send SMS
+                    <i class="fas fa-calendar-plus"></i> Create Appointment
                 </button>
             </form>
 
