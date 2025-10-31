@@ -4,8 +4,6 @@ require_once 'auth.php';
 
 $required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
-
-include_once 'check_and_send_sms.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
