@@ -1,5 +1,4 @@
 <?php
-
 $CHECK_INTERVAL = 3600; // Check every 1 hour (in seconds)
 $SEND_BEFORE_HOURS = 24; // Send SMS 24 hours before appointment
 
@@ -21,8 +20,9 @@ function shouldCheckSMS($last_check_file, $check_interval) {
 
 // Function to send SMS for upcoming appointments
 function sendUpcomingSMS($send_before_hours) {
-    require_once 'sms_service.php';
-    require_once 'db_conn.php';
+    // Use require_once to prevent redeclaring functions
+    require_once __DIR__ . '/sms_service.php';
+    require_once __DIR__ . '/db_conn.php';
     
     $sms = new SMSService();
     
@@ -74,21 +74,26 @@ function sendUpcomingSMS($send_before_hours) {
     ];
 }
 
-// Main execution
-if (shouldCheckSMS($last_check_file, $CHECK_INTERVAL)) {
-    try {
-        // Run the SMS check
-        $result = sendUpcomingSMS($SEND_BEFORE_HOURS);
-        
-        // Update last check time
-        file_put_contents($last_check_file, time());
-        
-        // Optional: Log the results
-        if ($result['total'] > 0) {
-            error_log("SMS Auto-send: {$result['sent']} sent, {$result['failed']} failed out of {$result['total']} appointments");
+// Main execution - Only run if not already defined (prevents duplicate execution)
+if (!defined('AUTO_SMS_EXECUTED')) {
+    define('AUTO_SMS_EXECUTED', true);
+    
+    if (shouldCheckSMS($last_check_file, $CHECK_INTERVAL)) {
+        try {
+            // Run the SMS check
+            $result = sendUpcomingSMS($SEND_BEFORE_HOURS);
+            
+            // Update last check time
+            file_put_contents($last_check_file, time());
+            
+            // Optional: Log the results (commented out - uncomment if you want logs)
+            // if ($result['total'] > 0) {
+            //     error_log("SMS Auto-send: {$result['sent']} sent, {$result['failed']} failed out of {$result['total']} appointments");
+            // }
+        } catch (Exception $e) {
+            // Silently catch errors to prevent breaking the page
+            error_log("SMS Auto-send Error: " . $e->getMessage());
         }
-    } catch (Exception $e) {
-        error_log("SMS Auto-send Error: " . $e->getMessage());
     }
 }
 ?>
