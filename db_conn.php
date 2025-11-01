@@ -115,140 +115,251 @@ function save_rabies_patient() {
         $id = !empty($_POST['id']) ? $_POST['id'] : date('YmdHis');
         
         // Basic patient information
-        $date_recorded = $conn->real_escape_string($_POST['date_recorded']);
-        $lname = $conn->real_escape_string($_POST['lname']);
-        $fname = $conn->real_escape_string($_POST['fname']);
-        $mname = $conn->real_escape_string($_POST['mname']);
-        $address = $conn->real_escape_string($_POST['address']);
-        $age = $conn->real_escape_string($_POST['age']);
-        $sex = $conn->real_escape_string($_POST['sex']);
+        $date_recorded = $_POST['date_recorded'];
+        $lname = $_POST['lname'];
+        $fname = $_POST['fname'];
+        $mname = $_POST['mname'];
+        $address = $_POST['address'];
+        $age = $_POST['age'];
+        $sex = $_POST['sex'];
         
         // Bite information
-        $bite_date = $conn->real_escape_string($_POST['bite_date']);
-        $bite_place = $conn->real_escape_string($_POST['bite_place']);
-        $animal_type = $conn->real_escape_string($_POST['animal_type']);
-        $bite_type = $conn->real_escape_string($_POST['bite_type']);
-        $bite_site = $conn->real_escape_string($_POST['bite_site']);
+        $bite_date = $_POST['bite_date'];
+        $bite_place = $_POST['bite_place'];
+        $animal_type = $_POST['animal_type'];
+        $bite_type = $_POST['bite_type'];
+        $bite_site = $_POST['bite_site'];
         
         // PEP information
-        $category = $conn->real_escape_string($_POST['category']);
-        $washing_of_bite = $conn->real_escape_string($_POST['washing_of_bite']);
-        $rig_date_given = $conn->real_escape_string($_POST['rig_date_given']);
-        $rig_amount = $conn->real_escape_string($_POST['rig_amount']);
-        $vaccine_route = $conn->real_escape_string($_POST['vaccine_route']);
+        $category = $_POST['category'];
+        $washing_of_bite = $_POST['washing_of_bite'];
+        $rig_date_given = !empty($_POST['rig_date_given']) ? $_POST['rig_date_given'] : null;
+        $rig_amount = $_POST['rig_amount'];
+        $vaccine_route = $_POST['vaccine_route'];
         
         // Vaccine information
-        $vaccine_generic = $conn->real_escape_string($_POST['vaccine_generic']);
-        $vaccine_brand = $conn->real_escape_string($_POST['vaccine_brand']);
+        $vaccine_generic = $_POST['vaccine_generic'];
+        $vaccine_brand = $_POST['vaccine_brand'];
         
-        // Vaccine dates
-        $vaccine_day0 = !empty($_POST['vaccine_day0']) ? $conn->real_escape_string($_POST['vaccine_day0']) : null;
-        $vaccine_day3 = !empty($_POST['vaccine_day3']) ? $conn->real_escape_string($_POST['vaccine_day3']) : null;
-        $vaccine_day7 = !empty($_POST['vaccine_day7']) ? $conn->real_escape_string($_POST['vaccine_day7']) : null;
-        $vaccine_day14 = !empty($_POST['vaccine_day14']) ? $conn->real_escape_string($_POST['vaccine_day14']) : null;
-        $vaccine_day2830 = !empty($_POST['vaccine_day2830']) ? $conn->real_escape_string($_POST['vaccine_day2830']) : null;
+        // Vaccine dates - handle empty dates as NULL
+        $vaccine_day0 = !empty($_POST['vaccine_day0']) ? $_POST['vaccine_day0'] : null;
+        $vaccine_day3 = !empty($_POST['vaccine_day3']) ? $_POST['vaccine_day3'] : null;
+        $vaccine_day7 = !empty($_POST['vaccine_day7']) ? $_POST['vaccine_day7'] : null;
+        $vaccine_day14 = !empty($_POST['vaccine_day14']) ? $_POST['vaccine_day14'] : null;
+        $vaccine_day2830 = !empty($_POST['vaccine_day2830']) ? $_POST['vaccine_day2830'] : null;
         
         // Additional information
-        $abc_name = $conn->real_escape_string($_POST['abc_name']);
-        $outcome = $conn->real_escape_string($_POST['outcome']);
-        $animal_status = $conn->real_escape_string($_POST['animal_status']);
-        $remarks = $conn->real_escape_string($_POST['remarks']);
+        $abc_name = $_POST['abc_name'];
+        $outcome = $_POST['outcome'];
+        $animal_status = $_POST['animal_status'];
+        $remarks = $_POST['remarks'];
         
         // Prepare SQL statement
-        $sql = "INSERT INTO sheet1 (id, date_recorded, lname, fname, mname, address, age, sex, 
+        $sql = "INSERT INTO sheet1 (
+                id, date_recorded, lname, fname, mname, address, age, sex, 
                 bite_date, bite_place, animal_type, bite_type, bite_site, category, washing_of_bite, 
-                rig_date_given, rig_amount, vaccine_route, vaccine_generic, vaccine_brand, vaccine_day0, vaccine_day3, vaccine_day7, vaccine_day14, 
-                vaccine_day2830, abc_name, outcome, animal_status, remarks) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                rig_date_given, rig_amount, vaccine_route, vaccine_generic, vaccine_brand, 
+                vaccine_day0, vaccine_day3, vaccine_day7, vaccine_day14, vaccine_day2830, 
+                abc_name, outcome, animal_status, remarks
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssssssssisssssssssssssss", 
-            $id, $date_recorded, $lname, $fname, $mname, $address, $age, $sex, 
-            $bite_date, $bite_place, $animal_type, $bite_type, $bite_site, $category, 
-            $washing_of_bite, $rig_date_given, $rig_amount, $vaccine_route, $vaccine_generic, $vaccine_brand, $vaccine_day0, $vaccine_day3, 
-            $vaccine_day7, $vaccine_day14, $vaccine_day2830, $abc_name, $outcome, $animal_status, $remarks);
+        
+        if (!$stmt) {
+            $_SESSION['message'] = 'Error preparing statement: ' . $conn->error;
+            $_SESSION['message_type'] = 'danger';
+            header("Location: rabies_form.php");
+            exit();
+        }
+        
+        // Type definition: 29 parameters total (all strings)
+        $stmt->bind_param("sssssssssssssssssssssssssssss", 
+            $id,                // 1
+            $date_recorded,     // 2
+            $lname,             // 3
+            $fname,             // 4
+            $mname,             // 5
+            $address,           // 6
+            $age,               // 7
+            $sex,               // 8
+            $bite_date,         // 9
+            $bite_place,        // 10
+            $animal_type,       // 11
+            $bite_type,         // 12
+            $bite_site,         // 13
+            $category,          // 14
+            $washing_of_bite,   // 15
+            $rig_date_given,    // 16
+            $rig_amount,        // 17
+            $vaccine_route,     // 18
+            $vaccine_generic,   // 19
+            $vaccine_brand,     // 20
+            $vaccine_day0,      // 21
+            $vaccine_day3,      // 22
+            $vaccine_day7,      // 23
+            $vaccine_day14,     // 24
+            $vaccine_day2830,   // 25
+            $abc_name,          // 26
+            $outcome,           // 27
+            $animal_status,     // 28
+            $remarks            // 29
+        );
         
         if ($stmt->execute()) {
-            header("Location: patient_records.php?success=1");
+            $_SESSION['message'] = 'Patient record successfully created!';
+            $_SESSION['message_type'] = 'success';
+            header("Location: patient_records.php");
             exit();
         } else {
-            header("Location: patient_records.php?error=1&msg=" . urlencode($stmt->error));
+            $_SESSION['message'] = 'Error creating patient record: ' . $stmt->error;
+            $_SESSION['message_type'] = 'danger';
+            header("Location: rabies_form.php");
             exit();
         }
         
         $stmt->close();
         $conn->close();
     }
-}
+}   
 
 // Function to update an existing rabies exposure patient
 function update_rabies_patient() {
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_id'])) {
         $conn = connect_db();
         
-        $new_id = $conn->real_escape_string($_POST['new_id']);
+        $new_id = intval($_POST['new_id']); // Convert to integer
         
         // Basic patient information
-        $id = $conn->real_escape_string($_POST['id']);
-        $date_recorded = $conn->real_escape_string($_POST['date_recorded']);
-        $lname = $conn->real_escape_string($_POST['lname']);
-        $fname = $conn->real_escape_string($_POST['fname']);
-        $mname = $conn->real_escape_string($_POST['mname']);
-        $address = $conn->real_escape_string($_POST['address']);
-        $age = $conn->real_escape_string($_POST['age']);
-        $sex = $conn->real_escape_string($_POST['sex']);
+        $id = $_POST['id'];
+        $date_recorded = $_POST['date_recorded'];
+        $lname = $_POST['lname'];
+        $fname = $_POST['fname'];
+        $mname = $_POST['mname'];
+        $address = $_POST['address'];
+        $age = $_POST['age'];
+        $sex = $_POST['sex'];
         
         // Bite information
-        $bite_date = $conn->real_escape_string($_POST['bite_date']);
-        $bite_place = $conn->real_escape_string($_POST['bite_place']);
-        $animal_type = $conn->real_escape_string($_POST['animal_type']);
-        $bite_type = $conn->real_escape_string($_POST['bite_type']);
-        $bite_site = $conn->real_escape_string($_POST['bite_site']);
+        $bite_date = $_POST['bite_date'];
+        $bite_place = $_POST['bite_place'];
+        $animal_type = $_POST['animal_type'];
+        $bite_type = $_POST['bite_type'];
+        $bite_site = $_POST['bite_site'];
         
         // PEP information
-        $category = $conn->real_escape_string($_POST['category']);
-        $washing_of_bite = $conn->real_escape_string($_POST['washing_of_bite']);
-        $rig_date_given = $conn->real_escape_string($_POST['rig_date_given']);
-        $rig_amount = $conn->real_escape_string($_POST['rig_amount']);
-        $vaccine_route = $conn->real_escape_string($_POST['vaccine_route']);
+        $category = $_POST['category'];
+        $washing_of_bite = $_POST['washing_of_bite'];
+        $rig_date_given = !empty($_POST['rig_date_given']) ? $_POST['rig_date_given'] : null;
+        $rig_amount = $_POST['rig_amount'];
+        $vaccine_route = $_POST['vaccine_route'];
         
         // Vaccine information
-        $vaccine_generic = $conn->real_escape_string($_POST['vaccine_generic']);
-        $vaccine_brand = $conn->real_escape_string($_POST['vaccine_brand']);
+        $vaccine_generic = $_POST['vaccine_generic'];
+        $vaccine_brand = $_POST['vaccine_brand'];
         
-        // Vaccine dates
-        $vaccine_day0 = !empty($_POST['vaccine_day0']) ? $conn->real_escape_string($_POST['vaccine_day0']) : null;
-        $vaccine_day3 = !empty($_POST['vaccine_day3']) ? $conn->real_escape_string($_POST['vaccine_day3']) : null;
-        $vaccine_day7 = !empty($_POST['vaccine_day7']) ? $conn->real_escape_string($_POST['vaccine_day7']) : null;
-        $vaccine_day14 = !empty($_POST['vaccine_day14']) ? $conn->real_escape_string($_POST['vaccine_day14']) : null;
-        $vaccine_day2830 = !empty($_POST['vaccine_day2830']) ? $conn->real_escape_string($_POST['vaccine_day2830']) : null;
+        // Vaccine dates - handle empty dates as NULL
+        $vaccine_day0 = !empty($_POST['vaccine_day0']) ? $_POST['vaccine_day0'] : null;
+        $vaccine_day3 = !empty($_POST['vaccine_day3']) ? $_POST['vaccine_day3'] : null;
+        $vaccine_day7 = !empty($_POST['vaccine_day7']) ? $_POST['vaccine_day7'] : null;
+        $vaccine_day14 = !empty($_POST['vaccine_day14']) ? $_POST['vaccine_day14'] : null;
+        $vaccine_day2830 = !empty($_POST['vaccine_day2830']) ? $_POST['vaccine_day2830'] : null;
         
         // Additional information
-        $abc_name = $conn->real_escape_string($_POST['abc_name']);
-        $outcome = $conn->real_escape_string($_POST['outcome']);
-        $animal_status = $conn->real_escape_string($_POST['animal_status']);
-        $remarks = $conn->real_escape_string($_POST['remarks']);
+        $abc_name = $_POST['abc_name'];
+        $outcome = $_POST['outcome'];
+        $animal_status = $_POST['animal_status'];
+        $remarks = $_POST['remarks'];
         
-        // Prepare SQL statement
-        $sql = "UPDATE sheet1 SET id = ?, date_recorded = ?, lname = ?, fname = ?, mname = ?, 
-                address = ?, age = ?, sex = ?, bite_date = ?, bite_place = ?, animal_type = ?, 
-                bite_type = ?, bite_site = ?, category = ?, washing_of_bite = ?, rig_date_given = ?, 
-                rig_amount = ?, vaccine_route = ?, vaccine_generic = ?, vaccine_brand = ?, vaccine_day0 = ?, vaccine_day3 = ?, vaccine_day7 = ?, 
-                vaccine_day14 = ?, vaccine_day2830 = ?, abc_name = ?, outcome = ?, 
-                animal_status = ?, remarks = ? WHERE new_id = ?";
+        // Prepare SQL statement with proper handling of NULL values
+        $sql = "UPDATE sheet1 SET 
+                id = ?, 
+                date_recorded = ?, 
+                lname = ?, 
+                fname = ?, 
+                mname = ?, 
+                address = ?, 
+                age = ?, 
+                sex = ?, 
+                bite_date = ?, 
+                bite_place = ?, 
+                animal_type = ?, 
+                bite_type = ?, 
+                bite_site = ?, 
+                category = ?, 
+                washing_of_bite = ?, 
+                rig_date_given = ?, 
+                rig_amount = ?, 
+                vaccine_route = ?, 
+                vaccine_generic = ?, 
+                vaccine_brand = ?, 
+                vaccine_day0 = ?, 
+                vaccine_day3 = ?, 
+                vaccine_day7 = ?, 
+                vaccine_day14 = ?, 
+                vaccine_day2830 = ?, 
+                abc_name = ?, 
+                outcome = ?, 
+                animal_status = ?, 
+                remarks = ? 
+                WHERE new_id = ?";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssissssssissssssssssssi", 
-            $id, $date_recorded, $lname, $fname, $mname, $address, $age, $sex, 
-            $bite_date, $bite_place, $animal_type, $bite_type, $bite_site, $category, 
-            $washing_of_bite, $rig_date_given, $rig_amount, $vaccine_route, $vaccine_generic, $vaccine_brand, $vaccine_day0, $vaccine_day3, 
-            $vaccine_day7, $vaccine_day14, $vaccine_day2830, $abc_name, $outcome, $animal_status, $remarks, $new_id);
+        
+        if (!$stmt) {
+            $_SESSION['message'] = 'Error preparing statement: ' . $conn->error;
+            $_SESSION['message_type'] = 'danger';
+            header("Location: rabies_form.php?id=" . $new_id);
+            exit();
+        }
+        
+        // CAREFULLY COUNTED: 29 's' + 1 'i' = 30 total parameters
+        // Let me write it out clearly with spacing:
+        // ssssss ssssss ssssss ssssss ssssss ssssi
+        // 123456 789012 345678 901234 567890
+        //        1      2      3      4
+        
+        $stmt->bind_param("sssssssssssssssssssssssssssssi", 
+            $id,                // 1
+            $date_recorded,     // 2
+            $lname,             // 3
+            $fname,             // 4
+            $mname,             // 5
+            $address,           // 6
+            $age,               // 7
+            $sex,               // 8
+            $bite_date,         // 9
+            $bite_place,        // 10
+            $animal_type,       // 11
+            $bite_type,         // 12
+            $bite_site,         // 13
+            $category,          // 14
+            $washing_of_bite,   // 15
+            $rig_date_given,    // 16
+            $rig_amount,        // 17
+            $vaccine_route,     // 18
+            $vaccine_generic,   // 19
+            $vaccine_brand,     // 20
+            $vaccine_day0,      // 21
+            $vaccine_day3,      // 22
+            $vaccine_day7,      // 23
+            $vaccine_day14,     // 24
+            $vaccine_day2830,   // 25
+            $abc_name,          // 26
+            $outcome,           // 27
+            $animal_status,     // 28
+            $remarks,           // 29
+            $new_id             // 30 (integer)
+        );
         
         if ($stmt->execute()) {
-            header("Location: patient_records.php?updated=1");
+            $_SESSION['message'] = 'Patient record successfully updated!';
+            $_SESSION['message_type'] = 'success';
+            header("Location: patient_records.php");
             exit();
         } else {
-            header("Location: patient_records.php?error=2&msg=" . urlencode($stmt->error));
+            $_SESSION['message'] = 'Error updating patient record: ' . $stmt->error;
+            $_SESSION['message_type'] = 'danger';
+            header("Location: rabies_form.php?id=" . $new_id);
             exit();
         }
         

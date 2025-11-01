@@ -2,7 +2,7 @@
 session_start();
 require_once 'auth.php';
 
-$required_roles = ['admin', 'abtc_employee']; 
+$required_roles = ['admin', 'abtc_employee'];
 check_page_access($required_roles);
 
 require_once('db_conn.php');
@@ -47,7 +47,7 @@ $page_title = "Add New Patient";
 if (isset($_GET['id'])) {
     $patient_id = $_GET['id'];
     $patient_data = get_patient($patient_id);
-    
+
     if ($patient_data) {
         $patient = array_merge($patient, $patient_data);
         $is_edit = true;
@@ -81,14 +81,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 20px;
             margin-bottom: 20px;
         }
-        
+
         .form-section {
             margin-bottom: 15px;
             padding: 15px;
             border-radius: 8px;
             background-color: #fff;
         }
-        
+
         .form-section-title {
             font-weight: bold;
             color: #3366cc;
@@ -97,27 +97,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-bottom: 1px solid #ccc;
             padding-bottom: 5px;
         }
-        
+
         .btn-section {
             margin-top: 20px;
             display: flex;
             justify-content: space-between;
         }
-        
+
         .exposure-category label {
             display: inline-block;
             margin-right: 15px;
         }
-        
+
         .washing-options label {
             display: inline-block;
             margin-right: 15px;
         }
-        
+
         .pep-section {
             background-color: #e6f2ff;
         }
-        
+
         .vaccination-schedule {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -168,8 +168,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="sex" class="form-label">Sex:</label>
                         <select class="form-select" id="sex" name="sex" required>
                             <option value="" disabled <?php echo empty($patient['sex']) ? 'selected' : ''; ?>>Select</option>
-                            <option value="Male" <?php echo $patient['sex'] == 'M' ? 'selected' : ''; ?>>Male</option>
-                            <option value="Female" <?php echo $patient['sex'] == 'F' ? 'selected' : ''; ?>>Female</option>
+                            <option value="M" <?php echo $patient['sex'] == 'M' ? 'selected' : ''; ?>>Male</option>
+                            <option value="F" <?php echo $patient['sex'] == 'F' ? 'selected' : ''; ?>>Female</option>
                         </select>
                     </div>
                 </div>
@@ -235,15 +235,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <h4 class="form-section-title">Category of Exposure</h4>
                         <div class="exposure-category">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="category" id="category1" value="I" <?php echo $patient['category'] == 'I' ? 'checked' : ''; ?> required>
+                                <input class="form-check-input" type="radio" name="category" id="category1" value="1" <?php echo $patient['category'] == '1' ? 'checked' : ''; ?> required>
                                 <label class="form-check-label" for="category1">I</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="category" id="category2" value="II" <?php echo $patient['category'] == 'II' ? 'checked' : ''; ?>>
+                                <input class="form-check-input" type="radio" name="category" id="category2" value="2" <?php echo $patient['category'] == '2' ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="category2">II</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="category" id="category3" value="III" <?php echo $patient['category'] == 'III' ? 'checked' : ''; ?>>
+                                <input class="form-check-input" type="radio" name="category" id="category3" value="3" <?php echo $patient['category'] == '3' ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="category3">III</label>
                             </div>
                         </div>
@@ -252,11 +252,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <h4 class="form-section-title">Washing of Bite Wound</h4>
                         <div class="washing-options">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="washing_of_bite" id="washingYes" value="YES" <?php echo $patient['washing_of_bite'] == 'YES' ? 'checked' : ''; ?> required>
+                                <input class="form-check-input" type="radio" name="washing_of_bite" id="washingYes" value="Y" <?php echo $patient['washing_of_bite'] == 'Y' ? 'checked' : ''; ?> required>
                                 <label class="form-check-label" for="washingYes">YES</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="washing_of_bite" id="washingNo" value="NO" <?php echo $patient['washing_of_bite'] == 'NO' ? 'checked' : ''; ?>>
+                                <input class="form-check-input" type="radio" name="washing_of_bite" id="washingNo" value="N" <?php echo $patient['washing_of_bite'] == 'N' ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="washingNo">NO</label>
                             </div>
                         </div>
@@ -267,7 +267,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!-- Post Exposure Prophylaxis Section -->
             <div class="form-section pep-section">
                 <h3 class="form-section-title">Post Exposure Prophylaxis</h3>
-                
+
                 <!-- RIG Information -->
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -282,7 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Vaccine Information -->
                 <div class="row g-3 mt-2">
                     <div class="col-md-4">
@@ -302,7 +302,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </select>
                     </div>
                 </div>
-                
+
                 <!-- Vaccination Schedule -->
                 <h4 class="mt-4">Anti-Rabies Vaccine Schedule</h4>
                 <div class="row g-3 mt-2">
@@ -389,17 +389,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 const day3Date = new Date(day0Date);
                 day3Date.setDate(day0Date.getDate() + 3);
                 document.getElementById('vaccine_day3').value = day3Date.toISOString().split('T')[0];
-                
+
                 // Day 7
                 const day7Date = new Date(day0Date);
                 day7Date.setDate(day0Date.getDate() + 7);
                 document.getElementById('vaccine_day7').value = day7Date.toISOString().split('T')[0];
-                
+
                 // Day 14
                 const day14Date = new Date(day0Date);
                 day14Date.setDate(day0Date.getDate() + 14);
                 document.getElementById('vaccine_day14').value = day14Date.toISOString().split('T')[0];
-                
+
                 // Day 28
                 const day28Date = new Date(day0Date);
                 day28Date.setDate(day0Date.getDate() + 28);
