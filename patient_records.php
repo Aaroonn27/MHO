@@ -737,13 +737,13 @@ $current_page = $result['current_page'];
                                     <td><?php echo htmlspecialchars($patient['animal_status']); ?></td>
                                     <td><?php echo htmlspecialchars($patient['remarks']); ?></td>
                                     <td class="action-buttons">
-                                        <!-- <a href="rabies_view.php?id=<?php echo $patient['new_id']; ?>" class="action-btn info" title="View Details">
+                                        <!-- <a href="rabies_view.php?id=<-?php echo $patient['new_id']; ?>" class="action-btn info" title="View Details">
                                             <i class="fas fa-eye"></i> View
                                         </a> -->
                                         <a href="rabies_form.php?id=<?php echo $patient['new_id']; ?>" class="action-btn warning" title="Edit Record">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <a href="rabies_registry.php?action=delete&id=<?php echo $patient['new_id']; ?>" class="action-btn danger" title="Delete Record" onclick="return confirm('Are you sure you want to delete this record? This action cannot be undone.');">
+                                        <a href="patient_records.php?action=delete&id=<?php echo $patient['new_id']; ?>" class="action-btn danger" title="Delete Record" onclick="return confirm('Are you sure you want to delete this record? This action cannot be undone.');">
                                             <i class="fas fa-trash"></i> Delete
                                         </a>
                                     </td>
